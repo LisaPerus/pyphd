@@ -19,6 +19,7 @@ import json
 from collections import OrderedDict
 
 # Third party imports
+import numpy as np
 import nibabel
 from nilearn import plotting
 
@@ -27,6 +28,8 @@ def get_image_snap(
         im_file,
         output_basename,
         modality="anat",
+        vmin=None,
+        vmax=None,
         title=None,
         coords=None,
         display_mode="ortho"):
@@ -40,7 +43,11 @@ def get_image_snap(
     output_basename: array
         output(s) basename.
     modality: str
-        type of image (anat or epi)
+        type of image (anat or func)
+    vmin: float
+        min intensity value in max intensity % value.
+    vmax: float
+        max intensity value in max intensity % value.
     title: str
         title on image
     coords: int array
@@ -55,20 +62,58 @@ def get_image_snap(
         array of path to outputs png
     """
 
+    # Check errors
+    MODALITIES = ["anat", "func"]
+    if modality not in MODALITIES:
+        raise NotImplementedError(
+            "Display for images that are not {0} images has yet to be "
+            "added.".format(" or ".join(MODALITIES)))
+
     # Load data
     im = nibabel.load(im_file)
+    if modality == "anat":
+        max_vox_value = np.max(im.get_data())
+    elif modality == "func":
+        max_vox_value = np.max(im.get_data()[:, :, :, 0])
+    else:
+        raise NotImplementedError(
+            "Display for images that are not {0} images has yet to be "
+            "added.".format(" or ".join(MODALITIES)))
     outputs = []
 
-    if modality != "anat":
-        raise NotImplementedError(
-            "Display for images that are not anatomical images has yet to be "
-            "added.")
+    # Set if needed vmin and vmax value
+    if vmin is not None:
+        vmin = vmin * max_vox_value
+    if vmax is not None:
+        vmax = vmax * max_vox_value
+
+    # Create snap
     out_file = output_basename + ".png"
-    display = plotting.plot_anat(
-        anat_img=im_file,
-        cut_coords=coords,
-        display_mode=display_mode,
-        title=title)
+    if modality == "anat":
+        display = plotting.plot_anat(
+            anat_img=im_file,
+            cut_coords=coords,
+            display_mode=display_mode,
+            title=title,
+            vmin=vmin,
+            vmax=vmax)
+    elif modality == "func":
+
+        # Display first volume
+        im = nibabel.Nifti1Image(im.get_data()[:, :, :, 0], im.affine)
+
+        # Even if it is an epi sequence we still use plot_anat function
+        # as plot_epi function does not serve our purpose here
+        display = plotting.plot_anat(
+            anat_img=im_file,
+            cut_coords=coords,
+            display_mode=display_mode,
+            title=title,
+            vmin=vmin,
+            vmax=vmax)
+    else:
+        raise NotImplementedError(
+            "No case implemented for {0} modality.".format(modality))
     display.savefig(out_file)
     outputs.append(out_file)
 
