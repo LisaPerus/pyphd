@@ -58,8 +58,8 @@ def get_image_snap(
 
     Returns
     -------
-    outputs: array
-        array of path to outputs png
+    outfile: str
+        path to output png
     """
 
     # Check errors
@@ -79,7 +79,6 @@ def get_image_snap(
         raise NotImplementedError(
             "Display for images that are not {0} images has yet to be "
             "added.".format(" or ".join(MODALITIES)))
-    outputs = []
 
     # Set if needed vmin and vmax value
     if vmin is not None:
@@ -105,7 +104,7 @@ def get_image_snap(
         # Even if it is an epi sequence we still use plot_anat function
         # as plot_epi function does not serve our purpose here
         display = plotting.plot_anat(
-            anat_img=im_file,
+            anat_img=im,
             cut_coords=coords,
             display_mode=display_mode,
             title=title,
@@ -115,9 +114,8 @@ def get_image_snap(
         raise NotImplementedError(
             "No case implemented for {0} modality.".format(modality))
     display.savefig(out_file)
-    outputs.append(out_file)
 
-    return outputs
+    return out_file
 
 
 def generate_pdf_struct_file(
