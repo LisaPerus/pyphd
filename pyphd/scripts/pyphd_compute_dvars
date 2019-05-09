@@ -1,0 +1,205 @@
+#!/usr/bin/env python
+# Script based on nipype to compute DVARS values on a functional image
+# Copyright (C) 2019  Lisa Perus
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# long with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# System import
+import os
+import argparse
+import textwrap
+import glob
+import re
+import json
+import shutil
+import subprocess
+import time
+import progressbar
+from datetime import datetime
+from argparse import RawTextHelpFormatter
+from datetime import datetime
+from pprint import pprint
+
+# Third-party imports
+from nipype.algorithms.confounds import ComputeDVARS
+
+# Pyconnectome imports
+from pyconnectome.utils.segtools import bet2
+
+
+# Script documentation
+DOC = """
+Compute DVARS on functional image
+---------------------------------
+
+To be coherent with Powers et al (2012) computation of DVARS, check that input
+func file has been slice timing and motion corrected and registered to MNI.
+
+Steps:
+1) Compute brain mask (FSL bet2)
+2) Compute DVARS (nipype)
+
+Example on MAPT data:
+python3 $SCRIPT_DIR/GIT_REPOS/pyphd/pyphd/scripts/pyphd_compute_dvars \
+    -f /tmp/wrasub-03990212LLU_ses-M0_task-rest_bold.nii.gz \
+    -o /tmp \
+    -F $HOME/fsl_init.sh \
+    -V 2
+"""
+
+
+def is_file(filepath):
+    """ Check file's existence - argparse 'type' argument.
+    """
+    if not os.path.isfile(filepath):
+        raise argparse.ArgumentError("File does not exist: %s" % filepath)
+    return filepath
+
+
+def is_directory(dirarg):
+    """ Type for argparse - checks that directory exists.
+    """
+    if not os.path.isdir(dirarg):
+        raise argparse.ArgumentError(
+            "The directory '{0}' does not exist!".format(dirarg))
+    return dirarg
+
+
+# Parse input arguments
+def get_cmd_line_args():
+    """
+    Create a command line argument parser and return a dict mapping
+    <argument name> -> <argument value>.
+    """
+    parser = argparse.ArgumentParser(
+        prog="python pyphd_compute_dvars",
+        description=textwrap.dedent(DOC),
+        formatter_class=RawTextHelpFormatter)
+
+    # Required arguments
+    required = parser.add_argument_group("required arguments")
+    required.add_argument(
+        "-f", "--func-file", type=is_file, required=True,
+        help="Functional image.")
+    required.add_argument(
+        "-o", "--outdir",
+        type=is_directory, required=True, metavar="<path>",
+        help="Path to the output directory.")
+
+    # Optional argument
+    parser.add_argument(
+        "-M", "--func-mask", type=is_file, help="Functional brain mask image.")
+    parser.add_argument(
+        "-F", "--fsl-config",
+        type=is_file, metavar="<path>",
+        help="Bash script initializing FSL's environment.")
+    parser.add_argument(
+        "-V", "--verbose",
+        type=int, choices=[0, 1, 2], default=2,
+        help="Increase the verbosity level: 0 silent, [1, 2] verbose.")
+
+    # Create a dict of arguments to pass to the 'main' function
+    args = parser.parse_args()
+    kwargs = vars(args)
+    verbose = kwargs.pop("verbose")
+    return kwargs, verbose
+
+
+"""
+Parse the command line.
+"""
+inputs, verbose = get_cmd_line_args()
+runtime = {
+    "timestamp": datetime.now().isoformat(),
+    "tool": "pyphd_compute_dvars"
+}
+outputs = {}
+if verbose > 0:
+    pprint("[info] Compute DVARS...")
+    pprint("[info] Runtime:")
+    pprint(runtime)
+    pprint("[info] Inputs:")
+    pprint(inputs)
+
+
+"""
+Step 1 : Create brain mask
+"""
+if inputs["func_mask"] is None:
+    print("Creating brain mask...")
+    output_fileroot = os.path.join(
+        inputs["outdir"],
+        os.path.basename(
+            inputs["func_file"]).replace(".nii", "").replace(".gz", ""))
+    output_fileroot = output_fileroot + "_brain"
+    bet2(
+        input_file=inputs["func_file"],
+        output_fileroot=inputs["outdir"],
+        outline=False,
+        mask=True,
+        skull=False,
+        nooutput=False,
+        f=0.5,
+        g=0,
+        radius=None,
+        smooth=None,
+        c=None,
+        threshold=False,
+        mesh=False,
+        shfile=inputs["fsl_config"])
+    brain_mask = glob.glob(output_fileroot + "_mask" + "*")
+    if len(brain_mask) != 1:
+        raise ValueError("Brain mask creation failed!")
+    else:
+        brain_mask = brain_mask[0]
+else:
+    brain_mask = inputs["func_mask"]
+
+
+"""
+Step 2 - Compute DVARS
+"""
+print("Computing DVARS...")
+os.chdir(inputs["outdir"])  # ComputeDVARS does not have an outdir argument...
+dvars = ComputeDVARS(
+    in_file=inputs["func_file"],
+    in_mask=brain_mask,
+    save_nstd=True,
+    save_std=False)
+results_dvars = dvars.run()
+avg_nstd = results_dvars.outputs.avg_nstd
+avg_std = results_dvars.outputs.avg_std
+avg_vxstd = results_dvars.outputs.avg_vxstd
+out_nstd = results_dvars.outputs.out_nstd
+outputs["avg_nstd"] = avg_nstd
+outputs["avg_std"] = avg_std
+outputs["avg_vxstd"] = avg_vxstd
+outputs["outfile_nstd"] = out_nstd
+
+
+"""
+Update the outputs and save them and the inputs in a 'logs' directory.
+"""
+logdir = os.path.join(inputs["outdir"], "logs")
+if not os.path.isdir(logdir):
+    os.mkdir(logdir)
+for name, final_struct in [("inputs", inputs), ("outputs", outputs),
+                           ("runtime", runtime)]:
+    log_file = os.path.join(logdir, "{0}.json".format(name))
+    with open(log_file, "wt") as open_file:
+        json.dump(final_struct, open_file, sort_keys=True, check_circular=True,
+                  indent=4)
+if verbose > 1:
+    print("[final]")
+    pprint(outputs)
