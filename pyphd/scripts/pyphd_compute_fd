@@ -1,0 +1,188 @@
+#!/usr/bin/env python
+# Script based on nipype to compute FrameWise Displacement values on a
+# functional image
+# Copyright (C) 2019  Lisa Perus
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# long with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# System import
+import os
+import argparse
+import textwrap
+import glob
+import re
+import json
+import shutil
+import subprocess
+import time
+import progressbar
+from datetime import datetime
+from argparse import RawTextHelpFormatter
+from datetime import datetime
+from pprint import pprint
+
+# Third-party imports
+from nipype.interfaces import afni
+from nipype.algorithms.confounds import FramewiseDisplacement
+
+# Script documentation
+DOC = """
+Compute FD values on functional image based on AFNI MC
+------------------------------------------------------
+
+To be coherent with Powers et al (2012) computation of FD, check that input
+func file is slice timing corrected.
+
+1) Motion correction (AFNI)
+2) FD computation
+
+Example on MAPT data:
+python3 $SCRIPT_DIR/GIT_REPOS/pyphd/pyphd/scripts/pyphd_compute_fd \
+    -f asub-03990179VMI_ses-M0_task-rest_bold.nii.gz \
+    -o /tmp/test \
+    -V 2
+
+"""
+
+
+def is_file(filepath):
+    """ Check file's existence - argparse 'type' argument.
+    """
+    if not os.path.isfile(filepath):
+        raise argparse.ArgumentError("File does not exist: %s" % filepath)
+    return filepath
+
+
+def is_directory(dirarg):
+    """ Type for argparse - checks that directory exists.
+    """
+    if not os.path.isdir(dirarg):
+        raise argparse.ArgumentError(
+            "The directory '{0}' does not exist!".format(dirarg))
+    return dirarg
+
+
+# Parse input arguments
+def get_cmd_line_args():
+    """
+    Create a command line argument parser and return a dict mapping
+    <argument name> -> <argument value>.
+    """
+    parser = argparse.ArgumentParser(
+        prog="python pyphd_compute_fd",
+        description=textwrap.dedent(DOC),
+        formatter_class=RawTextHelpFormatter)
+
+    # Required arguments
+    required = parser.add_argument_group("required arguments")
+    required.add_argument(
+        "-f", "--func-file", type=is_file, required=True,
+        help="Functional image.")
+    required.add_argument(
+        "-o", "--outdir",
+        type=is_directory, required=True, metavar="<path>",
+        help="Path to the output directory.")
+
+    # Optional argument
+    parser.add_argument(
+        "-T", "--motion-corr-tool", type=str, default="AFNI",
+        help="Motion correction tool.")
+    parser.add_argument(
+        "-M", "--motion-param-file", type=is_file,
+        help="Motion parameters file.")
+    parser.add_argument(
+        "-V", "--verbose",
+        type=int, choices=[0, 1, 2], default=2,
+        help="Increase the verbosity level: 0 silent, [1, 2] verbose.")
+
+    # Create a dict of arguments to pass to the 'main' function
+    args = parser.parse_args()
+    kwargs = vars(args)
+    verbose = kwargs.pop("verbose")
+    return kwargs, verbose
+
+
+"""
+Parse the command line.
+"""
+inputs, verbose = get_cmd_line_args()
+runtime = {
+    "timestamp": datetime.now().isoformat(),
+    "tool": "pyphd_compute_fd"
+}
+outputs = {}
+if verbose > 0:
+    pprint("[info] Compute FD...")
+    pprint("[info] Input file should have been corrected for slice-timing.")
+    pprint("[info] Runtime:")
+    pprint(runtime)
+    pprint("[info] Inputs:")
+    pprint(inputs)
+
+
+"""
+Step 1 : AFNI MC
+"""
+if inputs["motion_param_file"] is None:
+    out_file = os.path.join(
+        inputs["outdir"], "afni_mc_" + os.path.basename(inputs["func_file"]))
+    output_basename = os.path.join(inputs["outdir"], os.path.basename(
+        inputs["func_file"]).replace(".nii.gz", ""))
+    volreg = afni.Volreg()
+    volreg.inputs.in_file = inputs["func_file"]
+    volreg.inputs.args = '-Fourier -twopass'
+    volreg.inputs.zpad = 4
+    volreg.inputs.outputtype = 'NIFTI_GZ'
+    volreg.inputs.out_file = out_file
+    volreg.inputs.md1d_file = output_basename + ".m1d"
+    volreg.inputs.oned_file = output_basename + "_dfile.r1.1D"
+    volreg.inputs.oned_matrix_save = output_basename + "_mat.r1.tshift+orig.1D"
+    results = volreg.run()
+    motion_parameter_file = results.outputs.oned_file
+
+else:
+    motion_parameter_file = inputs["motion_param_file"]
+outputs["Motion parameters file"] = motion_parameter_file
+
+
+"""
+Step 2 : Compute FD
+"""
+fd = FramewiseDisplacement()
+fd.inputs.in_file = motion_parameter_file
+fd.inputs.parameter_source = inputs["motion_corr_tool"]
+fd.inputs.out_file = os.path.join(
+    inputs["outdir"],
+    os.path.basename(inputs["func_file"]).replace(".nii.gz", "") +
+    "_nipype_fd.txt")
+results = fd.run()
+fd_vols = results.outputs.out_file
+outputs["Framewise Displacement values"] = fd_vols
+
+
+"""
+Update the outputs and save them and the inputs in a 'logs' directory.
+"""
+logdir = os.path.join(inputs["outdir"], "logs")
+if not os.path.isdir(logdir):
+    os.mkdir(logdir)
+for name, final_struct in [("inputs", inputs), ("outputs", outputs),
+                           ("runtime", runtime)]:
+    log_file = os.path.join(logdir, "{0}.json".format(name))
+    with open(log_file, "wt") as open_file:
+        json.dump(final_struct, open_file, sort_keys=True, check_circular=True,
+                  indent=4)
+if verbose > 1:
+    print("[final]")
+    pprint(outputs)
