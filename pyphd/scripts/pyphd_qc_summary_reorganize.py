@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Script to reorganize QC Summary data
 # Copyright (C) 2019  Lisa Perus
 #
