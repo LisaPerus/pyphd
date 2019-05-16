@@ -15,6 +15,7 @@
 # long with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # Third-party imports
+import numpy as np
 import pydicom
 import nibabel
 
@@ -123,3 +124,30 @@ def get_im_affine_info(im_file):
     sform_code = im.header['sform_code']
     qform = im.header.get_qform()
     return aff, sform, qform, sform_code
+
+
+def get_mm_to_vox_pos(coords, affine):
+    """Get coordinates in voxels from coordinates in mm.
+
+    Parameters
+    ----------
+    coords: list
+        Point coordinates in mm.
+    affine:
+        image affine.
+
+    Returns
+    -------
+    vox_coords: list
+        Point coordinates in voxel coordinates.
+        /!\ Does not return coordinates rounded /!\
+    """
+
+    # Inverse matrix
+    inv_affine = np.linalg.inv(affine)
+
+    # Multiply by mm coordinates
+    coords = np.array(coords + [1])
+    vox_coords = np.dot(inv_affine, coords).tolist()
+
+    return vox_coords
