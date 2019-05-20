@@ -18,6 +18,7 @@
 import numpy as np
 import pydicom
 import nibabel
+from scipy.ndimage.measurements import center_of_mass
 
 
 def vox_coords_change_orientation(
@@ -149,5 +150,68 @@ def get_mm_to_vox_pos(coords, affine):
     # Multiply by mm coordinates
     coords = np.array(coords + [1])
     vox_coords = np.dot(inv_affine, coords).tolist()
+    vox_coords = vox_coords[:3]
 
     return vox_coords
+
+
+def get_vox_to_mm_pos(coords, affine):
+    """Get coordinates in voxels from coordinates in mm.
+
+    Parameters
+    ----------
+    coords: list
+        Point coordinates in mm.
+    affine:
+        image affine.
+
+    Returns
+    -------
+    mm_coords: list
+        Point coordinates in mm coordinates.
+        /!\ Does not return coordinates rounded /!\
+    """
+    coords = np.array(coords + [1])
+    mm_coords = np.dot(affine, coords).tolist()
+    mm_coords = mm_coords[:3]
+
+    return mm_coords
+
+
+def compute_im_centroid(im_file, vol=None):
+    """Compute image center of mass in voxel and mm coordinates.
+
+    Parameters
+    ----------
+    im_file: str
+        Path to image.
+    vol: int
+        If 4D image, specify which volume should be used to look at the center
+        of mass.
+
+    Returns
+    -------
+    vox_coords: list
+        Center of mass coordinates in voxel coordinates.
+    mm_coords: list
+        Center of mass coordinates in mm coordinates.
+    """
+
+    # Load data
+    im = nibabel.load(im_file)
+    im_data = im.get_data()
+    if vol is not None:
+        if len(im_data.shape) != 4:
+            raise ValueError(
+                "Please provide a 4D image if vol argument is set.")
+        im_data = im_data[:, :, :, vol]
+
+    # Compute center of mass in voxel coordinates
+    vox_coords = center_of_mass(im_data)
+    vox_coords = list(vox_coords)
+
+    # Compute center of mass in mm coordinates
+    aff = im.affine
+    mm_coords = get_vox_to_mm_pos(vox_coords, aff)
+
+    return vox_coords, mm_coords
