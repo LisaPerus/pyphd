@@ -1,0 +1,148 @@
+#!/usr/bin/env python
+# Script used to create mask from image intersection
+# Copyright (C) 2019  Lisa Perus
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# long with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# System imports
+import os
+import re
+from pprint import pprint
+import argparse
+from argparse import RawTextHelpFormatter
+import textwrap
+from datetime import datetime
+
+# Pyconnectome imports
+from pyconnectome.wrapper import FSLWrapper
+
+# Script documentation
+DOC = """Create binary mask population from multiple images.
+-----------------------------------------------------------
+
+python3 $SCRIPT_DIR/GIT_REPOS/pyphd/pyphd/scripts/pyphd_create_population_binary_mask \
+    -i $HOME/PHD/DATA/RESULTS/MAPT/REHO_ANALYSIS/Clara_n118/Subjects_Clara_gm_files.txt \
+    -o $HOME/PHD/DATA/RESULTS/MAPT/REHO_ANALYSIS/Clara_n118 \
+    -b gm \
+    -F $HOME/fsl_init.sh \
+    -V 2
+
+"""
+
+
+def is_file(filepath):
+    """ Check file's existence - argparse 'type' argument.
+    """
+    if not os.path.isfile(filepath):
+        raise argparse.ArgumentError("File does not exist: %s" % filepath)
+    return filepath
+
+
+def is_directory(dirarg):
+    """ Type for argparse - checks that directory exists.
+    """
+    if not os.path.isdir(dirarg):
+        raise argparse.ArgumentError(
+            "The directory '{0}' does not exist!".format(dirarg))
+    return dirarg
+
+
+# Parse input arguments
+def get_cmd_line_args():
+    """
+    Create a command line argument parser and return a dict mapping
+    <argument name> -> <argument value>.
+    """
+    parser = argparse.ArgumentParser(
+        prog="python pyphd_create_population_brain_mask",
+        description=textwrap.dedent(DOC),
+        formatter_class=RawTextHelpFormatter)
+
+    # Required arguments
+    required = parser.add_argument_group("required arguments")
+    required.add_argument(
+        "-i", "--input-im-file", type=str, required=True, metavar="<path>",
+        help="Path text file listing path to input images.")
+    required.add_argument(
+        "-b", "--basename", type=str, required=True, metavar="<path>",
+        help="Output basename.")
+    required.add_argument(
+        "-o", "--outdir",
+        type=is_directory, required=True, metavar="<path>",
+        help="Path to the output directory.")
+
+    # Optional argument
+    parser.add_argument(
+        "-F", "--fsl-config",
+        type=is_file, metavar="<path>",
+        help="Bash script initializing FSL's environment.")
+    parser.add_argument(
+        "-V", "--verbose",
+        type=int, choices=[0, 1, 2], default=2,
+        help="Increase the verbosity level: 0 silent, [1, 2] verbose.")
+
+    # Create a dict of arguments to pass to the 'main' function
+    args = parser.parse_args()
+    kwargs = vars(args)
+    verbose = kwargs.pop("verbose")
+    return kwargs, verbose
+
+
+"""
+Parse the command line.
+"""
+inputs, verbose = get_cmd_line_args()
+runtime = {
+    "tool": "pyphd_create_population_brain_mask",
+    "fsl_version": FSLWrapper([], shfile=inputs["fsl_config"]).version,
+    "timestamp": datetime.now().isoformat()}
+outputs = {}
+
+if verbose > 0:
+    pprint("[info] Create population brain mask...")
+    pprint("[info] Runtime:")
+    pprint(runtime)
+    pprint("[info] Inputs:")
+    pprint(inputs)
+
+# Load data
+with open(inputs["input_im_file"], "rt") as open_file:
+    lines = open_file.readlines()
+subjects_files = []
+for line in lines:
+    sid_file = line.strip("\n")
+    subjects_files.append(sid_file)
+
+# Merge all images into a 4D file
+output_4d_im_file = os.path.join(
+    inputs["outdir"], inputs["basename"] + "_all_merged.nii.gz")
+cmd = ["fslmerge", "-t", output_4d_im_file]
+cmd = cmd + subjects_files
+fslprocess = FSLWrapper(cmd, shfile=inputs["fsl_config"])
+fslprocess()
+
+# Create average brain image
+average_im_file = output_4d_im_file.replace(".nii.gz", "_mean.nii.gz")
+cmd = ["fslmaths", output_4d_im_file, "-Tmean", average_im_file]
+fslprocess = FSLWrapper(cmd, shfile=inputs["fsl_config"])
+fslprocess()
+
+# Binarize average brain image
+binarized_mean_im = average_im_file.replace(".nii.gz", "_mask.nii.gz")
+cmd = ["fslmaths", average_im_file, "-bin", binarized_mean_im]
+fslprocess = FSLWrapper(cmd, shfile=inputs["fsl_config"])
+fslprocess()
+
+outputs["mean_binarized_image"] = binarized_mean_im
+print(outputs)
