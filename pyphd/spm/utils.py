@@ -192,3 +192,38 @@ def get_slice_order(nb_slices, order, scanner):
             "No case implemented for scanner '{0}', only for SIEMENS and "
             "PHILIPS.".format(scanner))
     return slices_order
+
+
+def st_get_ref_slice(ref_slice, slice_order):
+    """ Returns slice index for slice timing correction reference slice.
+    --------------------------------------------------------------------
+
+    Returns 'First', 'Middle', or 'Last' slice index based on slice order.
+
+    Parameters
+    ----------
+    ref_slice: str
+        Indicates if user wants to use first, midlle (temporal) or last slice
+        for slice timing correction.
+    slice_order: int array
+        slice order.
+
+    Returns:
+    --------
+    ref_slice_idx: int
+        Reference slice index.
+    """
+
+    if ref_slice == "First":
+        ref_slice_idx = slice_order[0]
+    elif ref_slice == "Last":
+        ref_slice_idx = slice_order[-1]
+    elif ref_slice == "Middle":
+        if len(slice_order) % 2 == 0:
+            ref_slice_idx = slice_order[int(len(slice_order) / 2) - 1]
+        else:
+            ref_slice_idx = slice_order[math.floor(len(slice_order) / 2)]
+    else:
+        raise ValueError("Ref slice must be either First, Middle or Last."
+                         " Not : {0}.".format(ref_slice))
+    return ref_slice_idx
