@@ -407,7 +407,7 @@ st_results = st.run()
 timecorrected_func_im = st_results.outputs.timecorrected_files
 outputs["TA"] = ta
 outputs["Slice order"] = slice_order_list
-outputs["Ref slice"] = slice_order_list
+outputs["Ref slice"] = ref_slice_idx
 outputs["Slice timing corrected func image"] = timecorrected_func_im
 
 
