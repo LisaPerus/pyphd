@@ -44,7 +44,8 @@ from pypreprocess.io_utils import niigz2nii
 
 # PyPHD imports
 from pyphd.constants import RSFMRI_PREPROC_CLARA_MANESCO
-from pyphd.spm.utils import spm_standalone_reorient, get_slice_order
+from pyphd.spm.utils import (spm_standalone_reorient, get_slice_order,
+                             st_get_ref_slice)
 
 
 # Script documentation
@@ -73,6 +74,7 @@ python3 $SCRIPT_DIR/GIT_REPOS/pyphd/pyphd/scripts/rsfmri_preproc_clara_manesco.p
     -a /tmp/test_fmri/sub-03990171AGE_ses-M0_T1w.nii.gz \
     -l "Ascending interleaved" \
     -n SIEMENS \
+    -r Middle \
     -o /tmp/test_fmri/ \
     -C 4.6 34.9 13.2 \
     -S $SPM12_DIR/spm12/run_spm12.sh \
@@ -136,6 +138,9 @@ def get_cmd_line_args():
     required.add_argument(
         "-l", "--slice-order", type=str, required=True,
         help="Image slice order.")
+    required.add_argument(
+        "-r", "--st-ref-slice", type=str, required=True,
+        help="Slice timing reference slice. Can be First, Middle or Last.")
     required.add_argument(
         "-n", "--scanner", type=str, required=True,
         help="Scanner.")
@@ -372,7 +377,7 @@ Step 5 - Slice Timing Correction
 """
 
 # Get number of slices in volumes
-# Get subject volumes parameters
+# > Compute ta and slice order
 st_parameters = parameters["SliceTiming"]
 im = nibabel.load(func_im)
 nslices = im.shape[2]
@@ -383,6 +388,11 @@ ta = tr - (tr / nslices)
 slice_order_list = get_slice_order(
     nslices, inputs["slice_order"], inputs["scanner"])
 
+# > Compute slice of reference index
+ref_slice_idx = st_get_ref_slice(
+    ref_slice=inputs["st_ref_slice"],
+    slice_order=slice_order_list)
+
 # Run Slice timing correction
 print("Slice timing correction...")
 st = spm.SliceTiming()
@@ -391,10 +401,13 @@ st.inputs.num_slices = nslices
 st.inputs.time_repetition = tr
 st.inputs.time_acquisition = ta
 st.inputs.slice_order = slice_order_list
-st.inputs.ref_slice = nslices
+st.inputs.ref_slice = ref_slice_idx
 st.inputs.out_prefix = st_parameters["out_prefix"]
 st_results = st.run()
 timecorrected_func_im = st_results.outputs.timecorrected_files
+outputs["TA"] = ta
+outputs["Slice order"] = slice_order_list
+outputs["Ref slice"] = slice_order_list
 outputs["Slice timing corrected func image"] = timecorrected_func_im
 
 
