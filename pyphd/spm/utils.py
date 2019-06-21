@@ -20,18 +20,24 @@ import math
 import shutil
 import subprocess
 
+# Third-party imports
+import nibabel
+
 
 def spm_standalone_reorient(
-    ims, sid, origin_coords, outdir, spm_sh, spm_mcr, delete_mfile=False,
+    im, sid, origin_coords, outdir, spm_sh, spm_mcr, delete_mfile=False,
         delete_mat_file=False):
     """ Wraps SPM commands to change image origin.
     ----------------------------------------------
+
+    /!\ Directly change input image origin! /!\
+
     Works only with SPM standalone.
 
     Parameters
     ----------
-    ims: array of str
-        array of pathes to images whose origin has to be changed.
+    im: str
+       path to image whose origin has to be changed.
     sid: str
         subject ID.
     origin_coords: float array
@@ -45,6 +51,11 @@ def spm_standalone_reorient(
     delete_mat_file:: bool, default False
         Delete .mat transformation file.
 
+    Returns:
+    --------
+    im: str
+        path to image whose origin has been changed.
+
     TODO:
     Use nipype spm interface with SPMCommand
     e.g:
@@ -53,48 +64,52 @@ def spm_standalone_reorient(
     spm.SPMCommand.set_mlab_paths(matlab_cmd=matlab_cmd, use_mcr=True)
     """
 
-    for im in ims:
+    # System imports (needed for nipype)
+    import os
+    import subprocess
 
-        # Check image type
-        if not im.endswith(".nii"):
-            raise ValueError(
-                "spm_standalone_reorient : Please provided  a .nii file")
+    # Check image type
+    if not im.endswith(".nii"):
+        raise ValueError(
+            "spm_standalone_reorient : Please provided  a .nii file")
 
-        # Write script
-        script = "path = '{0}'\n".format(im)
-        script += "matlabbatch{1}.spm.util.reorient.transform.transprm = "
-        script += "[{0} {1} {2} 0 0 0 1 1 1 0 0 0];\n".format(
-            -origin_coords[0], -origin_coords[1], -origin_coords[2])
-        script += "matlabbatch{1}.spm.util.reorient.srcfiles = "
-        script += "cellstr(path);\n"
-        script += "spm_jobman('run',matlabbatch);"
-        script_file = os.path.join(outdir, "{0}_reorient_acpc.m".format(sid))
-        with open(script_file, "wt") as open_file:
-            open_file.write(script)
+    # Write script
+    script = "path = '{0}'\n".format(im)
+    script += "matlabbatch{1}.spm.util.reorient.transform.transprm = "
+    script += "[{0} {1} {2} 0 0 0 1 1 1 0 0 0];\n".format(
+        -origin_coords[0], -origin_coords[1], -origin_coords[2])
+    script += "matlabbatch{1}.spm.util.reorient.srcfiles = "
+    script += "cellstr(path);\n"
+    script += "spm_jobman('run',matlabbatch);"
+    script_file = os.path.join(outdir, "{0}_reorient_acpc.m".format(sid))
+    with open(script_file, "wt") as open_file:
+        open_file.write(script)
 
-        # Create cmd
-        cmd = [spm_sh, spm_mcr, "script", script_file]
+    # Create cmd
+    cmd = [spm_sh, spm_mcr, "script", script_file]
 
-        # Launch script
-        proc = subprocess.Popen(cmd,
-                                stdin=subprocess.PIPE,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE)
-        stdout, stderr = proc.communicate()
-        if proc.returncode == 1:
-            raise ValueError(
-                "Setting origin via SPM '{0}' failed : {1}".format(" ".join(
-                    cmd), stderr))
+    # Launch script
+    proc = subprocess.Popen(cmd,
+                            stdin=subprocess.PIPE,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE)
+    stdout, stderr = proc.communicate()
+    if proc.returncode == 1:
+        raise ValueError(
+            "Setting origin via SPM '{0}' failed : {1}".format(" ".join(
+                cmd), stderr))
 
-        # Delete m file
-        if delete_mfile:
-            shutil.remove(script_file)
+    # Delete m file
+    if delete_mfile:
+        shutil.remove(script_file)
 
-        # Delete mat file
-        mat_file = im.replace(".nii", ".mat")
-        if delete_mat_file and os.path.isfile(mat_file):
-            print("Deleting file {0}...".format(mat_file))
-            os.remove(mat_file)
+    # Delete mat file
+    mat_file = im.replace(".nii", ".mat")
+    if delete_mat_file and os.path.isfile(mat_file):
+        print("Deleting file {0}...".format(mat_file))
+        os.remove(mat_file)
+
+    return im
 
 
 def get_slice_order(nb_slices, order, scanner):
@@ -227,3 +242,53 @@ def st_get_ref_slice(ref_slice, slice_order):
         raise ValueError("Ref slice must be either First, Middle or Last."
                          " Not : {0}.".format(ref_slice))
     return ref_slice_idx
+
+
+def get_stc_parameters(im_file, slice_order, st_ref_slice, scanner):
+    """ Returns all needed parameters for slice timing correction.
+    --------------------------------------------------------------
+
+    Returns number of slices, ta, tr, reference slice index and slice order.
+
+    Parameters
+    ----------
+    im_file: str
+        path to functional image.
+    st_ref_slice: str
+        Indicates if user wants to use first, midlle (temporal) or last slice
+        for slice timing correction.
+    slice_order: str
+        slice order.
+    scanner: str
+        scanner.
+
+    Returns:
+    --------
+    nslices: int
+        Number of slices.
+    ta: float
+        Acquisition time.
+    tr: float
+        Repetition time.
+    ref_slice_idx: int
+        Reference slice index.
+    slice_order_list:
+        list of slice indexes by order of acquisition.
+    """
+
+    im = nibabel.load(im_file)
+    nslices = im.shape[2]
+    tr = im.header.get_zooms()[3]
+    if tr == 0 or tr == 1:
+        raise ValueError(
+            "Suspicious TR value in NIFTI header : {0}".format(tr))
+    ta = tr - (tr / nslices)
+    slice_order_list = get_slice_order(
+        nslices, slice_order, scanner)
+
+    # > Compute slice of reference index
+    ref_slice_idx = st_get_ref_slice(
+        ref_slice=st_ref_slice,
+        slice_order=slice_order_list)
+    
+    return nslices, ta, tr, ref_slice_idx, slice_order_list
