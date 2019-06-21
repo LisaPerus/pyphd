@@ -55,6 +55,7 @@ Steps:
 template.
 2) Normalize subject functional data from DARTEL generated template.
 (Smoothing is included in the normalization function).
+3) Normalize segmentations files (wm, gm, csf only).
 
 Example on MAPT data:
 python3 $SCRIPT_DIR/GIT_REPOS/pyphd/pyphd/scripts/rsfmri_preproc_dartel_part3.py \
@@ -125,6 +126,9 @@ def get_cmd_line_args():
         "-a", "--anat-im", type=is_file, required=True,
         help="Path to anatomical image already preprocessed by "
              "rsfmri_preproc_dartel_part1.py.")
+    required.add_argument(
+        "-e", "--seg-im", type=is_file, required=True, nargs="+",
+        help="Path to segmentation image c1*.nii, c2*.nii and c3*.nii.")
     required.add_argument(
         "-d", "--dartel-template", type=is_file, required=True,
         help="Path to dartel template.")
@@ -241,6 +245,35 @@ nm_results = nm.run()
 nm_results = nm_results.outputs
 outputs["Func normalization file"] = nm_results.normalization_parameter_file
 outputs["Normalized func file"] = nm_results.normalization_parameter_file
+
+
+"""
+Step 3 : Normalize segmentation
+"""
+print("Normalize segmentation data...")
+for seg in inputs["seg_im"]:
+    nm = spm.DARTELNorm2MNI()
+    nm.inputs.template_file = copy_template
+    nm.inputs.flowfield_files = inputs["flow_field"]
+    nm.inputs.apply_to_files = seg
+    nm.inputs.modulate = np_parameters["modulate"]
+    nm.inputs.bounding_box = np_parameters["bounding_box"]
+    nm.inputs.fwhm = np_parameters["fwhm"]["func"]
+    nm.inputs.voxel_size = np_parameters["voxel_size"]
+    nm_results = nm.run()
+    nm_results = nm_results.outputs
+    basename_seg = ""
+    if "c1" in os.path.basename(seg):
+        basename_seg = "GM"
+    if "c2" in os.path.basename(seg):
+        basename_seg = "WM"
+    if "c3" in os.path.basename(seg):
+        basename_seg = "CSF"
+
+    outputs["{0} Seg normalization file".format(
+        basename_seg)] = nm_results.normalization_parameter_file
+    outputs["Normalized {0} seg file".format(
+        basename_seg)] = nm_results.normalization_parameter_file
 
 
 # If template has been copied to subdir, delete it
