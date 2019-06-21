@@ -35,6 +35,21 @@ RSFMRI_PREPROC_CLARA_MANESCO = {
             "warping_regularization" : [0, 0.001, 0.5, 0.05, 0.2],
             "sampling_distance" : 3.0
         },
+    "NewSegmentDartel":
+        {
+            "tissues": [[["/home/lp254663/opt/spm12/spm12/spm12_mcr/spm12/tpm/TPM.nii", 1], 1, [True, True], [False, False]],
+                         [["/home/lp254663/opt/spm12/spm12/spm12_mcr/spm12/tpm/TPM.nii", 2], 1, [True, True], [False, False]],
+                         [["/home/lp254663/opt/spm12/spm12/spm12_mcr/spm12/tpm/TPM.nii", 3], 2, [True, False], [False, False]],
+                         [["/home/lp254663/opt/spm12/spm12/spm12_mcr/spm12/tpm/TPM.nii", 4], 3, [True, False], [False, False]],
+                         [["/home/lp254663/opt/spm12/spm12/spm12_mcr/spm12/tpm/TPM.nii", 5], 4, [True, False], [False, False]],
+                         [["/home/lp254663/opt/spm12/spm12/spm12_mcr/spm12/tpm/TPM.nii", 6], 2, [True, False], [False, False]]
+                        ],
+            "write_deformation_fields" : [True, True],
+            "channel_info" : [0.001, 60.0, [False, False]],
+            "affine_regularization" : "mni",
+            "warping_regularization" : [0, 0.001, 0.5, 0.05, 0.2],
+            "sampling_distance" : 3.0
+        },
     "Normalize12":
         {
             "affine_regularization_type": "mni",
@@ -86,5 +101,13 @@ RSFMRI_PREPROC_CLARA_MANESCO = {
             "write_interp" : 4,
             "write_mask" :  False,
             "write_wrap" : [0, 0, 0]
-        }
+        },
+    "DartelNormalize2MNI":
+    {
+        "bounding_box" : (-78.0, -112.0, -70.0, 78.0, 76.0, 85.0),
+        "fwhm" : {"func" : 6.0,
+                  "anat" : 0.0},
+        "modulate" : False,
+        "voxel_size" : (2.0, 2.0, 2.0)
+    }
 }
