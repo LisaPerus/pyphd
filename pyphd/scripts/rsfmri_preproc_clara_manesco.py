@@ -64,7 +64,8 @@ Executes the preprocessing pipeline as follows:
    supplied for the subject, session are realigned with each other before
    applying "within-session" realignement.
 7) Coregistration of functional and anatomical images.
-8) Smooth functional image
+8) Functional image normalization.
+9) Smooth normalized functional image
 
 Example on MAPT data:
 python3 $SCRIPT_DIR/GIT_REPOS/pyphd/pyphd/scripts/rsfmri_preproc_clara_manesco.py \
@@ -251,8 +252,8 @@ if inputs["commissure"] is not None:
     print(
         "Centering on {0} for func and anat images...".format(
             " ".join([str(x) for x in inputs["commissure"]])))
-    spm_standalone_reorient(
-        ims=[reoriented_func, reoriented_anat],
+    func_im = spm_standalone_reorient(
+        ims=reoriented_func,
         sid=inputs["sid"],
         origin_coords=inputs["commissure"],
         outdir=subdir,
@@ -260,8 +261,15 @@ if inputs["commissure"] is not None:
         spm_mcr=inputs["spm_mcr"],
         delete_mfile=False,
         delete_mat_file=True)
-    anat_im = reoriented_anat
-    func_im = reoriented_func
+    anat_im = spm_standalone_reorient(
+        ims=reoriented_anat,
+        sid=inputs["sid"],
+        origin_coords=inputs["commissure"],
+        outdir=subdir,
+        spm_sh=inputs["spm_sh"],
+        spm_mcr=inputs["spm_mcr"],
+        delete_mfile=False,
+        delete_mat_file=True)
 else:
     reoriented_func = None
     reoriented_anat = None
