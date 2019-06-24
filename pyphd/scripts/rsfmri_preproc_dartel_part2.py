@@ -122,7 +122,7 @@ def get_cmd_line_args():
 
     # Optional argument
     parser.add_argument(
-        "-C", "--CENTER", type=str, help="Center name.")
+        "-C", "--center", type=str, help="Center name.")
     parser.add_argument(
         "-T", "--timepoint", type=str, help="Timepoint.")
     parser.add_argument(
