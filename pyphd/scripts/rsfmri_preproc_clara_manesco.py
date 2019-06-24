@@ -253,7 +253,7 @@ if inputs["commissure"] is not None:
         "Centering on {0} for func and anat images...".format(
             " ".join([str(x) for x in inputs["commissure"]])))
     func_im = spm_standalone_reorient(
-        ims=reoriented_func,
+        im=reoriented_func,
         sid=inputs["sid"],
         origin_coords=inputs["commissure"],
         outdir=subdir,
@@ -262,7 +262,7 @@ if inputs["commissure"] is not None:
         delete_mfile=False,
         delete_mat_file=True)
     anat_im = spm_standalone_reorient(
-        ims=reoriented_anat,
+        im=reoriented_anat,
         sid=inputs["sid"],
         origin_coords=inputs["commissure"],
         outdir=subdir,
