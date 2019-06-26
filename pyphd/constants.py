@@ -104,9 +104,10 @@ RSFMRI_PREPROC_CLARA_MANESCO = {
         },
     "DartelNormalize2MNI":
     {
-        "bounding_box" : (-78.0, -112.0, -70.0, 78.0, 76.0, 85.0),
-        "fwhm" : {"func" : 6.0,
-                  "anat" : 0.0},
+        "bounding_box" : [[-78, -112, -70],
+                          [78, 76, 85]],
+        "fwhm" : {"func" : [6.0, 6.0, 6.0],
+                  "anat" : [1.0, 1.0, 1.0]},
         "modulate" : False,
         "voxel_size" : (2.0, 2.0, 2.0)
     }
