@@ -49,6 +49,11 @@ on MAPT data with DARTEL registration.
 Create the DARTEL template from a list of subjects segmentation files.
 rsfmri_preproc_dartel_part1.py must be run first.
 
+/!\ IMPORTANT /!\ 
+Run DARTEL (existing template) is not available through nipype.
+If template1...6.nii has already been created, go through the regular SPM
+interface to register rc*.nii files.
+
 Steps:
 0) Set environment and copy all DARTEL GM/WM seg files in a single directory
    (nipype oblige...)
