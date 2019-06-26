@@ -343,7 +343,7 @@ def dartel_normalize_to_mni(template, flowfield, infile, fwhm,
 
     # Setup script
     SCRIPT = """
-        fprintf(1,'Executing %s at %s:\n',mfilename(),datestr(now));
+        fprintf(1,'Executing %s at %s:',mfilename(),datestr(now));
         ver,
         try,
 
