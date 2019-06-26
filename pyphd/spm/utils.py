@@ -408,7 +408,7 @@ def dartel_normalize_to_mni(template, flowfield, infile, fwhm,
 
     # Find outputs
     # > Find template .mat file
-    template_mat_file = template.replace(".nii", ".mat")
+    template_mat_file = template.replace(".nii", "_2mni.mat")
 
     # > Find registered input file
     if fwhm == [0, 0, 0]:
