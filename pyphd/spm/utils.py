@@ -343,10 +343,6 @@ def dartel_normalize_to_mni(template, flowfield, infile, fwhm,
 
     # Setup script
     SCRIPT = """
-        fprintf(1,'Executing %s at %s:',mfilename(),datestr(now));
-        ver,
-        try,
-
         jobs{1}.spm.tools.dartel.mni_norm.fwhm(1) = <fwhm_1>;
         jobs{1}.spm.tools.dartel.mni_norm.fwhm(2) = <fwhm_2>;
         jobs{1}.spm.tools.dartel.mni_norm.fwhm(3) = <fwhm_3>;
@@ -371,17 +367,6 @@ def dartel_normalize_to_mni(template, flowfield, infile, fwhm,
         jobs{1}.spm.tools.dartel.mni_norm.bb = <bounding_box>;
 
         spm_jobman('run', jobs);
-
-
-        if strcmp(name, 'SPM8') || strcmp(name(1:5), 'SPM12'),
-            close('all', 'force');
-        end;
-
-        ,catch ME,
-        fprintf(2,'MATLAB code threw an exception:\n');
-        fprintf(2,'%s\n',ME.message);
-        if length(ME.stack) ~= 0, fprintf(2,'File:%s\nName:%s\nLine:%d\n',ME.stack.file,ME.stack.name,ME.stack.line);, end;
-        end;
         """
 
     SCRIPT = SCRIPT.replace("<fwhm_1>", str(fwhm[0]))
