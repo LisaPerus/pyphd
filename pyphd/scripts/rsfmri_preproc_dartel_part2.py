@@ -177,7 +177,7 @@ matlab_cmd = '{0} {1} script'.format(inputs["spm_sh"], inputs["spm_mcr"])
 spm.SPMCommand.set_mlab_paths(matlab_cmd=matlab_cmd, use_mcr=True)
 
 # Create dartel directory
-dartel_dir = os.path.join(inputs["outdir"], "dartel")
+dartel_dir = os.path.join(inputs["outdir"], "dartel_template")
 if not os.path.isdir(dartel_dir):
     os.mkdir(dartel_dir)
 
