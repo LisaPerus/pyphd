@@ -39,6 +39,7 @@ from nipype.interfaces import spm
 
 # PyPHD imports
 from pyphd.constants import RSFMRI_PREPROC_CLARA_MANESCO
+from pyphd.spm.utils import dartel_normalize_to_mni
 
 # Script documentation
 DOC = """
@@ -53,9 +54,11 @@ on MAPT data with DARTEL registration.
 Steps:
 1) Normalize subject anatomical and functional data from DARTEL generated
 template.
-2) Normalize subject functional data from DARTEL generated template.
-(Smoothing is included in the normalization function).
-3) Normalize segmentations files (wm, gm, csf only).
+2) Normalize subject functional data from DARTEL generated template
+with minimal smoothing (fwhm at 3)
+3) Normalize subject functional data from DARTEL generated template WITH
+smoothing (Smoothing is included in the normalization function).
+4) Normalize segmentations files (wm, gm, csf only).
 
 Example on MAPT data:
 python3 $SCRIPT_DIR/GIT_REPOS/pyphd/pyphd/scripts/rsfmri_preproc_dartel_part3.py \
@@ -205,63 +208,97 @@ if os.path.dirname(inputs["dartel_template"]) != subdir:
         subdir, os.path.basename(inputs["dartel_template"]))
     shutil.copy(inputs["dartel_template"], subdir)
     delete_template = True
+    template = copy_template
+else:
+    template = inputs["dartel_template"]
 
 # Get parameters
 parameters = RSFMRI_PREPROC_CLARA_MANESCO
+np_parameters = parameters["DartelNormalize2MNI"]
 
 
 """
 Step 1 : Normalize subject anatomical data
 """
 print("Normalize anatomical data...")
-np_parameters = parameters["DartelNormalize2MNI"]
-nm = spm.DARTELNorm2MNI()
-nm.inputs.template_file = copy_template
-nm.inputs.flowfield_files = inputs["flow_field"]
-nm.inputs.apply_to_files = inputs["anat_im"]
-nm.inputs.modulate = np_parameters["modulate"]
-nm.inputs.bounding_box = np_parameters["bounding_box"]
-nm.inputs.fwhm = np_parameters["fwhm"]["anat"]
-nm.inputs.voxel_size = np_parameters["voxel_size"]
-nm_results = nm.run()
-nm_results = nm_results.outputs
-outputs["Anat normalization file"] = nm_results.normalization_parameter_file
-outputs["Normalized anat file"] = nm_results.normalization_parameter_file
+registered_input_file, template_mat_file, m_file = dartel_normalize_to_mni(
+    template=template,
+    flowfield=inputs["flow_field"],
+    infile=inputs["anat_im"],
+    fwhm=np_parameters["fwhm"]["anat"],
+    voxel_size=np_parameters["voxel_size"],
+    outdir=subdir,
+    spm_sh=inputs["spm_sh"],
+    spm_mcr=inputs["spm_mcr"],
+    bb=np_parameters["bounding_box"],
+    modulate=np_parameters["modulate"]
+)
+outputs["Anat normalization file"] = template_mat_file
+outputs["Normalized anat file"] = registered_input_file
 
 
 """
-Step 2 : Normalize subject functional data
+Step 2 : Normalize subject functional data with minimal smoothing
 """
-print("Normalize functional data...")
-nm = spm.DARTELNorm2MNI()
-nm.inputs.template_file = copy_template
-nm.inputs.flowfield_files = inputs["flow_field"]
-nm.inputs.apply_to_files = inputs["func_im"]
-nm.inputs.modulate = np_parameters["modulate"]
-nm.inputs.bounding_box = np_parameters["bounding_box"]
-nm.inputs.fwhm = np_parameters["fwhm"]["func"]
-nm.inputs.voxel_size = np_parameters["voxel_size"]
-nm_results = nm.run()
-nm_results = nm_results.outputs
-outputs["Func normalization file"] = nm_results.normalization_parameter_file
-outputs["Normalized func file"] = nm_results.normalization_parameter_file
+print("Normalize functional data with minimal smoothing...")
+registered_input_file, template_mat_file, m_file = dartel_normalize_to_mni(
+    template=template,
+    flowfield=inputs["flow_field"],
+    infile=inputs["func_im"],
+    fwhm=[3., 3., 3.],
+    voxel_size=np_parameters["voxel_size"],
+    outdir=subdir,
+    spm_sh=inputs["spm_sh"],
+    spm_mcr=inputs["spm_mcr"],
+    bb=np_parameters["bounding_box"],
+    modulate=np_parameters["modulate"]
+)
+
+# Change output name
+new_registered_input_file = registered_input_file.replace(
+    ".nii", "_fwhm3iso.nii")
+shutil.move(registered_input_file, new_registered_input_file)
+outputs["Func with minimal smoothing normalization file"] = template_mat_file
+outputs["Normalized minimal smoothing func file"] = new_registered_input_file
 
 
 """
-Step 3 : Normalize segmentation
+Step 3 : Normalize subject functional data with smoothing
+"""
+print("Normalize functional data with smoothing...")
+registered_input_file, template_mat_file, m_file = dartel_normalize_to_mni(
+    template=template,
+    flowfield=inputs["flow_field"],
+    infile=inputs["func_im"],
+    fwhm=np_parameters["fwhm"]["func"],
+    voxel_size=np_parameters["voxel_size"],
+    outdir=subdir,
+    spm_sh=inputs["spm_sh"],
+    spm_mcr=inputs["spm_mcr"],
+    bb=np_parameters["bounding_box"],
+    modulate=np_parameters["modulate"]
+)
+outputs["Func with smoothing normalization file"] = template_mat_file
+outputs["Normalized smoothing func file"] = registered_input_file
+
+
+"""
+Step 4 : Normalize segmentation
 """
 print("Normalize segmentation data...")
 for seg in inputs["seg_im"]:
-    nm = spm.DARTELNorm2MNI()
-    nm.inputs.template_file = copy_template
-    nm.inputs.flowfield_files = inputs["flow_field"]
-    nm.inputs.apply_to_files = seg
-    nm.inputs.modulate = np_parameters["modulate"]
-    nm.inputs.bounding_box = np_parameters["bounding_box"]
-    nm.inputs.fwhm = np_parameters["fwhm"]["func"]
-    nm.inputs.voxel_size = np_parameters["voxel_size"]
-    nm_results = nm.run()
-    nm_results = nm_results.outputs
+    registered_input_file, template_mat_file, m_file = dartel_normalize_to_mni(
+        template=template,
+        flowfield=inputs["flow_field"],
+        infile=seg,
+        fwhm=[0.0, 0.0, 0.0],
+        voxel_size=np_parameters["voxel_size"],
+        outdir=subdir,
+        spm_sh=inputs["spm_sh"],
+        spm_mcr=inputs["spm_mcr"],
+        bb=np_parameters["bounding_box"],
+        modulate=np_parameters["modulate"]
+    )
     basename_seg = ""
     if "c1" in os.path.basename(seg):
         basename_seg = "GM"
@@ -271,9 +308,9 @@ for seg in inputs["seg_im"]:
         basename_seg = "CSF"
 
     outputs["{0} Seg normalization file".format(
-        basename_seg)] = nm_results.normalization_parameter_file
+        basename_seg)] = template_mat_file
     outputs["Normalized {0} seg file".format(
-        basename_seg)] = nm_results.normalization_parameter_file
+        basename_seg)] = registered_input_file
 
 
 # If template has been copied to subdir, delete it
