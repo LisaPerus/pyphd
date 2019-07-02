@@ -24,6 +24,7 @@ from argparse import RawTextHelpFormatter
 import textwrap
 from datetime import datetime
 import shutil
+import json
 
 # Third party imports
 from nipype import Node, Workflow
@@ -38,13 +39,6 @@ DOC = """Design t-tests from reho map data.
 2) Estimate model
 
 Example on MAPT data:
-python3 $SCRIPT_DIR/GIT_REPOST/pyphd/pyphd/design_test_reho_maps.py \
-    -i /home/lp259104/PHD/SCRIPTS/fMRI_ANALYSIS/MAPT_reho_maps.txt \
-    -o /tmp/test_second_level \
-    -S $SPM12_DIR/spm12/run_spm12.sh \
-    -M $SPM12_DIR/mcr/v713/ \
-    -V 1
-
 python3 $SCRIPT_DIR/GIT_REPOST/pyphd/pyphd/design_test_reho_maps.py \
     -i /home/lp259104/PHD/DATA/RESULTS/MAPT/REHO_ANALYSIS/Clara_n118/MAPT_reho_maps.txt \
     -o /tmp/test_second_level/PairedTTest \
@@ -150,21 +144,23 @@ with open(inputs["data_file"], "rt") as open_file:
 
 # Copy files to outdir
 imgs_per_timepoints = [[], []]
-copied_files = []
+to_erase = []
 for line in lines[1:]:
     line = line.strip("\n").strip(" ").split(",")
-    shutil.copy(line[0].strip("\n"), inputs["outdir"])
-    imgs_per_timepoints[0].append(
-        os.path.join(inputs["outdir"], os.path.basename(line[0].strip("\n"))))
+    in_file = line[0].strip("\n")
+    out_file = os.path.join(inputs["outdir"], os.path.basename(in_file))
+    if os.path.dirname(in_file) != inputs["outdir"]:
+        to_erase.append(out_file)
+    shutil.copy(in_file, out_file)
+    imgs_per_timepoints[0].append(out_file)
     if inputs["analysis"] == "OneSampleTTestDesign":
         continue
-    shutil.copy(line[1].strip("\n"), inputs["outdir"])
-    copied_file = os.path.join(
-        inputs["outdir"], os.path.basename(line[1].strip("\n")))
-    copied_files.append(copied_file)
-    imgs_per_timepoints[1].append(
-        os.path.join(inputs["outdir"], os.path.basename(line[1].strip("\n"))))
-outputs["Copied files "] = copied_files
+    in_file = line[1].strip("\n")
+    out_file = os.path.join(inputs["outdir"], os.path.basename(in_file))
+    if os.path.dirname(in_file) != inputs["outdir"]:
+        to_erase.append(out_file)
+    shutil.copy(in_file, out_file)
+    imgs_per_timepoints[1].append(out_file)
 
 # Create workflow
 analysis2nd = Workflow(
@@ -199,18 +195,21 @@ analysis2nd.connect([
 # Run workflow
 res = analysis2nd.run('MultiProc', plugin_args={'n_procs': 8})
 nodes_wf = list(res.nodes)
-outputs["Outputs"] = []
-for node in nodes_wf:
-    outputs["Outputs"].extend(node.result.outputs)
+outputs["Output dir"] = os.path.join(inputs["outdir"], "work_2d")
+
+# Erase copied files
+for fid in to_erase:
+    os.remove(fid)
 
 # Save output logs
-log_dir = os.path.join(inputs["outdir"], "logs")
-if not os.path.isdir(log_dir):
-    os.mkdir(log_dir)
+logdir = os.path.join(inputs["outdir"], "logs")
+if not os.path.isdir(logdir):
+    os.mkdir(logdir)
 
 for name, final_struct in [("inputs", inputs), ("outputs", outputs),
                            ("runtime", runtime)]:
-    log_file = os.path.join(logdir, "{0}_{1}.json".format(
+    log_file = os.path.join(
+        logdir, "design_test_reho_maps_{0}_{1}.json".format(
         name, runtime["timestamp"]))
     with open(log_file, "wt") as open_file:
         json.dump(final_struct, open_file, sort_keys=True, check_circular=True,
