@@ -46,6 +46,7 @@ from pypreprocess.io_utils import niigz2nii
 from pyphd.constants import RSFMRI_PREPROC_CLARA_MANESCO
 from pyphd.spm.utils import (spm_standalone_reorient, get_slice_order,
                              st_get_ref_slice)
+from pyphd.transformations.space import delete_im_first_volumes
 
 
 # Script documentation
@@ -55,7 +56,8 @@ on MAPT data.
 ------------------------------------------------------------------------------
 
 Executes the preprocessing pipeline as follows:
-1) Reorient functional image by centering on AC.
+1) Delete first volumes if needed and reorient functional image by centering
+   on AC.
 2) Segment anatomical image.
 3) Normalize anatomical image (to MNI).
 4) Smooth anatomical image (6mm).
@@ -71,8 +73,8 @@ Example on MAPT data:
 python3 $SCRIPT_DIR/GIT_REPOS/pyphd/pyphd/scripts/rsfmri_preproc_clara_manesco.py \
     -s sub-03990171AGE \
     -t ses-M0 \
-    -f /tmp/test_fmri/sub-03990171AGE_ses-M0_task-rest_bold.nii.gz \
-    -a /tmp/test_fmri/sub-03990171AGE_ses-M0_T1w.nii.gz \
+    -f $HOME/PHD/DATA/MAPT/*/*/*/*/sub-03990171AGE_ses-M0_task-rest_bold.nii.gz \
+    -a $HOME/PHD/DATA/MAPT/*/*/*/*/sub-03990171AGE_ses-M0_T1w.nii.gz \
     -l "Ascending interleaved" \
     -n SIEMENS \
     -r Middle \
@@ -80,6 +82,7 @@ python3 $SCRIPT_DIR/GIT_REPOS/pyphd/pyphd/scripts/rsfmri_preproc_clara_manesco.p
     -C 4.6 34.9 13.2 \
     -S $SPM12_DIR/spm12/run_spm12.sh \
     -M $SPM12_DIR/mcr/v713/ \
+    -D 10 \
     -V 2
 """
 
@@ -151,6 +154,9 @@ def get_cmd_line_args():
         help="Path to the output directory.")
 
     # Optional argument
+    parser.add_argument(
+        "-D", "--delete-volumes", type=int, default=0,
+        help="Delete first volumes of time serie.")
     parser.add_argument(
         "-C", "--commissure", type=float, nargs="+",
         help="Commissure coordinates in scanner space (mm).")
@@ -235,17 +241,23 @@ anat_im = niigz2nii(inputs["anat_im"], output_dir=subdir)
 """
 Step 1 - Reorient subject by setting origin to Anterior Commissure coordinates
 """
+if inputs["delete_volumes"] != 0:
+    print("Deleting {0} first volumes...".format(inputs["delete_volumes"]))
+    func_im = delete_im_first_volumes(
+        im_file=func_im,
+        nb_vol=inputs["delete_volumes"],
+        outdir=subdir,
+        erase=True)
+
 print("Reorienting to anterior commissure...")
 if inputs["commissure"] is not None:
 
     # Copy original images
     reoriented_func = os.path.join(
-        subdir, "{0}_{1}_task-rest_bold_orig_ac.nii".format(
-            inputs["sid"], inputs["timepoint"]))
+        subdir, os.path.basename(func_im).replace(".nii", "_orig_ac.nii"))
     shutil.copy(func_im, reoriented_func)
     reoriented_anat = os.path.join(
-        subdir, "{0}_{1}_T1w_orig_ac.nii".format(
-            inputs["sid"], inputs["timepoint"]))
+        subdir, os.path.basename(anat_im).replace(".nii", "_orig_ac.nii"))
     shutil.copy(anat_im, reoriented_anat)
 
     # Reorient func
