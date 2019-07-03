@@ -220,7 +220,7 @@ def compute_im_centroid(im_file, vol=None):
     return vox_coords, mm_coords
 
 
-def delete_im_first_volumes(im_file, nb_vol, erase=True):
+def delete_im_first_volumes(im_file, nb_vol, outdir, erase=True):
     """Delete image first volumes.
     ------------------------------
 
@@ -230,6 +230,8 @@ def delete_im_first_volumes(im_file, nb_vol, erase=True):
         path to 4D image.
     nb_vol: int
         number of initial volumes to delete.
+    outdir: str
+        path to output directory.
     erase: bool
         erase existing output file.
 
@@ -243,7 +245,8 @@ def delete_im_first_volumes(im_file, nb_vol, erase=True):
         raise ValueError("{0} is not a 4D image.".format(im_file))
     data = im.get_data()[:, :, :, nb_vol:]
     new_im = nibabel.Nifti1Image(data, im.affine)
-    new_im_file = im_file.replace(".nii", "_steady_state.nii")
+    new_im_file = os.path.join(
+        outdir, os.path.basename(im_file).replace(".nii", "_steady_state.nii"))
     if os.path.isfile(new_im_file) and not erase:
         raise ValueError(
             "Existing file : {0}, set erase to True to overwrite".format(
