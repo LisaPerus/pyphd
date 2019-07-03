@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # long with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+# System imports
+import os
+
 # Third-party imports
 import numpy as np
 import pydicom
