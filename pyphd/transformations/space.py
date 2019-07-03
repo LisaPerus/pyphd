@@ -248,5 +248,5 @@ def delete_im_first_volumes(im_file, nb_vol, erase=True):
         raise ValueError(
             "Existing file : {0}, set erase to True to overwrite".format(
                 im_file))
-    nibabel.save(new_im_file, new_im)
+    nibabel.save(new_im, new_im_file)
     return new_im_file
