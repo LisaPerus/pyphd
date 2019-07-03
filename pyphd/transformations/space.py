@@ -244,7 +244,7 @@ def delete_im_first_volumes(im_file, nb_vol, outdir, erase=True):
     if len(im.shape) != 4:
         raise ValueError("{0} is not a 4D image.".format(im_file))
     data = im.get_data()[:, :, :, nb_vol:]
-    new_im = nibabel.Nifti1Image(data, im.affine)
+    new_im = nibabel.Nifti1Image(data, im.affine, header=im.header)
     new_im_file = os.path.join(
         outdir, os.path.basename(im_file).replace(".nii", "_steady_state.nii"))
     if os.path.isfile(new_im_file) and not erase:
