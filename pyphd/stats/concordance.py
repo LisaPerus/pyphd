@@ -53,6 +53,8 @@ def correlation_plot(xdata, ydata, xlim=[0, 1], ylim=[0, 1],
 
     # Least squares fit of the data
     slope, intercept = np.linalg.lstsq(xdata_leastq, ydata)[0]
+    slope = float(slope)
+    intercept = float(intercept)
 
     # Calculate Pearson correlation coefficient and the 2-tailed p-value
     pearson_coeff, pval = stats.pearsonr(xdata, ydata)
@@ -65,7 +67,7 @@ def correlation_plot(xdata, ydata, xlim=[0, 1], ylim=[0, 1],
     plt.scatter(xdata, ydata, s=[1 for x in range(len(xdata))])
 
     # Plot the least squares fit line
-    plt.plot(xdata, slope*xdata + intercept, 'k', lw='2')
+    plt.plot(xdata, [slope*x + intercept for x in xdata], 'k', lw='2')
 
     # Add labels
     plt.xlabel(dataset_names[0], fontsize='16')
@@ -82,7 +84,10 @@ def correlation_plot(xdata, ydata, xlim=[0, 1], ylim=[0, 1],
 
     # Add a text box with correlation coefficient and p-value
     # TODO: Pass the text position as an argument
-    plt.text(0.1, 0.9, 'r=' + str(pearson_coeff) + pval_str, fontsize='16')
+    plt.text(
+        (xlim[1] + xlim[0])/2,
+        (ylim[1] + ylim[0])/2, 'r=' + str(pearson_coeff) + pval_str,
+        fontsize='16')
 
     # Set border thickness
     ax = plt.gca()
@@ -93,8 +98,9 @@ def correlation_plot(xdata, ydata, xlim=[0, 1], ylim=[0, 1],
 
     if out_png is not None:
         plt.savefig(out_png)
+    plt.close()
 
-    return out_png
+    return out_png, pearson_coeff, pval
 
 
 def bland_altman_plot(xdata, ydata, xlim=[0, 1], ylim=[-1, 1],
