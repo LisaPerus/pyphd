@@ -17,6 +17,7 @@
 # Pyconnectome imports
 from pyconnectome.wrapper import FSLWrapper
 
+
 def palm(indata, design_file, contrast_file, output_basename, fsl_sh,
          nb_permutations):
     """ Wraps FSL PALM command.
@@ -36,7 +37,6 @@ def palm(indata, design_file, contrast_file, output_basename, fsl_sh,
         Path to FSL sh init file.
     nb_permutations: int
         Number of permutation (default : 1000).
-    
 
     Returns:
     --------
