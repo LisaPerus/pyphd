@@ -15,6 +15,8 @@
 # long with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # System import
+import os
+import glob
 import subprocess
 
 
@@ -32,23 +34,30 @@ def palm(indata, design_file, contrast_file, output_basename, nb_permutations):
         Path to contrast .con file.
     output_basename: str
         Path to output basename.
-    fsl_sh: str
-        Path to FSL sh init file.
     nb_permutations: int
         Number of permutation (default : 1000).
 
-    Returns:
-    --------
-
-
+    Returns
+    -------
+    stat_val: array of str
+        path to csv files listing test values.
+    pval_unc: array of str
+        path to csv files listing uncorrected p-values for each contrast.
+    pval_fwe: array of str
+        path to csv files listing FWE-corrected p-values for each contrast.
     """
     cmd = ["palm", "-i", indata, "-d", design_file, "-t", contrast_file, "-o",
-           output_basename, "-n", nb_permutations]
+           output_basename, "-n", str(nb_permutations)]
     proc = subprocess.Popen(cmd,
-                            stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
     stdout, stderr = proc.communicate()
     if proc.returncode == 1:
         raise ValueError(
-            "Command '{0}' failed : {1}".format(" ".join(cmd), stderr))
+            "Command '{0}' failed : {1} + {2}".format(" ".join(cmd), stderr,
+            stdout))
+
+    stat_val = glob.glob(os.path.join(output_basename + "*dat_tstat_c*.csv"))
+    pval_unc = glob.glob(os.path.join(output_basename + "*uncp*.csv"))
+    p_fwe = glob.glob(os.path.join(output_basename + "*fwep*.csv"))
+    return stat_val, pval_unc, p_fwe
