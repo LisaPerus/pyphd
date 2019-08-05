@@ -14,12 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # long with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# Pyconnectome imports
-from pyconnectome.wrapper import FSLWrapper
+# System import
+import subprocess
 
 
-def palm(indata, design_file, contrast_file, output_basename, fsl_sh,
-         nb_permutations):
+def palm(indata, design_file, contrast_file, output_basename, nb_permutations):
     """ Wraps FSL PALM command.
     ---------------------------
 
@@ -45,5 +44,11 @@ def palm(indata, design_file, contrast_file, output_basename, fsl_sh,
     """
     cmd = ["palm", "-i", indata, "-d", design_file, "-t", contrast_file, "-o",
            output_basename, "-n", nb_permutations]
-    fslprocess = FSLWrapper(cmd, shfile=fsl_sh)
-    fslprocess()
+    proc = subprocess.Popen(cmd,
+                            stdin=subprocess.PIPE,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE)
+    stdout, stderr = proc.communicate()
+    if proc.returncode == 1:
+        raise ValueError(
+            "Command '{0}' failed : {1}".format(" ".join(cmd), stderr))
