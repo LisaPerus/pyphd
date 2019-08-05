@@ -19,6 +19,9 @@ import os
 import glob
 import subprocess
 
+# Pyconnectome imports
+from pyconnectome.wrapper import FSLWrapper
+
 
 def palm(indata, design_file, contrast_file, output_basename, nb_permutations):
     """ Wraps FSL PALM command.
@@ -54,10 +57,28 @@ def palm(indata, design_file, contrast_file, output_basename, nb_permutations):
     stdout, stderr = proc.communicate()
     if proc.returncode == 1:
         raise ValueError(
-            "Command '{0}' failed : {1} + {2}".format(" ".join(cmd), stderr,
-            stdout))
-
+                "Command '{0}' failed : {1} + {2}".format(
+                    " ".join(cmd), stderr, stdout))
     stat_val = glob.glob(os.path.join(output_basename + "*dat_tstat_c*.csv"))
     pval_unc = glob.glob(os.path.join(output_basename + "*uncp*.csv"))
     p_fwe = glob.glob(os.path.join(output_basename + "*fwep*.csv"))
     return stat_val, pval_unc, p_fwe
+
+
+def text2vest(indata, outdata, fsl_sh):
+    """ Wraps FSL Text2Vest command.
+    ---------------------------
+
+    Parameters
+    ----------
+    indata: str
+        Path to text file input data. Can be a text file for design matrix
+        or contrast.
+    outdata: str
+        Path to output data (.mat or .con file).
+    fsl_sh: str
+        Path to fsl init sh file.
+    """
+    cmd = ["Text2Vest", indata, outdata]
+    fslprocess = FSLWrapper(cmd, shfile=fsl_sh)
+    fslprocess()
