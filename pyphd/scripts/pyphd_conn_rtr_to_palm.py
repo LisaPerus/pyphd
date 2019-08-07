@@ -115,6 +115,9 @@ def get_cmd_line_args():
              "Each element of a connection must be separated by ':' "
              "(e.g DMN:Visual)")
     parser.add_argument(
+        "-T", "--two-tail", action="store_true",
+        help="If set, perform two-tailed test.")
+    parser.add_argument(
         "-N", "--nb-permutations", type=int, default=10000,
         help="Number of permutation for permutation testing.")
     parser.add_argument(
@@ -276,12 +279,15 @@ with progressbar.ProgressBar(max_value=len(connections),
         palm_output_basename = os.path.join(
             inputs["outdir"], "{0}_to_{1}_palm".format(
                 source.replace(" ", ""), target.replace(" ", "")))
+        if inputs["two_tail"]:
+            palm_output_basename += "two_tail"
         stat_val, pval_unc, p_fwe = palm(
             indata=connection_file,
             design_file=design_mat_file,
             contrast_file=constrat_file,
             output_basename=palm_output_basename,
-            nb_permutations=inputs["nb_permutations"])
+            nb_permutations=inputs["nb_permutations"],
+            twotail=inputs["two_tail"])
         outputs["{0}_to_{1}_palm_stat_val".format(source, target)] = stat_val
         outputs["{0}_to_{1}_palm_pval_unc".format(source, target)] = pval_unc
         outputs["{0}_to_{1}_palm_p_fwe".format(source, target)] = p_fwe
@@ -298,8 +304,7 @@ for name, final_struct in [("inputs", inputs), ("outputs", outputs),
                            ("runtime", runtime)]:
     log_file = os.path.join(
         logdir,
-        "pyphd_get_conn_rtr_to_palm_{0}_{1}.json".format(
-            output_basename, name))
+        "pyphd_get_conn_rtr_to_palm_{0}.json".format(name))
     with open(log_file, "wt") as open_file:
         json.dump(final_struct, open_file, sort_keys=True, check_circular=True,
                   indent=4)
