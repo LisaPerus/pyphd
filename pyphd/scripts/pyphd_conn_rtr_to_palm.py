@@ -302,9 +302,14 @@ if not os.path.isdir(logdir):
     os.mkdir(logdir)
 for name, final_struct in [("inputs", inputs), ("outputs", outputs),
                            ("runtime", runtime)]:
-    log_file = os.path.join(
-        logdir,
-        "pyphd_get_conn_rtr_to_palm_{0}.json".format(name))
+    if inputs["two_tail"]:
+        log_file = os.path.join(
+            logdir,
+            "pyphd_get_conn_rtr_to_palm_two_tail_{0}.json".format(name))
+    else:
+        log_file = os.path.join(
+            logdir,
+            "pyphd_get_conn_rtr_to_palm_{0}.json".format(name))
     with open(log_file, "wt") as open_file:
         json.dump(final_struct, open_file, sort_keys=True, check_circular=True,
                   indent=4)
