@@ -90,6 +90,15 @@ def get_cmd_line_args():
 
     # Optional argument
     parser.add_argument(
+        "-R", "--rscores-diff", action="store_true", default=False,
+        help="Do not zscore the difference of r-scores between the two "
+             "conditions.")
+    parser.add_argument(
+        "-Z", "--zscores-diff", action="store_true", default=False,
+        help="Instead of zscoring the difference of r-scores between the two "
+             "conditions, do the difference of the z-scores (it is what is "
+             "done by Conn by default.)")
+    parser.add_argument(
         "-V", "--verbose",
         type=int, choices=[0, 1], default=1,
         help="Increase the verbosity level: 0 silent, 1 verbose.")
@@ -146,32 +155,51 @@ second_roi_zscores_df = pd.DataFrame(
     second_roi_data["Z"], index=second_roi_source_names,
     columns=second_roi_target_names)
 
-# Get r-scores
-first_roi_rscores_df = first_roi_zscores_df.apply(tanh)
-second_roi_rscores_df = second_roi_zscores_df.apply(tanh)
+# Z-score the difference of R-scores
+if not inputs["zscores_diff"]:
 
-# Get difference
-diff_rscores_df = second_roi_rscores_df - first_roi_rscores_df
+    # Get r-scores
+    first_roi_rscores_df = first_roi_zscores_df.apply(tanh)
+    second_roi_rscores_df = second_roi_zscores_df.apply(tanh)
 
-# > Save diff r-scores
-out_csv = os.path.join(
-    inputs["outdir"], "rscores_{0}-{1}.csv".format(
-        first_roi_basename, second_roi_basename))
-diff_rscores_df.to_csv(out_csv)
-outputs["Rscores diff csv file"] = out_csv
+    # Get difference
+    diff_rscores_df = second_roi_rscores_df - first_roi_rscores_df
 
-# Z-score the difference
-diff_zscores_df = diff_rscores_df.apply(arctanh)
+    if inputs["rscores_diff"]:
 
-# Save data
-diff_roi_mat_data = first_roi_data.copy()
-diff_roi_mat_data["Z"] = diff_zscores_df.as_matrix()
+        # Save data
+        diff_roi_mat_data = first_roi_data.copy()
+        diff_roi_mat_data["Z"] = diff_rscores_df.as_matrix()
 
-out_mat = os.path.join(
-    inputs["outdir"], "zscores_{0}-{1}.mat".format(
-        first_roi_basename, second_roi_basename))
+        out_mat = os.path.join(
+            inputs["outdir"], "rscores_{0}-{1}.mat".format(
+                first_roi_basename, second_roi_basename))
+    else:
+
+        # Z-score the difference
+        diff_zscores_df = diff_rscores_df.apply(arctanh)
+
+        # Save data
+        diff_roi_mat_data = first_roi_data.copy()
+        diff_roi_mat_data["Z"] = diff_zscores_df.as_matrix()
+
+        out_mat = os.path.join(
+            inputs["outdir"], "zscores_{0}-{1}.mat".format(
+                first_roi_basename, second_roi_basename))
+else:
+    # Get difference
+    diff_zscores_df = second_roi_zscores_df - first_roi_zscores_df
+    diff_roi_mat_data = first_roi_data.copy()
+    diff_roi_mat_data["Z"] = diff_zscores_df.as_matrix()
+
+    out_mat = os.path.join(
+        inputs["outdir"], "diff_zscores_{0}-{1}.mat".format(
+            first_roi_basename, second_roi_basename))
+
+# Save outputs
 savemat(out_mat, diff_roi_mat_data)
 outputs["Diff mat file"] = out_mat
+
 
 """
 Update the outputs and save them and the inputs in a 'logs' directory.
