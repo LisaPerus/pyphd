@@ -21,6 +21,7 @@ import os
 import argparse
 import textwrap
 import json
+import glob
 from datetime import datetime
 from argparse import RawTextHelpFormatter
 from datetime import datetime
@@ -32,6 +33,7 @@ import pandas as pd
 import numpy as np
 from numpy import tanh
 from scipy.io import loadmat
+from statsmodels.stats.multitest import fdrcorrection
 
 # Pyphd imports
 from pyphd.fsl.utils import palm, text2vest
@@ -45,6 +47,7 @@ scores and input them to FSL PALM for permutation testing.
 1) Extract Z-score matrix
 2) Compute r-scores from Z-score matrix
 3) Use permutation testing to get some difference between groups, etc.
+4) Perform multiple testing correction (BH)
 
 Example on MAPT data:
 cat input.csv
@@ -52,7 +55,7 @@ Sid,Conn_file,Design_group1,Design_group2
 Subject001,resultsROI_Subject001_Condition001.mat,1,0
 Subject013,resultsROI_Subject013_Condition001.mat,0,1
 ...
-Subject00n,resultsROI_Subject0n_Condition00n.mat,0,1
+Subject00n,resultsROI_Subject0n_Condition001.mat,0,1
 
 python3 $SCRIPT_DIR/GIT_REPOS/pyphd/pyphd/scripts/pyphd_conn_rtr_to_palm.py \
     -i /tmp/test_palm/input.csv \
@@ -110,6 +113,9 @@ def get_cmd_line_args():
 
     # Optional argument
     parser.add_argument(
+        "-M", "--multiple-testing-constrasts", type=str, nargs="+",
+        help="Correct for multiple testing on these contrasts. E.g : c1, c2.")
+    parser.add_argument(
         "-C", "--connections", type=str, nargs="+",
         help="Connections that are to be kept only."
              "Each element of a connection must be separated by ':' "
@@ -156,15 +162,17 @@ conn_mat_files = []
 subjects = []
 designs = []
 nan_subjects = []  # Record subjects with no information about the design
+nan_subjects_sids = []
 with open(inputs["input_file"], "rt") as open_file:
     lines = open_file.readlines()
+input_data_path, input_data_ext = os.path.splitext(inputs["input_file"])
 header = lines[0].strip("\n").split(",")
 for idx, line in enumerate(lines[1:]):
     line = line.strip("\n").split(",")
-    print(line)
     design = ",".join(line[2:])
     if "NaN" in design or "NA" in design or "na" in design:
         nan_subjects.append(idx)
+        nan_subjects_sids.append(line[0])
     subjects.append(line[0])
     conn_mat_files.append(line[1])
     designs.append(design)
@@ -251,6 +259,17 @@ else:
     constrat_file = inputs["contrast"]
 
 # Write connections values
+connectivity_dir = os.path.join(
+    inputs["outdir"], os.path.basename(inputs["input_file"]).replace(
+        input_data_ext, "") + "_connections")
+if not os.path.isdir(connectivity_dir):
+    os.mkdir(connectivity_dir)
+
+palm_outdir = os.path.join(
+    inputs["outdir"], os.path.basename(inputs["input_file"]).replace(
+        input_data_ext, "") + "_palm_output")
+if not os.path.isdir(palm_outdir):
+    os.mkdir(palm_outdir)
 with progressbar.ProgressBar(max_value=len(connections),
                              redirect_stdout=True) as bar:
     for idx_conn, connection in enumerate(connections):
@@ -266,7 +285,7 @@ with progressbar.ProgressBar(max_value=len(connections),
 
         # Write connections file
         connection_file = os.path.join(
-            inputs["outdir"], "{0}_to_{1}_connectivity_values.csv".format(
+            connectivity_dir, "{0}_to_{1}_connectivity_values.csv".format(
                 source.replace(" ", ""), target.replace(" ", "")))
         with open(connection_file, "wt") as open_file:
             for val in connections_values:
@@ -277,7 +296,7 @@ with progressbar.ProgressBar(max_value=len(connections),
 
         # Run Palm
         palm_output_basename = os.path.join(
-            inputs["outdir"], "{0}_to_{1}_palm".format(
+            palm_outdir, "{0}_to_{1}_palm".format(
                 source.replace(" ", ""), target.replace(" ", "")))
         if inputs["two_tail"]:
             palm_output_basename += "two_tail"
@@ -295,21 +314,93 @@ with progressbar.ProgressBar(max_value=len(connections),
 
 
 """
+Step 4 : Perform multiple testing correction
+"""
+if inputs["multiple_testing_constrasts"] is not None:
+    contrasts_results = {}
+    for contrast in inputs["multiple_testing_constrasts"]:
+        contrasts_results[contrast] = {"tvalues": [], "unc_pvalues": [],
+                                       "fdr_corrected_pvalues": [],
+                                       "rejected_fdr_corr_pvals_p005": []}
+
+        # Get all contrast tvals
+        tstat_files = glob.glob(
+            os.path.join(palm_outdir, "*tstat_{0}.csv".format(contrast)))
+        connections_names = [
+            os.path.basename(x).replace(
+                "*tstat_{0}.csv".format(contrast), "") for x in tstat_files]
+
+        uncp_files = []
+        for tstat_file in tstat_files:
+            uncp_file = tstat_file.replace("tstat", "tstat_uncp")
+            uncp_files.append(uncp_file)
+
+        tvalues = []
+        for fid in tstat_files:
+            with open(fid, "rt") as open_file:
+                lines = open_file.readlines()
+            tval = float(lines[0].strip("\n"))
+            tvalues.append(tval)
+
+        unc_pvalues = []
+        for fid in uncp_files:
+            with open(fid, "rt") as open_file:
+                lines = open_file.readlines()
+            unc_pval = float(lines[0].strip("\n"))
+            unc_pvalues.append(unc_pval)
+
+        contrasts_results[contrast]["tvalues"] = tvalues
+        contrasts_results[contrast]["unc_pvalues"] = unc_pvalues
+
+        # Apply Benjamini-Hochberg FDR correction
+        # FDR correction
+        rejected, fdr_corr_pvalues = fdrcorrection(
+            pvals=unc_pvalues,
+            alpha=0.05,
+            method='indep')
+        contrasts_results[contrast]["fdr_corrected_pvalues"] = fdr_corr_pvalues
+        contrasts_results[contrast]["rejected_fdr_corr_pvals_p005"] = rejected
+
+        contrast_summary_file = os.path.join(
+            inputs["outdir"], os.path.basename(inputs["input_file"]).replace(
+                input_data_ext, "") + "{0}_palm_results.csv".format(contrast))
+        with open(contrast_summary_file, "wt") as open_file:
+            open_file.write("Connection,Tval,Pval_unc,Pval_FDR_corr,")
+            open_file.write("Reject_H0_FDR\n")
+            for idx, conn in enumerate(connections_names):
+                line = ",".join([conn, str(tvalues[idx]),
+                                 str(unc_pvalues[idx]),
+                                 str(fdr_corr_pvalues[idx]),
+                                 str(rejected[idx])])
+                line += "\n"
+                open_file.write(line)
+        outputs["Summary_contrast_{0}".format(
+                contrast)] = contrast_summary_file
+
+
+"""
 Update the outputs and save them and the inputs in a 'logs' directory.
 """
 logdir = os.path.join(inputs["outdir"], "logs")
 if not os.path.isdir(logdir):
     os.mkdir(logdir)
+if inputs["two_tail"]:
+    output_basename = os.path.basename(inputs["input_file"]).replace(
+        input_data_ext, "_two_tail_palm")
+else:
+    output_basename = os.path.basename(inputs["input_file"]).replace(
+        input_data_ext, "_one_tail_palm")
+nan_subjects_file = os.path.join(
+    inputs["outdir"], output_basename + "_nan_subjects.csv")
+with open(nan_subjects_file, "wt") as open_file:
+    open_file.write("Discarded subjects ")
+    open_file.write("(with NaN value for at least one variable\n")
+    for sid in nan_subjects_sids:
+        open_file.write(sid)
+        open_file.write("\n")
 for name, final_struct in [("inputs", inputs), ("outputs", outputs),
                            ("runtime", runtime)]:
-    if inputs["two_tail"]:
-        log_file = os.path.join(
-            logdir,
-            "pyphd_get_conn_rtr_to_palm_two_tail_{0}.json".format(name))
-    else:
-        log_file = os.path.join(
-            logdir,
-            "pyphd_get_conn_rtr_to_palm_{0}.json".format(name))
+    log_file = os.path.join(logdir, output_basename + "_{0}.json".format(name))
     with open(log_file, "wt") as open_file:
         json.dump(final_struct, open_file, sort_keys=True, check_circular=True,
                   indent=4)
