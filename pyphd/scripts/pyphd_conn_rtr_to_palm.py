@@ -281,7 +281,7 @@ else:
     constrat_file = inputs["contrast"]
 
 # If f contrast text file is specified, convert it to fts file
-if inputs["f_contrast"] is None:
+if inputs["f_contrast"] is not None:
     f_contrast_file = os.path.join(
         inputs["outdir"],
         os.path.basename(inputs["f_contrast"]).replace(".txt", ".fts"))
