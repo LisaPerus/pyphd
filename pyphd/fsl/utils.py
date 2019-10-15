@@ -55,11 +55,10 @@ def palm(indata, design_file, contrast_file, f_contrast, output_basename,
     pval_fwe: array of str
         path to csv files listing FWE-corrected p-values for each contrast.
     """
-    cmd = ["palm", "-i", indata, "-d", design_file]
+    cmd = ["palm", "-i", indata, "-d", design_file, "-t", contrast_file, "-o",
+           output_basename, "-n", str(nb_permutations)]
     if f_contrast is not None:
         cmd += ["-f", f_contrast]
-    cmd += ["-t", contrast_file, "-o", output_basename, "-n",
-            str(nb_permutations)]
     if twotail:
         cmd.append("-twotail")
     proc = subprocess.Popen(cmd,
