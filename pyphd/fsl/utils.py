@@ -23,8 +23,8 @@ import subprocess
 from pyconnectome.wrapper import FSLWrapper
 
 
-def palm(indata, design_file, contrast_file, output_basename, nb_permutations,
-    twotail=False):
+def palm(indata, design_file, contrast_file, f_contrast, output_basename,
+         nb_permutations, twotail=False):
     """ Wraps FSL PALM command.
     ---------------------------
 
@@ -36,13 +36,15 @@ def palm(indata, design_file, contrast_file, output_basename, nb_permutations,
         Path to .mat design file.
     contrast_file: str
         Path to contrast .con file.
+    f_contrast: bool
+        If contrast is an F contrast.
     output_basename: str
         Path to output basename.
     nb_permutations: int
         Number of permutation (default : 1000).
     twotail: bool
         Run two-tailed tests for all the t-contrasts instead of
-	    one-tailed.
+        one-tailed.
 
     Returns
     -------
@@ -53,8 +55,12 @@ def palm(indata, design_file, contrast_file, output_basename, nb_permutations,
     pval_fwe: array of str
         path to csv files listing FWE-corrected p-values for each contrast.
     """
-    cmd = ["palm", "-i", indata, "-d", design_file, "-t", contrast_file, "-o",
-           output_basename, "-n", str(nb_permutations)]
+    cmd = ["palm", "-i", indata, "-d", design_file]
+    if f_contrast:
+        cmd.append("-f")
+    else:
+        cmd.append("-t")
+    cmd += [contrast_file, "-o", output_basename, "-n", str(nb_permutations)]
     if twotail:
         cmd.append("-twotail")
     proc = subprocess.Popen(cmd,
