@@ -128,8 +128,9 @@ def get_cmd_line_args():
              "Each element of a connection must be separated by ':' "
              "(e.g DMN:Visual)")
     parser.add_argument(
-        "-F", "--f-contrast", action="store_true", default=False,
-        help="If set, given contrast is a f contrast and not t contrast.")
+        "-F", "--f-contrast", type=is_file,
+        help="F contrast txt file. If set :  test the t contrasts in a single "
+             "F contrast.")
     parser.add_argument(
         "-T", "--two-tail", action="store_true",
         help="If set, perform two-tailed test.")
@@ -279,6 +280,18 @@ if inputs["contrast"].endswith(".txt"):
 else:
     constrat_file = inputs["contrast"]
 
+# If f contrast text file is specified, convert it to fts file
+if inputs["f_contrast"] is None:
+    f_contrast_file = os.path.join(
+        inputs["outdir"],
+        os.path.basename(inputs["f_contrast"]).replace(".txt", ".fts"))
+    text2vest(
+        indata=inputs["f_contrast"],
+        outdata=f_contrast_file,
+        fsl_sh=inputs["fsl_config"])
+else:
+    f_contrast_file = None
+
 # Write connections values
 connectivity_dir = os.path.join(
     inputs["outdir"], os.path.basename(inputs["input_file"]).replace(
@@ -325,7 +338,7 @@ with progressbar.ProgressBar(max_value=len(connections),
             indata=connection_file,
             design_file=design_mat_file,
             contrast_file=constrat_file,
-            f_contrast=inputs["f_contrast"],
+            f_contrast=f_contrast_file,
             output_basename=palm_output_basename,
             nb_permutations=inputs["nb_permutations"],
             twotail=inputs["two_tail"])
