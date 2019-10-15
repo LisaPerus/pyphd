@@ -60,7 +60,7 @@ Subject00n,resultsROI_Subject0n_Condition001.mat,0,1
 python3 $SCRIPT_DIR/GIT_REPOS/pyphd/pyphd/scripts/pyphd_conn_rtr_to_palm.py \
     -i /tmp/test_palm/input.csv \
     -c $HOME/PHD/DATA/RESULTS/MAPT/CONNECTIVITY_ANALYSIS/SBC_05_Cambridge_R7/stats/one_sided_ttest.txt \
-    -N 500 \
+    -N 10000 \
     -f $HOME/fsl_init.sh \
     -o /tmp/test_palm \
     -V 1
@@ -113,6 +113,13 @@ def get_cmd_line_args():
 
     # Optional argument
     parser.add_argument(
+        "-D", "--demean", type=int, nargs="+",
+        help="Demean covariates in col 0, 1, ..., n IN DESIGN FILE as "
+             "suggested by FSL see "
+             "(https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/GLM/Faq) "
+             "/!\ First column has a 0 index and corresponds to column "
+             "index is design file /!\ ")
+    parser.add_argument(
         "-M", "--multiple-testing-constrasts", type=str, nargs="+",
         help="Correct for multiple testing on these contrasts. E.g : c1, c2.")
     parser.add_argument(
@@ -120,6 +127,9 @@ def get_cmd_line_args():
         help="Connections that are to be kept only."
              "Each element of a connection must be separated by ':' "
              "(e.g DMN:Visual)")
+    parser.add_argument(
+        "-F", "--f-contrast", action="store_true", default=False,
+        help="If set, given contrast is a f contrast and not t contrast.")
     parser.add_argument(
         "-T", "--two-tail", action="store_true",
         help="If set, perform two-tailed test.")
@@ -240,6 +250,17 @@ with open(design_file, "wt") as open_file:
         design = design.strip("\n").split(",")
         open_file.write("\t".join(design))
         open_file.write("\n")
+
+# If needed mean center columns
+if inputs["demean"] is not None:
+    design_data = pd.read_csv(design_file, sep="\t", header=None)
+    for col in inputs["demean"]:
+        col_values = design_data.iloc[:, col].astype(float)
+        mean_val_col = np.mean(col_values)
+        mean_centered_col_values = col_values - mean_val_col
+        design_data.iloc[:, col] = mean_centered_col_values
+    design_data.to_csv(design_file, sep='\t', header=False, index=False)
+
 design_mat_file = design_file.replace(".txt", ".mat")
 text2vest(
     indata=design_file,
@@ -304,6 +325,7 @@ with progressbar.ProgressBar(max_value=len(connections),
             indata=connection_file,
             design_file=design_mat_file,
             contrast_file=constrat_file,
+            f_contrast=inputs["f_contrast"],
             output_basename=palm_output_basename,
             nb_permutations=inputs["nb_permutations"],
             twotail=inputs["two_tail"])
@@ -404,6 +426,6 @@ for name, final_struct in [("inputs", inputs), ("outputs", outputs),
     with open(log_file, "wt") as open_file:
         json.dump(final_struct, open_file, sort_keys=True, check_circular=True,
                   indent=4)
-if verbose > 1:
+if verbose > 0:
     print("[final]")
     pprint(outputs)
