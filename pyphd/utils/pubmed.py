@@ -231,7 +231,8 @@ def sort_articles_by_journal_sjr(papers_info, outdir):
             papers_ranking[-1]["Articles"].append(paper)
         else:
             journal_sjr = scimagojr_ranking_data.iloc[line_idx, :]["SJR"]
-            journal_sjr = journal_sjr.replace(",", ".")
+            if type(journal_sjr) == str:
+                journal_sjr = journal_sjr.replace(",", ".")
             journal_sjr = float(journal_sjr)
             if journal_sjr not in papers_ranking.keys():
                 papers_ranking[journal_sjr] = {
