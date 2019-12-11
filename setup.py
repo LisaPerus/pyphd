@@ -20,5 +20,8 @@ setup(
     long_description=release_info["LONG_DESCRIPTION"],
     url=release_info["URL"],
     classifiers=release_info["CLASSIFIERS"],
-    license=release_info["LICENSE"]
+    license=release_info["LICENSE"],
+    include_package_data=True
 )
+
+
