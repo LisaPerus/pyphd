@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # long with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+# System imports
+import os
+
 # Constant for fmri data preprocessing script adapted from Clara Manesco
 # pipeline.
 RSFMRI_PREPROC_CLARA_MANESCO = {
@@ -111,4 +114,11 @@ RSFMRI_PREPROC_CLARA_MANESCO = {
         "modulate" : False,
         "voxel_size" : (2.0, 2.0, 2.0)
     }
+}
+
+SCIMAGOJR_RANKING_DATA = {
+    "data" : os.path.join(os.path.dirname(os.path.realpath(__file__)), "ressources", "scimagojr_2018.csv"),
+    "date" : "2019-12-11",
+    "link" : "https://www.scimagojr.com/journalrank.php?out=xls",
+    "version" : "2018"
 }
