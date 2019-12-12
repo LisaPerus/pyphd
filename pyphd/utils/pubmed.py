@@ -93,6 +93,39 @@ def fetch_pubmed_articles_details(query, sort="Best Match", retmax="20"):
     return papers_results
 
 
+def fetch_pubmed_articles_details_by_ids(
+        ids_list, sort="Best Match", retmax="20"):
+    """Returns details of papers from pubmed id list.
+
+    /!\ Code was directly copied from:
+        https://marcobonzanini.com/2015/01/12/searching-pubmed-with-python/
+    /!\
+
+
+    Parameters
+    ----------
+    ids_list: list of str
+        List of pubmed IDs.
+    sort: str
+        Type of sorting. E.g : relevance, Best Match.
+    retmax: str
+        Number of articles retained.
+
+    Returns
+    -------
+    papers_results: dict
+        Dictionnary containing information about papers
+        corresponding to the query.
+    """
+    ids = ','.join(ids_list)
+    Entrez.email = 'your.email@example.com'
+    handle = Entrez.efetch(db='pubmed',
+                           retmode='xml',
+                           id=ids)
+    papers_results = Entrez.read(handle)
+    return papers_results
+
+
 def sort_articles_by_abstract(papers_info, patterns, logical="and"):
     """Sort articles by looking at specific patterns/keyword in abstracts.
 
