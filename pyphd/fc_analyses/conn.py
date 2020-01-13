@@ -103,7 +103,7 @@ def extract_connectivities(group_name, tp=None, center_name=None,
                 " for default values.")
     if tp_name is None:
         if tp is not None:
-            tp_name = CONN_INPUTS[tp]["tp_name"]
+            tp_name = CONN_INPUTS[tp]["timepoint_name"]
         else:
             raise ValueError(
                 "Please specify a path for tp_name, or set a timepoint"
