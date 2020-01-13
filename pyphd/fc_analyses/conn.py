@@ -251,3 +251,79 @@ def extract_connectivities(group_name, tp=None, center_name=None,
                     open_file.write("," + covariates_results[cov][idx])
             open_file.write("\n")
     return outfile
+
+
+def extract_group(conn_file, groups_info={}, rename_cols={}, erase_cols=[],
+                  rename_file={}):
+    """Extract from connectivities values file group and subgroups of subjects.
+
+    /!\ conn_file MUST HAVE A ONE LINE HEADER /!\
+
+    Parameters
+    ----------
+    conn_file: str
+        File with connectivities values for each subject : one subject per
+        line and the connections on the columns.
+                    dmn1 <-> dmn2, dmn3 <-> dmn4
+        E.g : Sid1        0.9           0.2
+        Usually outputted by extract_connectivities function.
+    groups_info : dict
+        Dictionnary with information to extract groups. Keys are group columns,
+        and values are dictionnary with values to keep and new values to
+        replace them with.
+        E.g : {0 : {"4:ctrl" : "0", "3:IM" : "1"}, -1 : {"1" : "1"}}
+        will keep subjects with values 4:ctrl and 3:IM in the first column (
+        and replace these values by 0 and 1) but also have value 1 in the last
+        column.
+    rename_cols : dict
+        Keys are col ids in file, and values are new columns name in output
+        file.
+    erase_cols : list of str
+        List of cols to delete at the end (by column name).
+    rename_file: dict
+        dict which rename parts of infile to create outfile.
+        E.g : infile = "connectitivies_gpeMapt4c.txt"
+              rename_file = {"gpeMapt4c" : "IM_1_Placebo_0"}
+              outfile = "connectitivies_IM_1_Placebo_0"
+
+    Returns
+    -------
+    outfile: str
+        Path to file subjects with all their connection
+    """
+
+    # Read conn file
+    conn_data = pd.read_csv(conn_file, header=0)
+    outdata = conn_data.copy()
+
+    # Select subjects in subgroups
+    for col, col_data in groups_info.items():
+        outdata = outdata[outdata.iloc[:, col].isin(list(col_data.keys()))]
+
+    # Rename subgroup subjects with new values
+    for col, col_data in groups_info.items():
+        for old_name, new_name in col_data.items():
+            outdata.iloc[:, col][outdata.iloc[:, col] == old_name] = new_name
+
+    # Rename columns
+    new_colnames = []
+    for old_name, new_name in rename_cols.items():
+        for idx, col in enumerate(outdata.columns):
+            if col == old_name:
+                new_colnames.append(new_name)
+            else:
+                new_colnames.append(col)
+    outdata.columns = new_colnames
+
+    # Erase columns
+    for col_to_erase in erase_cols:
+        del outdata[col_to_erase]
+
+    # Create outfile
+    outfile = conn_file
+    for elt_old, elt_new in rename_file.items():
+        outfile = outfile.replace(elt_old, elt_new)
+
+    # Save output file
+    outdata.to_csv(outfile, index=False)
+    return outfile
