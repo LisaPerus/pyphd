@@ -94,7 +94,7 @@ def fetch_pubmed_articles_details(query, sort="Best Match", retmax="20"):
 
 
 def fetch_pubmed_articles_details_by_ids(
-        ids_list, sort="Best Match", retmax="20"):
+        ids_list, sort="Best Match"):
     """Returns details of papers from pubmed id list.
 
     /!\ Code was directly copied from:
