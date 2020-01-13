@@ -96,7 +96,7 @@ def extract_connectivities(group_name, tp=None, center_name=None,
                 " for default values.")
     if conn_datapath is None:
         if tp is not None:
-            outdir = CONN_INPUTS[tp]["conn_datapath"]
+            conn_datapath = CONN_INPUTS[tp]["conn_datapath"]
         else:
             raise ValueError(
                 "Please specify a path for conn_datapath, or set a timepoint"
@@ -209,7 +209,7 @@ def extract_connectivities(group_name, tp=None, center_name=None,
                 covariates_results[cov].append(sid_cov_data)
 
     # Write results
-    outfile = os.path.join(OUTDIR, "conn_connectivities.txt")
+    outfile = os.path.join(outdir, "conn_connectivities.txt")
     if group_name is not None:
         outfile = outfile.replace(".txt", "_" + group_name + ".txt")
     if center_name is not None:
