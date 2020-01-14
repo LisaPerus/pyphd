@@ -293,7 +293,7 @@ def extract_group(conn_file, groups_info={}, rename_cols={}, erase_cols=[],
     """
 
     # Read conn file
-    conn_data = pd.read_csv(conn_file, header=0)
+    conn_data = pd.read_csv(conn_file, header=0, dtype=str)
     outdata = conn_data.copy()
 
     # Select subjects in subgroups
@@ -305,6 +305,10 @@ def extract_group(conn_file, groups_info={}, rename_cols={}, erase_cols=[],
         for old_name, new_name in col_data.items():
             outdata.iloc[:, col][outdata.iloc[:, col] == old_name] = new_name
 
+    # Erase columns
+    for col_to_erase in erase_cols:
+        del outdata[col_to_erase]
+
     # Rename columns
     new_colnames = []
     for old_name, new_name in rename_cols.items():
@@ -315,10 +319,6 @@ def extract_group(conn_file, groups_info={}, rename_cols={}, erase_cols=[],
                 new_colnames.append(col)
     outdata.columns = new_colnames
 
-    # Erase columns
-    for col_to_erase in erase_cols:
-        del outdata[col_to_erase]
-
     # Create outfile
     outfile = conn_file
     for elt_old, elt_new in rename_file.items():
@@ -327,3 +327,46 @@ def extract_group(conn_file, groups_info={}, rename_cols={}, erase_cols=[],
     # Save output file
     outdata.to_csv(outfile, index=False)
     return outfile
+
+
+def sort_connectivities_by_pvals(conn_result_file, p_val_thresh,
+                                 p_val_colname, additional_infos_columns):
+    """Extract from a statistic test result file connectitivies under
+       a specific pval threshold.
+
+    Parameters
+    ----------
+    conn_result_file: str
+        Path to file with statistics results for each connection.
+        Must have at least one column for pvalues.
+        Connectivities are supposed to be in the first column.
+    p_val_thresh : float
+        pval threshold. Can be higher than 0.05 if we want to observe trends
+        (especially if a correction has been applied).
+    p_val_colname : str
+        colname containing pvalues on which the pvalues have to be thresholded.
+    additional_infos_columns: dict
+        Indicates supplementary info to save for significant connections.
+        Key is column number, value is the name of var of interest.
+
+    Returns
+    -------
+    results: List of dict
+        List of dictionnaries with, for each dictionnary
+    """
+
+    # Read infile
+    data = pd.read_csv(conn_result_file)
+
+    # Select connections under threshold
+    significant_data = data[data[p_val_colname] < p_val_thresh]
+    significant_data = significant_data.sort_values(by=[p_val_colname])
+
+    # Store results
+    results = []
+    for idx, row in significant_data.iterrows():
+        results_conn = {}
+        for col, info_new_name in additional_infos_columns.items():
+            results_conn[info_new_name] = row[col]
+        results[conn] = results_conn
+    return results
