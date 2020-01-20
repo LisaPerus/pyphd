@@ -330,7 +330,7 @@ def extract_group(conn_file, groups_info={}, rename_cols={}, erase_cols=[],
 
 
 def sort_connectivities_by_pvals(conn_result_file, p_val_thresh,
-                                 p_val_colname, additional_infos_columns):
+                                 p_val_colname, save_info_columns):
     """Extract from a statistic test result file connectitivies under
        a specific pval threshold.
 
@@ -345,9 +345,8 @@ def sort_connectivities_by_pvals(conn_result_file, p_val_thresh,
         (especially if a correction has been applied).
     p_val_colname : str
         colname containing pvalues on which the pvalues have to be thresholded.
-    additional_infos_columns: dict
-        Indicates supplementary info to save for significant connections.
-        Key is column number, value is the name of var of interest.
+    save_info_columns: list
+        Indicates which information to save (by column name).
 
     Returns
     -------
@@ -366,7 +365,7 @@ def sort_connectivities_by_pvals(conn_result_file, p_val_thresh,
     results = []
     for idx, row in significant_data.iterrows():
         results_conn = {}
-        for col, info_new_name in additional_infos_columns.items():
-            results_conn[info_new_name] = row[col]
-        results[conn] = results_conn
+        for col in save_info_columns:
+            results_conn[col] = row[col]
+        results.append(results_conn)
     return results
