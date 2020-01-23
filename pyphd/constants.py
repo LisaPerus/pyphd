@@ -123,7 +123,33 @@ SCIMAGOJR_RANKING_DATA = {
     "version" : "2018"
 }
 
+# /!\ Warning here uses conn rscores pattern
 CONN_INPUTS = {
+    "M0" : {
+        "conn_file_pattern" : "rscores_resultsROI_*_Condition001.mat",
+        "datafile" : "/home/lp259104/PHD/NOTES/Conn_input_Montpellier_Bordeaux_Toulouse_MAPT_M0_only.csv",
+        "outdir" : "/home/lp259104/PHD/DATA/RESULTS/MAPT/CONNECTIVITY_ANALYSIS/SBC_01_Grecius_PRE/CONN_FIRST_LEVEL_CONNECTIVITY_RESULTS/PARAMETRIC_TESTS",
+        "conn_datapath" : "/media/lp259104/10086bbb-e609-4274-a6b1-fcb6e9e0f9cb/tmp/MAPT_Conn_Montpellier_Bordeaux_Toulouse_M0/conn_analysis/results/firstlevel/SBC_01_Grecius_PRE/rscores",
+        "timepoint_name" : "rscores_all_subjects_at_PRE"
+            },
+    "M36" : {
+        "conn_file_pattern" : "rscores_resultsROI_*_Condition001.mat",
+        "datafile" : "/home/lp259104/PHD/NOTES/Conn_input_Montpellier_Bordeaux_Toulouse_MAPT_M36_only.csv",
+        "outdir" : "/home/lp259104/PHD/DATA/RESULTS/MAPT/CONNECTIVITY_ANALYSIS/SBC_01_Grecius_POST/CONN_FIRST_LEVEL_CONNECTIVITY_RESULTS/PARAMETRIC_TESTS",
+        "conn_datapath" : "/media/lp259104/10086bbb-e609-4274-a6b1-fcb6e9e0f9cb/tmp/MAPT_Conn_Montpellier_Bordeaux_Toulouse_M36/conn_analysis/results/firstlevel/SBC_01_Grecius_M36/rscores",
+        "timepoint_name" : "rscores_all_subjects_at_POST"
+        },
+    "M36-M0" : {
+        "conn_file_pattern" : "rscores_resultsROI_*_Condition001*_Condition002.mat",
+        "datafile" : "/home/lp259104/PHD/NOTES/Conn_input_Montpellier_Bordeaux_Toulouse_MAPT.csv",
+        "outdir" : "/home/lp259104/PHD/DATA/RESULTS/MAPT/CONNECTIVITY_ANALYSIS/SBC_04_Grecius_R50/CONN_FIRST_LEVEL_CONNECTIVITY_RESULTS/PARAMETRIC_TESTS",
+        "conn_datapath" : "/media/lp259104/10086bbb-e609-4274-a6b1-fcb6e9e0f9cb/tmp/MAPT_Conn_Montpellier_Bordeaux_Toulouse/conn_analysis/results/firstlevel/SBC_04_Grecius_R50/Condition002-Condition001",
+        "timepoint_name" : "diff_rscores_POST-PRE"
+        }
+}
+
+
+CONN_INPUTS_OLD = {
     "M0" : {
         "conn_file_pattern" : "resultsROI_*_Condition001.mat",
         "datafile" : "/home/lp259104/PHD/NOTES/Conn_input_Montpellier_Bordeaux_Toulouse_MAPT_M0_only.csv",
@@ -139,10 +165,10 @@ CONN_INPUTS = {
         "timepoint_name" : "all_subjects_at_POST"
         },
     "M36-M0" : {
-        "conn_file_pattern" : "zscores_resultsROI_*Condition001*_Condition002.mat",
+        "conn_file_pattern" : "diff_zscores_resultsROI_*_Condition001*_Condition002.mat",
         "datafile" : "/home/lp259104/PHD/NOTES/Conn_input_Montpellier_Bordeaux_Toulouse_MAPT.csv",
         "outdir" : "/home/lp259104/PHD/DATA/RESULTS/MAPT/CONNECTIVITY_ANALYSIS/SBC_04_Grecius_R50/CONN_FIRST_LEVEL_CONNECTIVITY_RESULTS/PARAMETRIC_TESTS",
-        "conn_datapath" : "/media/lp259104/10086bbb-e609-4274-a6b1-fcb6e9e0f9cb/tmp/MAPT_Conn_Montpellier_Bordeaux_Toulouse/conn_analysis/results/firstlevel/SBC_04_Grecius_R50/Condition002-Condition001",
-        "timepoint_name" : "zscored_diff_POST-PRE"
+        "conn_datapath" : "/media/lp259104/10086bbb-e609-4274-a6b1-fcb6e9e0f9cb/tmp/MAPT_Conn_Montpellier_Bordeaux_Toulouse/conn_analysis/results/firstlevel/SBC_04_Grecius_R50/diff_zscores_Condition002-Condition001",
+        "timepoint_name" : "diff_zscores_POST-PRE"
         }
 }
