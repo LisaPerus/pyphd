@@ -65,7 +65,7 @@ python3 $SCRIPT_DIR/GIT_REPOS/pyphd/pyphd/scripts/pyphd_conn_rtr_to_palm.py \
     -o /tmp/test_palm \
     -V 1
 
-NB: for an ANOVA give t-contrast file:
+NB: for an ANOVA give t-contrast file (4gpes):
 1 0 0 -1
 0 1 0 -1
 0 0 1 -1
@@ -223,7 +223,6 @@ for conn_mat_file in conn_mat_files:
 """
 Step 2 : Do permutation testing for each connection
 """
-
 # Get connections
 if inputs["connections"] is None:
     connections = []
