@@ -67,7 +67,6 @@ def palm(indata, design_file, contrast_file, f_contrast, output_basename,
         cmd += ["-f", f_contrast]
     if twotail:
         cmd.append("-twotail")
-    print(" ".join(cmd))
     proc = subprocess.Popen(cmd,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
@@ -76,8 +75,6 @@ def palm(indata, design_file, contrast_file, f_contrast, output_basename,
         raise ValueError(
                 "Command '{0}' failed : {1} + {2}".format(
                     " ".join(cmd), stderr, stdout))
-    print(stderr)
-    print(stdout)
     stat_val = glob.glob(os.path.join(output_basename + "*dat_tstat_c*.csv"))
     pval_unc = glob.glob(os.path.join(output_basename + "*uncp*.csv"))
     p_fwe = glob.glob(os.path.join(output_basename + "*fwep*.csv"))
