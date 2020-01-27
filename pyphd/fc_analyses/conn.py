@@ -21,6 +21,7 @@ import argparse
 
 # Third party imports
 from pyphd.constants import CONN_INPUTS
+from pyphd.fsl.utils import text2vest
 import pandas as pd
 from scipy.io import loadmat
 
@@ -369,3 +370,158 @@ def sort_connectivities_by_pvals(conn_result_file, p_val_thresh,
             results_conn[col] = row[col]
         results.append(results_conn)
     return results
+
+
+def prepare_permutation_on_connectivities(input_file, gpe_col,
+                                          gpe_separate_cols, contrast_file,
+                                          fsl_config, outdir, covariates=None,
+                                          demean=True, f_contrast=None):
+    """From a file extracted with extract_connectivities, create necessary
+    inputs to run permutation on a connection with FSL PALM.
+
+    Parameters
+    ----------
+    input_file: str
+        Csv file listing for each subject its group, values for the
+        different dependant variables, and eventual covariates.
+        Must be comma-separated.
+    gpe_col: str
+        Name of column with subject's group appartenance.
+    gpe_separate_cols: list of str
+        Indicates how to divide one col with groups of subject in 0 and 1.
+        3:IM/0 4:ctrl/1 indicates that subjects 3:IM will be in the first
+        column, and 4:ctrl in the second col.
+        It is very important because in order to known which contrast is
+        specified.
+    contrast_file: str
+        contrast file.
+    fsl_config: str
+        path to fsl init sh file.
+    outdir : str
+        path to output directory.
+    covariates: list of str
+        Covariates names in input csv file header.
+    demean: bool
+        if true, demean covariates.
+    f_contrast: str
+        Path to F contrast txt file. If set :  test the t contrasts in a single
+        F contrast.
+
+    Returns
+    -------
+    design_mat_file: str
+        path to design mat file
+    constrat_file: str
+        path to contrast file
+    out_design_csv: str
+        path to design mat file with header
+    f_contrast_file: str
+        path to f contrast file
+    """
+
+    input_data_path, input_data_ext = os.path.splitext(input_file)
+    indata = pd.read_csv(input_file, dtype=str)
+
+    # Get rid of NaN data and save NaN subjects
+    nan_values_df = indata[indata.isnull().values]
+    nan_subjects_csv = os.path.join(
+        outdir, os.path.basename(input_file).replace(
+            input_data_ext, "_nan_subjects" + input_data_ext))
+    nan_values_df.to_csv(nan_subjects_csv, index=False)
+    indata = indata.dropna()
+
+    """
+    Create design matrix
+    """
+    gpe_order = {}
+    for gpe_info in gpe_separate_cols:
+        gpe_info = gpe_info.split("/")
+        gpe = gpe_info[0]
+        gpe_col = int(gpe_info[1])
+        gpe_order[gpe_col] = gpe
+
+    # Get dependant variables values
+    not_dependant_variables = [gpe_col]
+    if covariates is not None:
+        not_dependant_variables += covariates
+    dependant_variables = [
+        x for x in indata.columns if x not in not_dependant_variables]
+
+    # Create empty dataframe for design matrix
+    # > Create new cols for design matrix df
+    cols = []
+    for gpe_col in sorted(gpe_order.keys()):
+        cols.append(gpe_order[gpe_col].replace(":", "_") + "_" + str(gpe_col))
+    if covariates is not None:
+        cols += covariates
+
+    # > Create new index for design matrix df
+    index_design = [x for x in range(indata.shape[0])]
+
+    # > Create empty design matrix df
+    design_mat_df = pd.DataFrame(index=index_design, columns=cols)
+
+    # > Fill design matrix by columns
+    # >> with group columns
+    for gpe_col in sorted(gpe_order.keys()):
+        gpe_col_name = gpe_order[gpe_col].replace(":", "_") + "_" + str(
+            gpe_col)
+        col_values = []
+        for elt in indata[gpe_col]:
+            if elt == gpe_order[gpe_col]:
+                col_values.append("1")
+            else:
+                col_values.append("0")
+        design_mat_df[gpe_col_name] = col_values
+
+    # >> with covariates
+    if covariates is not None:
+        for cov in covariates:
+            col_values = indata[cov]
+            if demean:
+                mean_val_col = np.mean([float(x) for x in col_values])
+                col_values = [float(x) - mean_val_col for x in col_values]
+            design_mat_df[cov] = col_values
+
+    # > Save intermediate desin matrix output
+    out_design_csv = os.path.join(outdir, "design.csv")
+    design_mat_df.to_csv(out_design_csv, index=False)
+
+    # > Save design mat file
+    design_txt_file = os.path.join(outdir, "design.txt")
+    design_mat_df.to_csv(design_txt_file, index=False, header=False, sep=" ")
+
+    """
+    Tranform design matrix/contrast files to valid PALM inputs
+    """
+    design_mat_file = design_txt_file.replace(".txt", ".mat")
+    text2vest(
+        indata=design_txt_file,
+        outdata=design_mat_file,
+        fsl_sh=fsl_config)
+
+    # If contrast is in text file, convert in .con file
+    if contrast_file.endswith(".txt"):
+        constrat_file = os.path.join(
+            outdir,
+            os.path.basename(contrast_file).replace(".txt", ".con"))
+        text2vest(
+            indata=contrast_file,
+            outdata=constrat_file,
+            fsl_sh=fsl_config)
+    else:
+        constrat_file = contrast_file
+
+    # If f contrast text file is specified, convert it to fts file
+    if f_contrast is not None:
+        f_contrast_file = os.path.join(
+            outdir,
+            os.path.basename(f_contrast).replace(".txt", ".fts"))
+        text2vest(
+            indata=f_contrast,
+            outdata=f_contrast_file,
+            fsl_sh=fsl_config)
+    else:
+        f_contrast_file = None
+
+    return design_mat_file, constrat_file, out_design_csv, f_contrast_file
