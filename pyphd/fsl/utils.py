@@ -24,7 +24,7 @@ from pyconnectome.wrapper import FSLWrapper
 
 
 def palm(indata, design_file, contrast_file, f_contrast, output_basename,
-         nb_permutations, twotail=False):
+         nb_permutations, twotail=False, alternate_palm_bin=None):
     """ Wraps FSL PALM command.
     ---------------------------
 
@@ -45,6 +45,8 @@ def palm(indata, design_file, contrast_file, f_contrast, output_basename,
     twotail: bool
         Run two-tailed tests for all the t-contrasts instead of
         one-tailed.
+    alternate_palm_bin: str
+        Path to alternate palm bin file : useful for cluster.
 
     Returns
     -------
@@ -55,12 +57,17 @@ def palm(indata, design_file, contrast_file, f_contrast, output_basename,
     pval_fwe: array of str
         path to csv files listing FWE-corrected p-values for each contrast.
     """
-    cmd = ["palm", "-i", indata, "-d", design_file, "-t", contrast_file, "-o",
+    if alternate_palm_bin is None:
+        cmd = ["palm"]
+    else:
+        cmd = [alternate_palm_bin]
+    cmd += ["-i", indata, "-d", design_file, "-t", contrast_file, "-o",
            output_basename, "-n", str(nb_permutations)]
     if f_contrast is not None:
         cmd += ["-f", f_contrast]
     if twotail:
         cmd.append("-twotail")
+    print(" ".join(cmd))
     proc = subprocess.Popen(cmd,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
@@ -69,6 +76,8 @@ def palm(indata, design_file, contrast_file, f_contrast, output_basename,
         raise ValueError(
                 "Command '{0}' failed : {1} + {2}".format(
                     " ".join(cmd), stderr, stdout))
+    print(stderr)
+    print(stdout)
     stat_val = glob.glob(os.path.join(output_basename + "*dat_tstat_c*.csv"))
     pval_unc = glob.glob(os.path.join(output_basename + "*uncp*.csv"))
     p_fwe = glob.glob(os.path.join(output_basename + "*fwep*.csv"))
