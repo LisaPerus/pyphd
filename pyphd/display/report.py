@@ -15,13 +15,16 @@
 # long with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # System imports
+import os
 import json
+import subprocess
 from collections import OrderedDict
 
 # Third party imports
 import numpy as np
 import nibabel
 from nilearn import plotting
+from pyconnectome.wrapper import FSLWrapper
 
 
 def get_image_snap(
@@ -85,10 +88,10 @@ def get_image_snap(
             "added.".format(" or ".join(MODALITIES)))
 
     # Set if needed vmin and vmax value
-    #if vmin is not None:
-    #    vmin = vmin * max_vox_value
-    #if vmax is not None:
-    #    vmax = vmax * max_vox_value
+    # if vmin is not None:
+    #     vmin = vmin * max_vox_value
+    # if vmax is not None:
+    #     vmax = vmax * max_vox_value
 
     # Create snap
     out_file = output_basename + ".png"
@@ -189,3 +192,78 @@ def generate_pdf_struct_file(
             "linecount": 120
         }
         cpt_page += 1
+
+
+def fsleyes_render(
+    im_file,
+    out_file,
+    overlay_files=[],
+    overlay_types=[],
+    overlay_mask_colors=[],
+        mm_pos=None):
+    """
+    Create png snap of image using fsleyes render.
+
+    Parameters
+    ----------
+    im_file: str
+        path to input image file.
+    out_file : str
+        path to output file, without png extension.
+    overlay_files: list of str
+        list of overlay images
+    overlay_types: list of str
+        type of overlays. fsleyes render overlay types : label, linevector,
+        mask, mesh, mip, rgbvector, sh, tensor, volum.
+    overlay_mask_colors: list of list of int
+        list of RGB color for each overlay. For mask only.
+    mm_pos: list of int
+        MNI pos to center snap on.
+
+    Returns
+    -------
+    output_png: str
+        path to output png
+
+    /!\ Warnings : fsleyes render cannot be wrapped with pyconnectome
+        FSLWrapper, FSLenv must be set before /!\
+    """
+    cmd = ["fsleyes", "render"]
+
+    # Center on mni coords if needed
+    if mm_pos is not None:
+        cmd += ["-wl"] + [str(x) for x in mm_pos]
+
+    cmd += ["-of", out_file]
+    cmd += [im_file]
+
+    # Add overlays
+    if len(overlay_files) != 0:
+        if len(overlay_files) != len(overlay_types):
+            raise ValueError(
+                "An overlay type must be specified for each overlay file.")
+
+        for idx, overlay_file in enumerate(overlay_files):
+            cmd += [overlay_file, "-ot", overlay_types[idx]]
+
+            if overlay_types[idx] == "mask":
+                if len(overlay_mask_colors) != 0:
+                    cmd += ["--maskColour"]
+                    cmd += [str(x) for x in overlay_mask_colors[idx]]
+
+    # Run cmd
+    proc = subprocess.Popen(cmd,
+                            stdin=subprocess.PIPE,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE)
+    stdout, stderr = proc.communicate()
+    if proc.returncode == 1:
+        raise ValueError(
+            "Command {0} failed : {1}".format(" ".join(
+                cmd), stderr))
+
+    # Check that file
+    output_png = out_file + ".png"
+    if not os.path.isfile(output_png):
+        raise ValueError("Could not find {0}.".format(output_png))
+    return output_png
