@@ -24,7 +24,6 @@ from collections import OrderedDict
 import numpy as np
 import nibabel
 from nilearn import plotting
-from pyconnectome.wrapper import FSLWrapper
 
 
 def get_image_snap(
