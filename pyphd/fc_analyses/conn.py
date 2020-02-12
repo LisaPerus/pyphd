@@ -1,4 +1,4 @@
-# Functions to use Conn outputs
+# Functions to use Conn outputs and general connectivity data
 # Copyright (C) 2019  Lisa Perus
 #
 # This program is free software: you can redistribute it and/or modify
@@ -20,6 +20,7 @@ import glob
 import argparse
 
 # Third party imports
+import numpy as np
 from pyphd.constants import CONN_INPUTS
 from pyphd.fsl.utils import text2vest
 import pandas as pd
@@ -525,3 +526,44 @@ def prepare_permutation_on_connectivities(input_file, gpe_col,
         f_contrast_file = None
 
     return design_mat_file, constrat_file, out_design_csv, f_contrast_file
+
+
+def create_adjacency_matrix(connections, connections_values):
+    """
+    Create adjancency matrix for connections
+
+    Parameters
+    ----------
+    connections: list of list of str
+        List of list containing connected elements.
+    connections_values: list of float
+        List containing connection strength.
+
+
+    Returns
+    -------
+    adjacency_matrix: pandas Dataframe
+        Adjacency matrix of all connections.
+    """
+
+    # Create a n x n matrix with n being the number of elements connected
+    all_elements = []
+    for conn in connections:
+        all_elements.append(conn[0])
+        all_elements.append(conn[1])
+    all_elements = np.unique(all_elements)
+    adjacency_matrix = np.zeros((len(all_elements), len(all_elements)))
+
+    # Fill diagonal with 1
+    np.fill_diagonal(adjacency_matrix, 1)
+
+    # Transform adjacency matrix to pandas dataframe
+    adjacency_matrix = pd.DataFrame(
+        adjacency_matrix, index=all_elements, columns=all_elements)
+
+    # Fill matrix with connectivities values
+    for idx, conn in enumerate(connections):
+        adjacency_matrix.loc[conn[0], conn[1]] = connections_values[idx]
+        adjacency_matrix.loc[conn[1], conn[0]] = connections_values[idx]
+
+    return adjacency_matrix
