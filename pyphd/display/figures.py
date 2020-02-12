@@ -17,9 +17,10 @@
 # System imports
 import os
 from matplotlib import pyplot as plt
-from matplotlib_venn import venn2
+import matplotlib.patches as mpatches
 
 # Third-party imports
+from nilearn import plotting
 import numpy as np
 
 
@@ -139,3 +140,43 @@ def histogram_bars(data, outdir, png_basename, xtitle=None, ytitle=None,
     plt.close()
 
     return out_png
+
+
+def plot_connectome(adjacency_matrix, coords, outname, patches=None):
+    """
+    Plot connectome using nilearn functions
+
+    Parameters:
+    -----------
+    adjacency_matrix: numpy ndarray
+        square matrix of connections values
+    coords: list of list of int
+        List of coordinates for each element of the matrix.
+        Must be in the same order as elements in the square matrix.
+    outname: str
+        output name.
+    patches: list of list of str
+        list of list for patches in the form : [["label", "color"]]
+        Must be in the same order as elements in the square matrix.
+    """
+    coords = np.array(coords)
+
+    # Plot
+    if patches is None:
+        display = plotting.plot_connectome(adjacency_matrix, coords)
+    else:
+        handle_patches = []
+        node_colors = []
+        for node_info in patches:
+            label, color = node_info
+            node_patch = mpatches.Patch(color=color, label=label)
+            handle_patches.append(node_patch)
+            node_colors.append(color)
+        display = plotting.plot_connectome(
+            adjacency_matrix, coords, node_color=node_colors)
+        plt.legend(
+            handles=handle_patches, loc="upper left", bbox_to_anchor=(-0.1, 1))
+
+    # Save plot
+    display.savefig(outname)
+    display.close()
