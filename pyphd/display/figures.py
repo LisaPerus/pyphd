@@ -142,7 +142,9 @@ def histogram_bars(data, outdir, png_basename, xtitle=None, ytitle=None,
     return out_png
 
 
-def plot_connectome(adjacency_matrix, coords, outname, patches=None):
+def plot_connectome(
+    adjacency_matrix, coords, outname, title=None,
+        patches=None, edge_kwargs=None):
     """
     Plot connectome using nilearn functions
 
@@ -155,15 +157,20 @@ def plot_connectome(adjacency_matrix, coords, outname, patches=None):
         Must be in the same order as elements in the square matrix.
     outname: str
         output name.
+    title: str
+        Figure title.
     patches: list of list of str
         list of list for patches in the form : [["label", "color"]]
         Must be in the same order as elements in the square matrix.
+    edge_kwargs : dict
+        will be passed as kwargs for each edge matlotlib Line2D.
     """
     coords = np.array(coords)
 
     # Plot
     if patches is None:
-        display = plotting.plot_connectome(adjacency_matrix, coords)
+        display = plotting.plot_connectome(
+            adjacency_matrix, coords, title=title, edge_kwargs=edge_kwargs)
     else:
         handle_patches = []
         node_colors = []
@@ -172,10 +179,11 @@ def plot_connectome(adjacency_matrix, coords, outname, patches=None):
             node_patch = mpatches.Patch(color=color, label=label)
             handle_patches.append(node_patch)
             node_colors.append(color)
-        display = plotting.plot_connectome(
-            adjacency_matrix, coords, node_color=node_colors)
-        plt.legend(
-            handles=handle_patches, loc="upper left", bbox_to_anchor=(-0.1, 1))
+        display = plotting.plot_connectome(adjacency_matrix, coords,
+                                           node_color=node_colors, title=title,
+                                           edge_kwargs=edge_kwargs)
+        plt.legend(handles=handle_patches, loc="upper left",
+                   bbox_to_anchor=(-0.1, 1), labelspacing=0.05, handlelength=1)
 
     # Save plot
     display.savefig(outname)
