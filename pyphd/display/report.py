@@ -164,16 +164,15 @@ def generate_pdf_struct_file(
     type_pdf: str
         type of pdf
     """
-    data = OrderedDict()
-    data["cover"] = {"type": "cover"}
     cpt = 0
     cpt_page = 1
     page_dict = OrderedDict()
+    page_dict["cover"] = {"type": "cover"}
     while 1:
         images_page = []
         page_text = []
         for i in range(nb_im_per_pages):
-            if cpt == (len(images) - 1):
+            if cpt == (len(images)):
                 with open(out_file, "wt") as open_file:
                     json.dump(page_dict, open_file, sort_keys=True,
                               check_circular=True, indent=4)
@@ -191,6 +190,11 @@ def generate_pdf_struct_file(
             "linecount": 120
         }
         cpt_page += 1
+        if cpt == (len(images)):
+            with open(out_file, "wt") as open_file:
+                json.dump(page_dict, open_file, sort_keys=True,
+                          check_circular=True, indent=4)
+                return
 
 
 def fsleyes_render(
