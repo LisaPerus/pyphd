@@ -123,52 +123,99 @@ SCIMAGOJR_RANKING_DATA = {
     "version" : "2018"
 }
 
+# Scripts stats
+
+parent_dir = os.path.dirname(__file__)
+SCRIPTS_STATS = {"ttest" : os.path.join(os.getenv("SCRIPT_DIR"), "GIT_REPOS", "RPhd", "scripts", "ttest_ind.R"),
+                 "anova" : os.path.join(os.getenv("SCRIPT_DIR"), "GIT_REPOS", "RPhd", "scripts", "anova.R"),
+                 "glm" : os.path.join(os.getenv("SCRIPT_DIR"), "GIT_REPOS", "RPhd", "scripts", "glm_two_groups_plus_covariates.R"),
+                 "ancova" : os.path.join(os.getenv("SCRIPT_DIR"), "GIT_REPOS", "RPhd", "scripts", "ancova.R")
+}
+COVARIATES_RSFMRI_ANALYSES = ["age", "sexe", "NIVSCOL", "APOE4"]
+ANALYSES_DETAILS_JSON = os.path.join(
+    parent_dir, "ressources", "mapt_analyses_details.json")
+
+MAPT_RSFMRI_CONTRAST_FILES = {
+        "ttest" : os.path.join(os.getenv("SCRIPT_DIR"), "fMRI_ANALYSIS", "contrasts", "ttest.txt"),
+        "glm_4covs" : os.path.join(os.getenv("SCRIPT_DIR"), "fMRI_ANALYSIS", "contrasts", "glm_2gpes_4covs.txt"),
+        "glm_5covs" : os.path.join(os.getenv("SCRIPT_DIR"), "fMRI_ANALYSIS", "contrasts", "glm_2gpes_5covs.txt"),
+        "anova_4gpes" : [os.path.join(os.getenv("SCRIPT_DIR"), "fMRI_ANALYSIS", "contrasts", "anova_4gpes.txt"), os.path.join(os.getenv("SCRIPT_DIR"), "fMRI_ANALYSIS", "contrasts", "anova_4gpes_fcontrast.txt")],
+        "ancova_4gpes_4covs" : [os.path.join(os.getenv("SCRIPT_DIR"), "fMRI_ANALYSIS", "contrasts", "ancova_4gpes_4covs.txt"), os.path.join(os.getenv("SCRIPT_DIR"), "fMRI_ANALYSIS", "contrasts", "ancova_4gpes_4covs_fcontrast.txt")],
+        "ancova_4gpes_5covs" : [os.path.join(os.getenv("SCRIPT_DIR"), "fMRI_ANALYSIS", "contrasts", "ancova_4gpes_5covs.txt"), os.path.join(os.getenv("SCRIPT_DIR"), "fMRI_ANALYSIS", "contrasts", "ancova_4gpes_4covs_fcontrast.txt")]
+}
+
+
 # /!\ Warning here uses conn rscores pattern
 CONN_INPUTS = {
     "M0" : {
         "conn_file_pattern" : "rscores_resultsROI_*_Condition001.mat",
-        "datafile" : "/home/lp259104/PHD/NOTES/Conn_input_Montpellier_Bordeaux_Toulouse_MAPT_M0_only.csv",
-        "outdir" : "/home/lp259104/PHD/DATA/RESULTS/MAPT/CONNECTIVITY_ANALYSIS/SBC_01_Grecius_PRE/CONN_FIRST_LEVEL_CONNECTIVITY_RESULTS/PARAMETRIC_TESTS",
-        "conn_datapath" : "/media/lp259104/10086bbb-e609-4274-a6b1-fcb6e9e0f9cb/tmp/MAPT_Conn_Montpellier_Bordeaux_Toulouse_M0/conn_analysis/results/firstlevel/SBC_01_Grecius_PRE/rscores",
-        "timepoint_name" : "rscores_all_subjects_at_PRE"
+        "datafile" : os.path.join(os.getenv("HOME"), "PHD", "NOTES", "Conn_input_Montpellier_Bordeaux_Toulouse_MAPT.csv"),
+        "outdir" : os.path.join(os.getenv("MEDIA_SCRIPT"), "MAPT_rsfmri", "MONTPELLIER_ONLY", "TESTS_WITH_SUBJECTS_COMMON_AT_M0_M36", "PARAMETRIC_TESTS", "M0"),
+        "conn_datapath" : os.path.join(os.getenv("MEDIA_SCRIPT"), "MAPT_Conn_Montpellier_Bordeaux_Toulouse", "conn_analysis", "results", "firstlevel", "SBC_04_Grecius_R50", "rscores"),
+        "timepoint_name" : "rscores_common_subjects_timesteps_PREPOST_at_PRE"
             },
     "M36" : {
-        "conn_file_pattern" : "rscores_resultsROI_*_Condition001.mat",
-        "datafile" : "/home/lp259104/PHD/NOTES/Conn_input_Montpellier_Bordeaux_Toulouse_MAPT_M36_only.csv",
-        "outdir" : "/home/lp259104/PHD/DATA/RESULTS/MAPT/CONNECTIVITY_ANALYSIS/SBC_01_Grecius_POST/CONN_FIRST_LEVEL_CONNECTIVITY_RESULTS/PARAMETRIC_TESTS",
-        "conn_datapath" : "/media/lp259104/10086bbb-e609-4274-a6b1-fcb6e9e0f9cb/tmp/MAPT_Conn_Montpellier_Bordeaux_Toulouse_M36/conn_analysis/results/firstlevel/SBC_01_Grecius_M36/rscores",
-        "timepoint_name" : "rscores_all_subjects_at_POST"
+        "conn_file_pattern" : "rscores_resultsROI_*_Condition002.mat",
+        "datafile" : os.path.join(os.getenv("HOME"), "PHD", "NOTES", "Conn_input_Montpellier_Bordeaux_Toulouse_MAPT.csv"),
+        "outdir" : os.path.join(os.getenv("MEDIA_SCRIPT"), "MAPT_rsfmri", "MONTPELLIER_ONLY", "TESTS_WITH_SUBJECTS_COMMON_AT_M0_M36", "PARAMETRIC_TESTS", "M36"),
+        "conn_datapath" : os.path.join(os.getenv("MEDIA_SCRIPT"), "MAPT_Conn_Montpellier_Bordeaux_Toulouse", "conn_analysis", "results", "firstlevel", "SBC_04_Grecius_R50", "rscores"),
+        "timepoint_name" : "rscores_common_subjects_timesteps_PREPOST_at_POST"
         },
     "M36-M0" : {
         "conn_file_pattern" : "rscores_resultsROI_*_Condition001*_Condition002.mat",
-        "datafile" : "/home/lp259104/PHD/NOTES/Conn_input_Montpellier_Bordeaux_Toulouse_MAPT.csv",
-        "outdir" : "/home/lp259104/PHD/DATA/RESULTS/MAPT/CONNECTIVITY_ANALYSIS/SBC_04_Grecius_R50/CONN_FIRST_LEVEL_CONNECTIVITY_RESULTS/PARAMETRIC_TESTS",
-        "conn_datapath" : "/media/lp259104/10086bbb-e609-4274-a6b1-fcb6e9e0f9cb/tmp/MAPT_Conn_Montpellier_Bordeaux_Toulouse/conn_analysis/results/firstlevel/SBC_04_Grecius_R50/Condition002-Condition001",
+        "datafile" : os.path.join(os.getenv("HOME"), "PHD", "NOTES", "Conn_input_Montpellier_Bordeaux_Toulouse_MAPT.csv"),
+        "outdir" : os.path.join(os.getenv("MEDIA_SCRIPT"), "MAPT_rsfmri", "MONTPELLIER_ONLY", "TESTS_WITH_SUBJECTS_COMMON_AT_M0_M36", "PARAMETRIC_TESTS", "M36-M0"),
+        "conn_datapath" :  os.path.join(os.getenv("MEDIA_SCRIPT"), "MAPT_Conn_Montpellier_Bordeaux_Toulouse", "conn_analysis", "results", "firstlevel", "SBC_04_Grecius_R50", "Condition002-Condition001"),
         "timepoint_name" : "diff_rscores_POST-PRE"
         }
 }
 
+# Analysis for all subjects at each timepoints
+CONN_INPUTS_TRANSVERSAL_ALL_SUBJECTS = {
+    "M0" : {
+        "conn_file_pattern" : "rscores_resultsROI_*_Condition001.mat",
+        "datafile" : os.path.join(os.getenv("HOME"), "PHD", "NOTES", "Conn_input_Montpellier_Bordeaux_Toulouse_MAPT_M0_only.csv"),
+        "outdir" : os.path.join(os.getenv("HOME"), "PHD", "DATA", "RESULTS", "MAPT", "CONNECTIVITY_ANALYSIS", "SBC_01_Grecius_PRE", "CONN_FIRST_LEVEL_CONNECTIVITY_RESULTS", "PARAMETRIC_TESTS"),
+        "conn_datapath" : os.path.join(os.getenv("MEDIA_SCRIPT"), "MAPT_Conn_Montpellier_Bordeaux_Toulouse_M0", "conn_analysis", "results", "firstlevel", "SBC_01_Grecius_PRE", "rscores"),
+        "timepoint_name" : "rscores_all_subjects_at_PRE"
+            },
+    "M36" : {
+        "conn_file_pattern" : "rscores_resultsROI_*_Condition001.mat",
+        "datafile" : os.path.join(os.getenv("HOME"), "PHD", "NOTES", "Conn_input_Montpellier_Bordeaux_Toulouse_MAPT_M36_only.csv"),
+        "outdir" : os.path.join(os.getenv("HOME"), "PHD", "DATA", "RESULTS", "MAPT", "CONNECTIVITY_ANALYSIS", "SBC_01_Grecius_POST", "CONN_FIRST_LEVEL_CONNECTIVITY_RESULTS", "PARAMETRIC_TESTS"),
+        "conn_datapath" : os.path.join(os.getenv("MEDIA_SCRIPT"), "MAPT_Conn_Montpellier_Bordeaux_Toulouse_M36", "conn_analysis", "results", "firstlevel", "SBC_01_Grecius_M36", "rscores"),
+        "timepoint_name" : "rscores_all_subjects_at_POST"
+        },
+    "M36-M0" : {
+        "conn_file_pattern" : "rscores_resultsROI_*_Condition001*_Condition002.mat",
+        "datafile" : os.path.join(os.getenv("HOME"), "PHD", "NOTES", "Conn_input_Montpellier_Bordeaux_Toulouse_MAPT.csv"),
+        "outdir" : os.path.join(os.getenv("HOME"), "PHD", "DATA", "RESULTS", "MAPT", "CONNECTIVITY_ANALYSIS", "SBC_04_Grecius_R50", "CONN_FIRST_LEVEL_CONNECTIVITY_RESULTS", "PARAMETRIC_TESTS"),
+        "conn_datapath" : os.path.join(os.getenv("MEDIA_SCRIPT"), "MAPT_Conn_Montpellier_Bordeaux_Toulouse", "conn_analysis", "results", "firstlevel", "SBC_04_Grecius_R50", "Condition002-Condition001"),
+        "timepoint_name" : "diff_rscores_POST-PRE"
+        }
+}
 
+# Old conn inputs with zscores
 CONN_INPUTS_OLD = {
     "M0" : {
         "conn_file_pattern" : "resultsROI_*_Condition001.mat",
-        "datafile" : "/home/lp259104/PHD/NOTES/Conn_input_Montpellier_Bordeaux_Toulouse_MAPT_M0_only.csv",
-        "outdir" : "/home/lp259104/PHD/DATA/RESULTS/MAPT/CONNECTIVITY_ANALYSIS/SBC_01_Grecius_PRE/CONN_FIRST_LEVEL_CONNECTIVITY_RESULTS/PARAMETRIC_TESTS",
-        "conn_datapath" : "/media/lp259104/10086bbb-e609-4274-a6b1-fcb6e9e0f9cb/tmp/MAPT_Conn_Montpellier_Bordeaux_Toulouse_M0/conn_analysis/results/firstlevel/SBC_01_Grecius_PRE",
+        "datafile" : os.path.join(os.getenv("HOME"), "PHD", "NOTES", "Conn_input_Montpellier_Bordeaux_Toulouse_MAPT_M0_only.csv"),
+        "outdir" : os.path.join(os.getenv("HOME"), "PHD", "DATA", "RESULTS", "MAPT", "CONNECTIVITY_ANALYSIS", "SBC_01_Grecius_PRE", "CONN_FIRST_LEVEL_CONNECTIVITY_RESULTS", "PARAMETRIC_TESTS"),
+        "conn_datapath" : os.path.join(os.getenv("MEDIA_SCRIPT"), "MAPT_Conn_Montpellier_Bordeaux_Toulouse_M0", "conn_analysis", "results", "firstlevel", "SBC_01_Grecius_PRE"),
         "timepoint_name" : "all_subjects_at_PRE"
             },
     "M36" : {
         "conn_file_pattern" : "resultsROI_*_Condition001.mat",
-        "datafile" : "/home/lp259104/PHD/NOTES/Conn_input_Montpellier_Bordeaux_Toulouse_MAPT_M36_only.csv",
-        "outdir" : "/home/lp259104/PHD/DATA/RESULTS/MAPT/CONNECTIVITY_ANALYSIS/SBC_01_Grecius_POST/CONN_FIRST_LEVEL_CONNECTIVITY_RESULTS/PARAMETRIC_TESTS",
-        "conn_datapath" : "/media/lp259104/10086bbb-e609-4274-a6b1-fcb6e9e0f9cb/tmp/MAPT_Conn_Montpellier_Bordeaux_Toulouse_M36/conn_analysis/results/firstlevel/SBC_01_Grecius_M36",
+        "datafile" : os.path.join(os.getenv("HOME"), "PHD", "NOTES", "Conn_input_Montpellier_Bordeaux_Toulouse_MAPT_M36_only.csv"),
+        "outdir" : os.path.join(os.getenv("HOME"), "PHD", "DATA", "RESULTS", "MAPT", "CONNECTIVITY_ANALYSIS", "SBC_01_Grecius_POST", "CONN_FIRST_LEVEL_CONNECTIVITY_RESULTS", "PARAMETRIC_TESTS"),
+        "conn_datapath" : os.path.join(os.getenv("MEDIA_SCRIPT"), "MAPT_Conn_Montpellier_Bordeaux_Toulouse_M36", "conn_analysis", "results", "firstlevel", "SBC_01_Grecius_M36"),
         "timepoint_name" : "all_subjects_at_POST"
         },
     "M36-M0" : {
         "conn_file_pattern" : "diff_zscores_resultsROI_*_Condition001*_Condition002.mat",
-        "datafile" : "/home/lp259104/PHD/NOTES/Conn_input_Montpellier_Bordeaux_Toulouse_MAPT.csv",
-        "outdir" : "/home/lp259104/PHD/DATA/RESULTS/MAPT/CONNECTIVITY_ANALYSIS/SBC_04_Grecius_R50/CONN_FIRST_LEVEL_CONNECTIVITY_RESULTS/PARAMETRIC_TESTS",
-        "conn_datapath" : "/media/lp259104/10086bbb-e609-4274-a6b1-fcb6e9e0f9cb/tmp/MAPT_Conn_Montpellier_Bordeaux_Toulouse/conn_analysis/results/firstlevel/SBC_04_Grecius_R50/diff_zscores_Condition002-Condition001",
+        "datafile" : os.path.join(os.getenv("HOME"), "PHD", "NOTES", "Conn_input_Montpellier_Bordeaux_Toulouse_MAPT.csv"),
+        "outdir" : os.path.join(os.getenv("HOME"), "PHD", "DATA", "RESULTS", "MAPT", "CONNECTIVITY_ANALYSIS", "SBC_04_Grecius_R50", "CONN_FIRST_LEVEL_CONNECTIVITY_RESULTS", "PARAMETRIC_TESTS"),
+        "conn_datapath" : os.path.join(os.getenv("MEDIA_SCRIPT"), "MAPT_Conn_Montpellier_Bordeaux_Toulouse", "conn_analysis", "results", "firstlevel", "SBC_04_Grecius_R50", "diff_zscores_Condition002-Condition001"),
         "timepoint_name" : "diff_zscores_POST-PRE"
         }
 }
