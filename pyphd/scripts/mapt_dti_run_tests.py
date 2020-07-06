@@ -201,6 +201,8 @@ if inputs["groups_info"] is None:
             analysis_name]["groups_info"]
     else:
         inputs["groups_info"] = {}
+else:
+    inputs["groups_info"] = json.loads(inputs["groups_info"])
 
 group_name = group_extraction_info[analysis_name]["group_name"]
 conn_file_additional_covariates = None
