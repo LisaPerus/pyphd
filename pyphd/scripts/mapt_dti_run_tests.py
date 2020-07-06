@@ -130,6 +130,11 @@ def get_cmd_line_args():
         "-T", "--timepoints", type=str, nargs="+",
         help="Timepoint for each input scalar list.")
     parser.add_argument(
+        "-G", "--groups-info", type=str,
+        help="Alternative group info to the one in ANALYSES_DETAILS_JSON "
+             " for subgroup extraction. Dict is directly passed, surrounded "
+             "by simple quotes (double quotes for dict keys and values).")
+    parser.add_argument(
         "-S", "--scalar-datafile-subcol", type=str, default="Sid",
         help="Colname of subjects IDs in scalar list datafile.")
     parser.add_argument(
@@ -179,17 +184,24 @@ with open(inputs["group_json"], "rt") as open_file:
     group_extraction_info = json.load(open_file)
 analysis_name = inputs["analysis_name"]
 if group_extraction_info[analysis_name]["extract_group"]:
-    inputs["groups_info"] = group_extraction_info[analysis_name]["groups_info"]
     inputs["rename_cols"] = group_extraction_info[analysis_name]["rename_cols"]
     inputs["rename_file"] = group_extraction_info[analysis_name]["rename_file"]
     inputs["erase_cols"] = group_extraction_info[analysis_name]["erase_cols"]
     inputs["extract_group"] = group_extraction_info[
         analysis_name]["extract_group"]
 else:
-    inputs["groups_info"] = {}
     inputs["rename_cols"] = {}
     inputs["rename_file"] = {}
     inputs["erase_cols"] = []
+
+# If groups info is not specified take group_json groups_info data
+if inputs["groups_info"] is None:
+    if group_extraction_info[analysis_name]["extract_group"]:
+        inputs["groups_info"] = group_extraction_info[
+            analysis_name]["groups_info"]
+        else:
+            inputs["groups_info"] = {}
+
 group_name = group_extraction_info[analysis_name]["group_name"]
 conn_file_additional_covariates = None
 if "additional_conn_file_covariates" in group_extraction_info[
