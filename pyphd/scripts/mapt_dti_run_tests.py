@@ -217,6 +217,7 @@ if inputs["timepoints"] is None:
         "Only processing scalar file {0}".format(
             inputs["input_scalar_list"][0]))
     timepoints_data = {"NA": inputs["input_scalar_list"][0]}
+    inputs["timepoints"] = ""
 else:
     timepoints_data = OrderedDict()
     for idx, tp in enumerate(inputs["timepoints"]):
@@ -452,6 +453,9 @@ for tp, dti_file in timepoints_data.items():
 Update the outputs and save them and the inputs in a 'logs' directory.
 """
 logdir = os.path.join(inputs["outdir"], analysis_name, "logs")
+if not os.path.isdir(logdir):
+    os.mkdir(logdir)
+logdir = os.path.join(logdir, "_".join(inputs["timepoints"]))
 if not os.path.isdir(logdir):
     os.mkdir(logdir)
 
