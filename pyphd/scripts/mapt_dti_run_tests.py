@@ -199,8 +199,8 @@ if inputs["groups_info"] is None:
     if group_extraction_info[analysis_name]["extract_group"]:
         inputs["groups_info"] = group_extraction_info[
             analysis_name]["groups_info"]
-        else:
-            inputs["groups_info"] = {}
+    else:
+        inputs["groups_info"] = {}
 
 group_name = group_extraction_info[analysis_name]["group_name"]
 conn_file_additional_covariates = None
