@@ -23,7 +23,6 @@ import json
 import glob
 from datetime import datetime
 from argparse import RawTextHelpFormatter
-from datetime import datetime
 from pprint import pprint
 from collections import OrderedDict
 import pandas as pd
