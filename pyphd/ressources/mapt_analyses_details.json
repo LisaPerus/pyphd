@@ -434,6 +434,17 @@
             "erase_cols" : ["scoreCAIDE_ge_6"],
             "rename_file" : {"gpeMapt4c" : "Low_risk_dementia_only_Omega3_1_Placebo_0", "scoreCAIDE_ge_6" : ""}
         },
+    "Low_risk_dementia_only_IM_1_Placebo_0":
+        {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "Low_risk_dementia_only_IM_1_Placebo_0"},
+            "erase_cols" : ["scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "Low_risk_dementia_only_IM_1_Placebo_0", "scoreCAIDE_ge_6" : ""}
+        },
     "At_least_one_frailty_criteria_only_Omega3_plus_IM_1_Placebo_0":
         {
             "models" : ["ttest", "glm"],
