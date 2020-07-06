@@ -98,7 +98,6 @@ def text2vest(indata, outdata, fsl_sh):
         Path to fsl init sh file.
     """
     cmd = ["Text2Vest", indata, outdata]
-    print(" ".join(cmd))
     fslprocess = FSLWrapper(cmd, shfile=fsl_sh)
     fslprocess()
 
@@ -256,6 +255,7 @@ def randomise(
         cmd += ["--fonly"]
     if raw_statistic_im:
         cmd += ["-R"]
+    print("Running randomise...")
     fslprocess = FSLWrapper(cmd, shfile=fsl_sh)
     fslprocess()
     cmd = " ".join(cmd)
