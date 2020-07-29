@@ -543,6 +543,689 @@
             "rename_cols" : {"gpeMapt4c" : "MMSE_inf_30_only_IM_1_Placebo_0"},
             "erase_cols" : ["MMSE_M0_inf_30"],
             "rename_file" : {"gpeMapt4c" : "MMSE_inf_30_only_IM_1_Placebo_0", "MMSE_M0_inf_30" : ""}
-        }
-
+        },
+    "CDR_evolution_vs_CDR_stable" :
+        {
+            "models" : ["ttest", "glm"],
+            "group_name" : "CDR_modified_from_V0_to_V36",
+            "extract_group" : false,
+            "groups_info" : {},
+            "rename_cols" : {},
+            "erase_cols" : [],
+            "rename_file" : {}
+        },
+    "Declin_MMSE_0399_MAPT_MRI" :
+        {
+            "models" : ["ttest", "glm"],
+            "group_name" : "Declin_MMSE_0399_MAPT_MRI",
+            "extract_group" : false,
+            "groups_info" : {},
+            "rename_cols" : {},
+            "erase_cols" : [],
+            "rename_file" : {}
+        },
+    "Declin_Comp_0399_MAPT_MRI" :
+        {
+            "models" : ["ttest", "glm"],
+            "group_name" : "Declin_Comp_0399_MAPT_MRI",
+            "extract_group" : false,
+            "groups_info" : {},
+            "rename_cols" : {},
+            "erase_cols" : [],
+            "rename_file" : {}
+        },
+    "CDR_evolution_Omega3_plus_IM_1_Placebo_0" :
+        {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["CDR_modified_from_V0_to_V36"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "CDR_evolution_Omega3_plus_IM_1_Placebo_0"},
+            "erase_cols" : ["CDR_modified_from_V0_to_V36"],
+            "rename_file" : {"gpeMapt4c" : "CDR_evolution_Omega3_plus_IM_1_Placebo_0", "CDR_modified_from_V0_to_V36" : ""}
+        },
+    "CDR_evolution_Omega3_1_Placebo_0" :
+        {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["CDR_modified_from_V0_to_V36"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "CDR_evolution_Omega3_1_Placebo_0"},
+            "erase_cols" : ["CDR_modified_from_V0_to_V36"],
+            "rename_file" : {"gpeMapt4c" : "CDR_evolution_Omega3_1_Placebo_0", "CDR_modified_from_V0_to_V36" : ""}
+        },
+    "CDR_evolution_IM_1_Placebo_0" :
+        {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["CDR_modified_from_V0_to_V36"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "CDR_evolution_IM_1_Placebo_0"},
+            "erase_cols" : ["CDR_modified_from_V0_to_V36"],
+            "rename_file" : {"gpeMapt4c" : "CDR_evolution_IM_1_Placebo_0", "CDR_modified_from_V0_to_V36" : ""}
+        },
+    "CDR_stable_Omega3_plus_IM_1_Placebo_0" :
+        {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["CDR_modified_from_V0_to_V36"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "CDR_stable_Omega3_plus_IM_1_Placebo_0"},
+            "erase_cols" : ["CDR_modified_from_V0_to_V36"],
+            "rename_file" : {"gpeMapt4c" : "CDR_stable_Omega3_plus_IM_1_Placebo_0", "CDR_modified_from_V0_to_V36" : ""}
+        },
+    "CDR_stable_Omega3_1_Placebo_0" :
+        {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["CDR_modified_from_V0_to_V36"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "CDR_stable_Omega3_1_Placebo_0"},
+            "erase_cols" : ["CDR_modified_from_V0_to_V36"],
+            "rename_file" : {"gpeMapt4c" : "CDR_stable_Omega3_1_Placebo_0", "CDR_modified_from_V0_to_V36" : ""}
+        },
+    "CDR_stable_IM_1_Placebo_0" :
+        {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["CDR_modified_from_V0_to_V36"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "CDR_stable_IM_1_Placebo_0"},
+            "erase_cols" : ["CDR_modified_from_V0_to_V36"],
+            "rename_file" : {"gpeMapt4c" : "CDR_stable_IM_1_Placebo_0", "CDR_modified_from_V0_to_V36" : ""}
+        },
+    "Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD" : 
+        {
+        "models" : ["ttest", "glm"],
+        "group_name" : "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6",
+        "extract_group" : false,
+        "groups_info" : {},
+        "rename_cols" : {},
+        "erase_cols" : [],
+        "rename_file" : {}
+        },
+    "Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "No_Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "No_Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "No_Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "Ge2RF_DecCOMP0399MRI_APOE4_HRD" : 
+        {
+        "models" : ["ttest", "glm"],
+        "group_name" : "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6",
+        "extract_group" : false,
+        "groups_info" : {},
+        "rename_cols" : {},
+        "erase_cols" : [],
+        "rename_file" : {}
+        },
+    "Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "No_Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "No_Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_IM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_IM_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "No_Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_IM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_IM_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "Ge2RF_DecMMSE0399MRI_APOE4_HRD" : 
+        {
+        "models" : ["ttest", "glm"],
+        "group_name" : "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6",
+        "extract_group" : false,
+        "groups_info" : {},
+        "rename_cols" : {},
+        "erase_cols" : [],
+        "rename_file" : {}
+        },
+    "Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "No_Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "No_Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_IM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_IM_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "No_Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_IM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_IM_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "DecMMSE0399MRI_only_O3_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Declin_MMSE_0399_MAPT_MRI"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "DecMMSE0399MRI_only_O3_1_Pl_0"},
+            "erase_cols" : ["Declin_MMSE_0399_MAPT_MRI"],
+            "rename_file" : {"gpeMapt4c" : "DecMMSE0399MRI_only_O3_1_Pl_0", "Declin_MMSE_0399_MAPT_MRI" : ""}
+            },
+    "No_DecMMSE0399MRI_only_O3_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Declin_MMSE_0399_MAPT_MRI"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "No_DecMMSE0399MRI_only_O3_1_Pl_0"},
+            "erase_cols" : ["Declin_MMSE_0399_MAPT_MRI"],
+            "rename_file" : {"gpeMapt4c" : "No_DecMMSE0399MRI_only_O3_1_Pl_0", "Declin_MMSE_0399_MAPT_MRI" : ""}
+            },
+    "DecMMSE0399MRI_only_O3pIM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Declin_MMSE_0399_MAPT_MRI"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "DecMMSE0399MRI_only_O3pIM_1_Pl_0"},
+            "erase_cols" : ["Declin_MMSE_0399_MAPT_MRI"],
+            "rename_file" : {"gpeMapt4c" : "DecMMSE0399MRI_only_O3pIM_1_Pl_0", "Declin_MMSE_0399_MAPT_MRI" : ""}
+            },
+    "No_DecMMSE0399MRI_only_O3pIM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Declin_MMSE_0399_MAPT_MRI"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "No_DecMMSE0399MRI_only_O3pIM_1_Pl_0"},
+            "erase_cols" : ["Declin_MMSE_0399_MAPT_MRI"],
+            "rename_file" : {"gpeMapt4c" : "No_DecMMSE0399MRI_only_O3pIM_1_Pl_0", "Declin_MMSE_0399_MAPT_MRI" : ""}
+            },
+    "DecMMSE0399MRI_only_IM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Declin_MMSE_0399_MAPT_MRI"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "DecMMSE0399MRI_only_IM_1_Pl_0"},
+            "erase_cols" : ["Declin_MMSE_0399_MAPT_MRI"],
+            "rename_file" : {"gpeMapt4c" : "DecMMSE0399MRI_only_IM_1_Pl_0", "Declin_MMSE_0399_MAPT_MRI" : ""}
+            },
+    "No_DecMMSE0399MRI_only_IM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Declin_MMSE_0399_MAPT_MRI"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "No_DecMMSE0399MRI_only_IM_1_Pl_0"},
+            "erase_cols" : ["Declin_MMSE_0399_MAPT_MRI"],
+            "rename_file" : {"gpeMapt4c" : "No_DecMMSE0399MRI_only_IM_1_Pl_0", "Declin_MMSE_0399_MAPT_MRI" : ""}
+            },
+    "Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD" : 
+        {
+        "models" : ["ttest", "glm"],
+        "group_name" : "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6",
+        "extract_group" : false,
+        "groups_info" : {},
+        "rename_cols" : {},
+        "erase_cols" : [],
+        "rename_file" : {}
+        },
+    "Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "No_Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3pIM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3pIM_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "No_Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3pIM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3pIM_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_IM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_IM_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "No_Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_IM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_IM_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD" : 
+        {
+        "models" : ["ttest", "glm"],
+        "group_name" : "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6",
+        "extract_group" : false,
+        "groups_info" : {},
+        "rename_cols" : {},
+        "erase_cols" : [],
+        "rename_file" : {}
+        },
+    "Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "No_Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3pIM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3pIM_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "No_Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3pIM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3pIM_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_IM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_IM_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "No_Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_IM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_IM_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "DecCOMP0399MRI_only_O3_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Declin_Comp_0399_MAPT_MRI"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "DecCOMP0399MRI_only_O3_1_Pl_0"},
+            "erase_cols" : ["Declin_Comp_0399_MAPT_MRI"],
+            "rename_file" : {"gpeMapt4c" : "DecCOMP0399MRI_only_O3_1_Pl_0", "Declin_Comp_0399_MAPT_MRI" : ""}
+            },
+    "No_DecCOMP0399MRI_only_O3_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Declin_Comp_0399_MAPT_MRI"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "No_DecCOMP0399MRI_only_O3_1_Pl_0"},
+            "erase_cols" : ["Declin_Comp_0399_MAPT_MRI"],
+            "rename_file" : {"gpeMapt4c" : "No_DecCOMP0399MRI_only_O3_1_Pl_0", "Declin_Comp_0399_MAPT_MRI" : ""}
+            },
+    "DecCOMP0399MRI_only_O3pIM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Declin_Comp_0399_MAPT_MRI"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "DecCOMP0399MRI_only_O3pIM_1_Pl_0"},
+            "erase_cols" : ["Declin_Comp_0399_MAPT_MRI"],
+            "rename_file" : {"gpeMapt4c" : "DecCOMP0399MRI_only_O3pIM_1_Pl_0", "Declin_Comp_0399_MAPT_MRI" : ""}
+            },
+    "No_DecCOMP0399MRI_only_O3pIM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Declin_Comp_0399_MAPT_MRI"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "No_DecCOMP0399MRI_only_O3pIM_1_Pl_0"},
+            "erase_cols" : ["Declin_Comp_0399_MAPT_MRI"],
+            "rename_file" : {"gpeMapt4c" : "No_DecCOMP0399MRI_only_O3pIM_1_Pl_0", "Declin_Comp_0399_MAPT_MRI" : ""}
+            },
+    "DecCOMP0399MRI_only_IM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Declin_Comp_0399_MAPT_MRI"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "DecCOMP0399MRI_only_IM_1_Pl_0"},
+            "erase_cols" : ["Declin_Comp_0399_MAPT_MRI"],
+            "rename_file" : {"gpeMapt4c" : "DecCOMP0399MRI_only_IM_1_Pl_0", "Declin_Comp_0399_MAPT_MRI" : ""}
+            },
+    "No_DecCOMP0399MRI_only_IM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Declin_Comp_0399_MAPT_MRI"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "No_DecCOMP0399MRI_only_IM_1_Pl_0"},
+            "erase_cols" : ["Declin_Comp_0399_MAPT_MRI"],
+            "rename_file" : {"gpeMapt4c" : "No_DecCOMP0399MRI_only_IM_1_Pl_0", "Declin_Comp_0399_MAPT_MRI" : ""}
+            },
+    "Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD" : 
+        {
+        "models" : ["ttest", "glm"],
+        "group_name" : "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6",
+        "extract_group" : false,
+        "groups_info" : {},
+        "rename_cols" : {},
+        "erase_cols" : [],
+        "rename_file" : {}
+        },
+    "Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "No_Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "No_Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""}
+            },
+    "No_Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0" : 
+            {
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0"},
+            "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""}
+            }
 }
