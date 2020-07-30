@@ -26,7 +26,8 @@ from pyconnectome.wrapper import FSLWrapper
 
 
 def palm(indata, design_file, contrast_file, f_contrast, output_basename,
-         nb_permutations, twotail=False, alternate_palm_bin=None):
+         nb_permutations, twotail=False, alternate_palm_bin=None,
+         singularity_cmd=None):
     """ Wraps FSL PALM command.
     ---------------------------
 
@@ -49,6 +50,9 @@ def palm(indata, design_file, contrast_file, f_contrast, output_basename,
         one-tailed.
     alternate_palm_bin: str
         Path to alternate palm bin file : useful for cluster.
+    singularity_cmd : list of str
+        singularity command to use with palm if palm is contained in a
+        singularity image.
 
     Returns
     -------
@@ -63,6 +67,8 @@ def palm(indata, design_file, contrast_file, f_contrast, output_basename,
         cmd = ["palm"]
     else:
         cmd = [alternate_palm_bin]
+    if singularity_cmd is not None:
+        cmd = singularity_cmd + cmd
     cmd += ["-i", indata, "-d", design_file, "-t", contrast_file, "-o",
             output_basename, "-n", str(nb_permutations)]
     if f_contrast is not None:
