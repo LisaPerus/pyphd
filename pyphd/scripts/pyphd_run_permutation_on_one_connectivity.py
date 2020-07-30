@@ -115,6 +115,12 @@ def get_cmd_line_args():
         "-N", "--nb-permutations", type=int, default=10000,
         help="Number of permutation for permutation testing.")
     parser.add_argument(
+        "-S", "--singularity-im", type=str,
+        help="Singularity image is palm is contained.")
+    parser.add_argument(
+        "-B", "--singularity-bindings", type=str, nargs="+",
+        help="Singularity image bindings.")
+    parser.add_argument(
         "-V", "--verbose",
         type=int, choices=[0, 1], default=1,
         help="Increase the verbosity level: 0 silent, 1 verbose.")
@@ -157,6 +163,19 @@ palm_output_basename = os.path.join(
     palm_outdir, "{0}_palm".format(conn_basename))
 if inputs["two_tail"]:
     palm_output_basename += "two_tail"
+
+# Check if palm is contained in a singularity image
+if inputs["singularity_im"] is None:
+    singularity_cmd = None
+else:
+    singularity_cmd = ["singularity", "exec"]
+    if inputs["singularity_bindings"] is not None:
+        singularity_cmd.append("-B")
+        for binding in inputs["singularity_bindings"]:
+            singularity_cmd.append(binding)
+        singularity_cmd.append(inputs["singularity_im"])
+
+# Run palm
 stat_val, pval_unc, p_fwe = palm(
     indata=inputs["input_conn_file"],
     design_file=inputs["design_mat"],
@@ -165,7 +184,8 @@ stat_val, pval_unc, p_fwe = palm(
     output_basename=palm_output_basename,
     nb_permutations=inputs["nb_permutations"],
     twotail=inputs["two_tail"],
-    alternate_palm_bin=inputs["alternate_palm"])
+    alternate_palm_bin=inputs["alternate_palm"],
+    singularity_cmd=singularity_cmd)
 outputs["{0}_palm_stat_val".format(conn_basename)] = stat_val
 outputs["{0}_palm_pval_unc".format(conn_basename)] = pval_unc
 outputs["{0}_palm_p_fwe".format(conn_basename)] = p_fwe
