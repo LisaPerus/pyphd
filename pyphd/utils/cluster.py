@@ -17,6 +17,9 @@
 # System import
 import os
 import subprocess
+import math
+import time
+from multiprocessing import Pool
 
 
 def create_pbs_cmd(
@@ -67,6 +70,8 @@ def create_pbs_cmd(
     -------
     pbs_file: str
         pbs file containing command to run script.
+    cmd: str
+        final command.
     """
 
     if not os.path.isdir(cluster_logdir):
@@ -109,7 +114,7 @@ def create_pbs_cmd(
     with open(pbs_file, "wt") as open_file:
         open_file.write(pbs_script)
 
-    return pbs_file
+    return pbs_file, cmd
 
 
 def run_qsub(pbs_file):
@@ -126,14 +131,127 @@ def run_qsub(pbs_file):
     stdout:
         qsub output
     stderr:
-        qsub error code
+        qsub error msg
+    error_code: int
+        qsub command error code
     """
     cmd = ["qsub", pbs_file]
+    cmd = " ".join(cmd)
     process = subprocess.Popen(
         cmd,
         shell=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
+    error_code = process.returncode
 
-    return stdout, stderr
+    return stdout, stderr, error_code
+
+
+def run_jobs_batch(pbs_files, cmds, user, queue, nb_jobs_batch=100,
+                   logfile=None):
+    """Function to run set of jobs
+
+    Divide jobs into batch and run them.
+    Jobs are only run is jobs from user are not running yet.
+    If user has already jobs running, waits until jobs are finished.
+
+    Parameters:
+    -----------
+    pbs_files: list of str
+        list of pbs files
+    cmds: list of str
+        list of commands in pbs files
+    user: str
+        username
+    queue: str
+        queue name
+    nb_jobs_batch: int
+        number of jobs per batch
+    logfile: str
+        path to logfile to write into (optional)
+    """
+
+    # Divide jobs into batches
+    batches = []
+    new_batch = []
+    cpt = 0
+    for idx, fid in enumerate(pbs_files):
+        if cpt == nb_jobs_batch:
+            batches.append(new_batch)
+            new_batch = []
+            cpt = 0
+        new_batch.append(fid)
+        cpt += 1
+
+    if (len(pbs_files) < nb_jobs_batch or
+            ((len(pbs_files) % nb_jobs_batch) != 0)):
+        batches.append(new_batch)
+
+    # Run the batches
+    cpt = 0
+    for batch in batches:
+        while True:
+
+            # > Check if user has jobs running
+            jobs_running = get_user_queue_jobs(user, queue)
+            if len(jobs_running) > 0:
+                time.sleep(5)
+            else:
+                output_msgs = []
+                error_msgs = []
+                error_codes = []
+                commands = []
+                all_results = Pool().map(run_qsub, batch)
+                for result in all_results:
+                    output_msgs.append(result[0])
+                    error_msgs.append(result[1])
+                    error_codes.append(result[2])
+                    commands.append(cmds[cpt])
+                    cpt += 1
+
+                # If log file, write logs
+                if logfile is not None:
+                    with open(logfile, "at") as open_file:
+                        for idx, pbs_file in enumerate(batch):
+                            line = "cluster_" + os.path.basename(pbs_file)
+                            line += "_cmd = "
+                            line += "[" + ", ".join(cmds[idx].split(" "))
+                            line += "]\n"
+                            line += "cluster_" + os.path.basename(pbs_file)
+                            line += "_exitcode = " + str(error_codes[idx])
+                            line += "\n"
+                            line += "cluster_" + os.path.basename(pbs_file)
+                            line += "_error = " + "["
+                            line += ", ".join(error_msgs[idx].split(" "))
+                            line += "]"
+                            open_file.write(line)
+                            open_file.write("\n")
+                            print(line)
+
+
+def get_user_queue_jobs(user, queue):
+    """Function to get jobs IDs from a queue.
+
+    Parameters:
+    -----------
+    user: str
+        user name on cluster.
+    queue: str
+        queue name.
+
+    Returns
+    -------
+    jobs_ids: list of str
+    """
+    cmd = "qstat | grep {0} | grep {1}".format(user, queue)
+    cmd += " | awk '{print $1}'"
+    process = subprocess.Popen(
+        cmd,
+        shell=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
+    stdout, stderr = process.communicate()
+    jobs_ids = stdout.decode("utf-8").split("\n")
+    jobs_ids = [x for x in jobs_ids if len(x) != 0]
+    return jobs_ids
