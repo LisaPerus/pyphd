@@ -70,7 +70,7 @@ def create_pbs_cmd(
     -------
     pbs_file: str
         pbs file containing command to run script.
-    cmd: str
+    cmd: list of str
         final command.
     """
 
@@ -220,9 +220,7 @@ def run_jobs_batch(pbs_files, cmds, user, queue, nb_jobs_batch=100,
                             line += "_exitcode = " + str(error_codes[idx])
                             line += "\n"
                             line += "cluster_" + os.path.basename(pbs_file)
-                            line += "_error = " + "["
-                            line += ", ".join(error_msgs[idx].split(" "))
-                            line += "]"
+                            line += "_error = " + "[" + error_msgs[idx] + "]"
                             open_file.write(line)
                             open_file.write("\n")
                             print(line)
