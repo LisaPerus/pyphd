@@ -203,7 +203,7 @@ def run_jobs_batch(pbs_files, cmds, user, queue, nb_jobs_batch=100,
                 all_results = Pool().map(run_qsub, batch)
                 for result in all_results:
                     output_msgs.append(result[0])
-                    error_msgs.append(result[1])
+                    error_msgs.append(result[1].decode("utf-8"))
                     error_codes.append(result[2])
                     commands.append(cmds[cpt])
                     cpt += 1
