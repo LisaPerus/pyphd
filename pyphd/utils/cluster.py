@@ -38,7 +38,7 @@ def create_pbs_cmd(
 
     Parameters:
     -----------
-    cmd:
+    cmd: list of str
         bash command to be written in pbs file.
     pbs_outdir:
         directory where to store pbs files.
@@ -101,12 +101,10 @@ def create_pbs_cmd(
     # Set command
     for arg, arg_value in kwargs.items():
         if kwargs_type[arg] == "short":
-            cmd += """ -{0} {1}
-                """.format(arg, arg_value[job_number])
+            cmd += ["-" + arg, str(arg_value[job_number])]
         elif kwargs_type[arg] == "long":
-            cmd += """ --{0} {1}
-                """.format(arg, arg_value[job_number])
-    pbs_script = pbs_script + "\n{0}".format(cmd)
+            cmd += ["--" + arg, str(arg_value[job_number])]
+    pbs_script = pbs_script + "\n" + " ".join(cmd)
 
     # Write PBS file
     pbs_file = os.path.join(
@@ -216,7 +214,7 @@ def run_jobs_batch(pbs_files, cmds, user, queue, nb_jobs_batch=100,
                         for idx, pbs_file in enumerate(batch):
                             line = "cluster_" + os.path.basename(pbs_file)
                             line += "_cmd = "
-                            line += "[" + ", ".join(cmds[idx].split(" "))
+                            line += str(cmds[idx])
                             line += "]\n"
                             line += "cluster_" + os.path.basename(pbs_file)
                             line += "_exitcode = " + str(error_codes[idx])
