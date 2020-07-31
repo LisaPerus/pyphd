@@ -101,10 +101,10 @@ def create_pbs_cmd(
     # Set command
     for arg, arg_value in kwargs.items():
         if kwargs_type[arg] == "short":
-            cmd += """-{0} {1}
+            cmd += """ -{0} {1}
                 """.format(arg, arg_value[job_number])
         elif kwargs_type[arg] == "long":
-            cmd += """--{0} {1}
+            cmd += """ --{0} {1}
                 """.format(arg, arg_value[job_number])
     pbs_script = pbs_script + "\n{0}".format(cmd)
 
