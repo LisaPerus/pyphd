@@ -224,6 +224,7 @@ def run_jobs_batch(pbs_files, cmds, user, queue, nb_jobs_batch=100,
                             open_file.write(line)
                             open_file.write("\n")
                             print(line)
+                break
 
 
 def get_user_queue_jobs(user, queue):
