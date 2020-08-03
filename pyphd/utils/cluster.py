@@ -202,7 +202,7 @@ def run_jobs_batch(pbs_files, error_files, cmds, user, queue,
 
     # Run the batches
     cpt_pbs_file = 0
-    for batch in enumerate(batches):
+    for batch in batches:
         while True:
 
             # > Check if user has jobs running
