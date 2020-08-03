@@ -50,6 +50,8 @@ def create_pbs_cmd(
       the script parameters: iterative kwargs must contain a list of elements
         and must all have the same length, non-iterative kwargs will be
         replicated.
+      If element is None only argname is added. E.g : "T" : [None, None]
+      -> -T .
     job_name: str
         job name.
     job_number: int
@@ -101,9 +103,15 @@ def create_pbs_cmd(
     # Set command
     for arg, arg_value in kwargs.items():
         if kwargs_type[arg] == "short":
-            cmd += ["-" + arg, str(arg_value[job_number])]
+            cmd += ["-"]
         elif kwargs_type[arg] == "long":
-            cmd += ["--" + arg, str(arg_value[job_number])]
+            cmd += ["--"]
+        else:
+            raise ValueError("Unknown argtype : {0}".format(kwargs_type[arg]))
+        cmd += [arg]
+        if arg_value[job_number] is not None:
+            cmd += [str(arg_value[job_number])]
+
     pbs_script = pbs_script + "\n" + " ".join(cmd)
 
     # Write PBS file
