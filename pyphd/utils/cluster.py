@@ -209,45 +209,67 @@ def run_jobs_batch(pbs_files, error_files, cmds, user, queue,
             jobs_running = get_user_queue_jobs(user, queue)
             if len(jobs_running) > 0:
                 time.sleep(5)
+
+            # > Else run jobs
             else:
-                output_msgs = []
-                error_msgs = []
-                error_codes = []
-                commands = []
+                jobs_ids = []
+                qsub_error_msgs = []
+                qsub_error_codes = []
                 with multiprocessing.Pool() as pool:
                     all_results = pool.map(run_qsub, batch)
                 for result in all_results:
-                    output_msgs.append(result[0])
-                    error_msg = result[1].decode("utf-8")
-                    error_code = result[2]
-                    pbs_error_file = error_files[cpt]
-                    with open(pbs_error_file, "rt") as open_file:
-                        error_lines = open_file.readlines()
-                    for err_line in error_lines:
-                        error_msg += " - " + err_line
-                    if error_code == 0 and len(error_msg.strip(" ")) != 0:
-                        error_code = 1
-                    error_msgs.append(error_msg)
-                    error_codes.append(error_code)
-                    commands.append(cmds[cpt])
-                    cpt += 1
+                    job_id = result[0].decode("utf-8").strip("\n")
+                    qsub_error_msg = result[1].decode("utf-8")
+                    qsub_error_code = result[2]
+                    jobs_ids.append(job_id)
+                    qsub_error_msgs.append(qsub_error_msg)
+                    qsub_error_codes.append(qsub_error_code)
 
-                # If log file, write logs
-                if logfile is not None:
-                    with open(logfile, "at") as open_file:
-                        for idx, pbs_file in enumerate(batch):
-                            line = "cluster_" + os.path.basename(pbs_file)
-                            line += "_cmd = "
-                            line += str(cmds[idx])
-                            line += "]\n"
-                            line += "cluster_" + os.path.basename(pbs_file)
-                            line += "_exitcode = " + str(error_codes[idx])
-                            line += "\n"
-                            line += "cluster_" + os.path.basename(pbs_file)
-                            line += "_error = " + "[" + error_msgs[idx] + "]"
-                            open_file.write(line)
-                            open_file.write("\n")
-                            print(line)
+                # >> Wait until jobs are finished to run logs
+                while True:
+                    if check_jobs_finished_running(jobs_ids):
+
+                        # If log file, write logs
+                        if logfile is not None:
+                            with open(logfile, "at") as open_file:
+                                for idx, pbs_file in enumerate(batch):
+                                    line = "cluster_" + os.path.basename(
+                                        pbs_file)
+                                    line += "_cmd = "
+                                    line += str(cmds[cpt])
+                                    line += "]\n"
+                                    line += "cluster_" + os.path.basename(
+                                        pbs_file)
+                                    if qsub_error_codes[idx] != 0:
+                                        error_code = qsub_error_codes[idx]
+                                        error_msg = qsub_error_msgs[idx]
+                                    else:
+                                        qsub_err_file = error_files[cpt]
+                                        with open(
+                                                qsub_err_file, "rt") as of:
+                                            error_lines = of.readlines()
+                                        if len(error_lines) == 1:
+                                            if len(error_lines[0].strip(
+                                                    " ").strip("\n")) == 0:
+                                                error_code = 0
+                                                error_msg = ""
+                                            else:
+                                                error_code = 1
+                                                error_msg = " - ".join(
+                                                    error_lines)
+                                        else:
+                                            error_code = 0
+                                            error_msg = ""
+                                    line += "_exitcode = " + str(error_code)
+                                    line += "\n"
+                                    line += "cluster_" + os.path.basename(
+                                        pbs_file)
+                                    line += "_error = " + "[" + error_msg + "]"
+                                    open_file.write(line)
+                                    open_file.write("\n")
+                                    print(line)
+                                    cpt += 1
+                        break
                 break
 
 
@@ -276,3 +298,38 @@ def get_user_queue_jobs(user, queue):
     jobs_ids = stdout.decode("utf-8").split("\n")
     jobs_ids = [x for x in jobs_ids if len(x) != 0]
     return jobs_ids
+
+
+def check_jobs_finished_running(jobs):
+    """Function to check if list of jobs has finished running.
+
+    Parameters:
+    -----------
+    jobs: list of str
+        list of jobs.
+
+    Returns
+    -------
+    jobs_run: bool
+        True if all jobs have been run.
+    """
+    all_job_run = []
+    for job in jobs:
+        cmd = "qstat -x {0}".format(job)
+        cmd += " | awk '{print $5}'"
+        process = subprocess.Popen(
+            cmd,
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
+        stdout, stderr = process.communicate()
+        job_status = stdout.decode("utf-8").split("\n")[-1].strip(" ")
+        if job_status == "F":
+            all_job_run.append(True)
+        else:
+            all_job_run.append(False)
+    jobs_run = True
+    for status in all_job_run:
+        if not status:
+            jobs_run = False
+    return jobs_run
