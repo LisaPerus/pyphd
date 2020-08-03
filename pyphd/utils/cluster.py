@@ -19,7 +19,7 @@ import os
 import subprocess
 import math
 import time
-from multiprocessing import Pool
+import multiprocessing
 
 
 def create_pbs_cmd(
