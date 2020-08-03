@@ -201,8 +201,8 @@ def run_jobs_batch(pbs_files, error_files, cmds, user, queue,
         batches.append(new_batch)
 
     # Run the batches
-    cpt = 0
-    for batch in batches:
+    cpt_pbs_file = 0
+    for batch in enumerate(batches):
         while True:
 
             # > Check if user has jobs running
@@ -225,18 +225,23 @@ def run_jobs_batch(pbs_files, error_files, cmds, user, queue,
                     qsub_error_msgs.append(qsub_error_msg)
                     qsub_error_codes.append(qsub_error_code)
 
-                # >> Wait until jobs are finished to run logs
+                # >> Wait until jobs are finished and error logs are written
                 while True:
-                    if check_jobs_finished_running(jobs_ids):
-
-                        # If log file, write logs
+                    all_error_logs_written = True
+                    all_error_logs = []
+                    for idx in range(len(batch)):
+                        if not os.path.isfile(error_files[cpt_pbs_file + idx]):
+                            all_error_logs_written = False
+                            all_error_logs.append(
+                                error_files[cpt_pbs_file + idx])
+                    if all_error_logs_written:
                         if logfile is not None:
                             with open(logfile, "at") as open_file:
                                 for idx, pbs_file in enumerate(batch):
                                     line = "cluster_" + os.path.basename(
                                         pbs_file)
                                     line += "_cmd = "
-                                    line += str(cmds[cpt])
+                                    line += str(cmds[cpt_pbs_file + idx])
                                     line += "]\n"
                                     line += "cluster_" + os.path.basename(
                                         pbs_file)
@@ -244,7 +249,8 @@ def run_jobs_batch(pbs_files, error_files, cmds, user, queue,
                                         error_code = qsub_error_codes[idx]
                                         error_msg = qsub_error_msgs[idx]
                                     else:
-                                        qsub_err_file = error_files[cpt]
+                                        qsub_err_file = error_files[
+                                            cpt_pbs_file + idx]
                                         with open(
                                                 qsub_err_file, "rt") as of:
                                             error_lines = of.readlines()
@@ -268,8 +274,8 @@ def run_jobs_batch(pbs_files, error_files, cmds, user, queue,
                                     open_file.write(line)
                                     open_file.write("\n")
                                     print(line)
-                                    cpt += 1
                         break
+                cpt_pbs_file += len(batch)
                 break
 
 
@@ -312,6 +318,8 @@ def check_jobs_finished_running(jobs):
     -------
     jobs_run: bool
         True if all jobs have been run.
+    all_job_run: list of bool
+        List of True False if input jobs have been run
     """
     all_job_run = []
     for job in jobs:
@@ -332,4 +340,4 @@ def check_jobs_finished_running(jobs):
     for status in all_job_run:
         if not status:
             jobs_run = False
-    return jobs_run
+    return jobs_run, all_job_run
