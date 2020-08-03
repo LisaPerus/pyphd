@@ -224,7 +224,7 @@ def run_jobs_batch(pbs_files, error_files, cmds, user, queue,
                     with open(pbs_error_file, "rt") as open_file:
                         error_lines = open_file.readlines()
                     for err_line in error_lines:
-                        error_msg += " - " err_line
+                        error_msg += " - " + err_line
                     if error_code == 0 and len(error_msg.strip(" ")) != 0:
                         error_code = 1
                     error_msgs.append(error_msg)
