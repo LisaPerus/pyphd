@@ -263,6 +263,9 @@ def run_jobs_batch(pbs_files, error_files, cmds, user, queue,
                                                 error_code = 1
                                                 error_msg = " - ".join(
                                                     error_lines)
+                                        elif len(error_lines) > 1:
+                                            error_code = 1
+                                            error_msg = " - ".join(error_lines)
                                         else:
                                             error_code = 0
                                             error_msg = ""
