@@ -74,6 +74,10 @@ def create_pbs_cmd(
         pbs file containing command to run script.
     cmd: list of str
         final command.
+    log_file: str
+        pbs output log file
+    err_file: str
+        pbs error log file
     """
 
     if not os.path.isdir(cluster_logdir):
@@ -103,12 +107,12 @@ def create_pbs_cmd(
     # Set command
     for arg, arg_value in kwargs.items():
         if kwargs_type[arg] == "short":
-            cmd += ["-"]
+            type_arg = "-"
         elif kwargs_type[arg] == "long":
-            cmd += ["--"]
+            type_arg = "--"
         else:
             raise ValueError("Unknown argtype : {0}".format(kwargs_type[arg]))
-        cmd += [arg]
+        cmd += [type_arg + arg]
         if arg_value[job_number] is not None:
             cmd += [str(arg_value[job_number])]
 
@@ -120,7 +124,7 @@ def create_pbs_cmd(
     with open(pbs_file, "wt") as open_file:
         open_file.write(pbs_script)
 
-    return pbs_file, cmd
+    return pbs_file, cmd, log_file, err_file
 
 
 def run_qsub(pbs_file):
@@ -154,8 +158,8 @@ def run_qsub(pbs_file):
     return stdout, stderr, error_code
 
 
-def run_jobs_batch(pbs_files, cmds, user, queue, nb_jobs_batch=100,
-                   logfile=None):
+def run_jobs_batch(pbs_files, error_files, cmds, user, queue,
+                   nb_jobs_batch=100, logfile=None):
     """Function to run set of jobs
 
     Divide jobs into batch and run them.
@@ -166,6 +170,8 @@ def run_jobs_batch(pbs_files, cmds, user, queue, nb_jobs_batch=100,
     -----------
     pbs_files: list of str
         list of pbs files
+    error_files: list of str
+        list of error files outputs
     cmds: list of str
         list of commands in pbs files
     user: str
@@ -213,10 +219,15 @@ def run_jobs_batch(pbs_files, cmds, user, queue, nb_jobs_batch=100,
                 for result in all_results:
                     output_msgs.append(result[0])
                     error_msg = result[1].decode("utf-8")
-                    error_msgs.append(error_msg)
                     error_code = result[2]
+                    pbs_error_file = error_files[cpt]
+                    with open(pbs_error_file, "rt") as open_file:
+                        error_lines = open_file.readlines()
+                    for err_line in error_lines:
+                        error_msg += " - " err_line
                     if error_code == 0 and len(error_msg.strip(" ")) != 0:
                         error_code = 1
+                    error_msgs.append(error_msg)
                     error_codes.append(error_code)
                     commands.append(cmds[cpt])
                     cpt += 1
