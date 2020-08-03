@@ -200,7 +200,8 @@ def run_jobs_batch(pbs_files, cmds, user, queue, nb_jobs_batch=100,
                 error_msgs = []
                 error_codes = []
                 commands = []
-                all_results = Pool().map(run_qsub, batch)
+                with multiprocessing.Pool() as pool:
+                    all_results = pool.map(run_qsub, batch)
                 for result in all_results:
                     output_msgs.append(result[0])
                     error_msgs.append(result[1].decode("utf-8"))
