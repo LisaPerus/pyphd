@@ -19,7 +19,7 @@ import pandas as pd
 import numpy as np
 from pyphd.fc_analyses.conn import extract_connectivities, extract_group
 from pyphd.constants import (SCRIPTS_STATS, COVARIATES_RSFMRI_ANALYSES,
-                             ANALYSES_DETAILS_JSON)
+                             ANALYSES_DETAILS_JSON, CONN_INPUTS)
 
 # Script documentation
 DOC = """
@@ -179,14 +179,35 @@ commands_stats = {"without_covariates": {},
                   "with_covariates": {}}
 outputs["without_covariates"] = {}
 outputs["with_covariates"] = {}
+
+# Create analysis dir
+analysis_dir = os.path.join(inputs["outdir"], inputs["analysis_name"])
+if not os.path.isdir(analysis_dir):
+    os.mkdir(analysis_dir)
+
 for tp in inputs["timepoints"]:
+
+    # > Create tp/model dir and statistics dir
+    # Note 06/08/2020 : previous code version could go wrong
+    # if multiple processes with the same group_name and subgroup extraction,
+    # with access to the SAME files were run in parallel.
+    # To avoid this issue analysis are run in specific analysis dir.
+    tp_dir = os.path.join(analysis_dir, tp)
+    if not os.path.isdir(tp_dir):
+        os.mkdir(tp_dir)
+    tp_model_dir = os.path.join(tp_dir, inputs["models"][0])
+    if not os.path.isdir(tp_model_dir):
+        os.mkdir(tp_model_dir)
+    statistics_dir = os.path.join(tp_model_dir, "statistics")
+    if not os.path.isdir(statistics_dir):
+        os.mkdir(statistics_dir)
 
     # > Extract connectivity file
     conn_file = extract_connectivities(
         inputs["group_name"], tp=tp, center_name=inputs["center"],
         covariates=conn_file_additional_covariates, network=None,
-        conn_file_pattern=None, datafile=None, outdir=None, conn_datapath=None,
-        tp_name=None)
+        conn_file_pattern=None, datafile=None, outdir=tp_model_dir,
+        conn_datapath=None, tp_name=None)
 
     # > Extract subgroup if necessary
     group_colname = inputs["group_name"]
@@ -225,7 +246,7 @@ for tp in inputs["timepoints"]:
     # > Run statistical test
     cmd = ["Rscript", "--vanilla", SCRIPTS_STATS[inputs["models"][0]],
            "-d", conn_file,
-           "-o", os.path.join(os.path.dirname(conn_file), "statistics"),
+           "-o", statistics_dir,
            "-g", group_colname,
            "-v"]
     proc = subprocess.Popen(cmd,
@@ -249,6 +270,17 @@ Process with covariates
 """
 for tp in inputs["timepoints"]:
 
+    # > Create tp/model dir and statistics dir
+    tp_dir = os.path.join(analysis_dir, tp)
+    if not os.path.isdir(tp_dir):
+        os.mkdir(tp_dir)
+    tp_model_dir = os.path.join(tp_dir, inputs["models"][1])
+    if not os.path.isdir(tp_model_dir):
+        os.mkdir(tp_model_dir)
+    statistics_dir = os.path.join(tp_model_dir, "statistics")
+    if not os.path.isdir(statistics_dir):
+        os.mkdir(statistics_dir)
+
     # If APOE has been added as a group delete it will be added twice with
     # the covariates. Delete the first APOE from the covariates.
     if "keep_apoe_cov_stats" in group_extraction_info[analysis_name].keys():
@@ -268,7 +300,8 @@ for tp in inputs["timepoints"]:
     # Extract connectivities
     conn_file = extract_connectivities(inputs["group_name"], tp=tp,
                                        center_name=inputs["center"],
-                                       covariates=covariates_extract_conn)
+                                       covariates=covariates_extract_conn,
+                                       outdir=tp_model_dir)
 
     # > Extract subgroup if necessary
     group_colname = inputs["group_name"]
@@ -325,7 +358,7 @@ for tp in inputs["timepoints"]:
     # >> Run script
     cmd = ["Rscript", "--vanilla", SCRIPTS_STATS[inputs["models"][1]],
            "-d", conn_file,
-           "-o", os.path.join(os.path.dirname(conn_file), "statistics"),
+           "-o", statistics_dir,
            "-g", group_colname,
            "-c", " ".join(covariates_tp_rscript)]
 
