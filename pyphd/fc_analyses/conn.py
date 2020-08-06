@@ -322,9 +322,11 @@ def extract_group(conn_file, groups_info={}, rename_cols={}, erase_cols=[],
     outdata.columns = new_colnames
 
     # Create outfile
-    outfile = conn_file
+    outdir = os.path.dirname(conn_file)
+    outfile = os.path.basename(conn_file)
     for elt_old, elt_new in rename_file.items():
         outfile = outfile.replace(elt_old, elt_new)
+    outfile = os.path.join(outdir, outfile)
 
     # Save output file
     outdata.to_csv(outfile, index=False)
@@ -528,7 +530,8 @@ def prepare_permutation_on_connectivities(input_file, gpe_col,
     return design_mat_file, constrat_file, out_design_csv, f_contrast_file
 
 
-def create_adjacency_matrix(connections, connections_values):
+def create_adjacency_matrix(connections, connections_values,
+                            fill_diagonal_with_zeros=False):
     """
     Create adjancency matrix for connections
 
@@ -538,32 +541,46 @@ def create_adjacency_matrix(connections, connections_values):
         List of list containing connected elements.
     connections_values: list of float
         List containing connection strength.
-
+    fill_diagonal_with_zeros: bool
+        For specific purpose fill matrix diagonal with zeroes (for example
+        if you use the output matrix with mne plot connectome function)
 
     Returns
     -------
     adjacency_matrix: pandas Dataframe
         Adjacency matrix of all connections.
+    node_list: list of str
+        list of nodes for adjacency_matrix header
     """
 
     # Create a n x n matrix with n being the number of elements connected
+    # Get connections names without blank space because if may be a problem
+    # to use pandas loc function if index or columns names have blank names
     all_elements = []
+    conn_wo_blanks = []
     for conn in connections:
         all_elements.append(conn[0])
         all_elements.append(conn[1])
+        conn_wo_blanks.append(
+            [conn[0].replace(" ", "_"), conn[1].replace(" ", "_")])
     all_elements = np.unique(all_elements)
+    all_elements_wo_blanks = [x.replace(" ", "_") for x in all_elements]
     adjacency_matrix = np.zeros((len(all_elements), len(all_elements)))
 
     # Fill diagonal with 1
-    np.fill_diagonal(adjacency_matrix, 1)
+    if not fill_diagonal_with_zeros:
+        np.fill_diagonal(adjacency_matrix, 1)
 
     # Transform adjacency matrix to pandas dataframe
     adjacency_matrix = pd.DataFrame(
-        adjacency_matrix, index=all_elements, columns=all_elements)
+        adjacency_matrix, index=all_elements_wo_blanks,
+        columns=all_elements_wo_blanks)
 
     # Fill matrix with connectivities values
-    for idx, conn in enumerate(connections):
-        adjacency_matrix.loc[conn[0], conn[1]] = connections_values[idx]
-        adjacency_matrix.loc[conn[1], conn[0]] = connections_values[idx]
+    for idx, conn in enumerate(conn_wo_blanks):
+        adjacency_matrix.loc[
+            conn[0], conn[1]] = connections_values[idx]
+        adjacency_matrix.loc[
+            conn[1], conn[0]] = connections_values[idx]
 
-    return adjacency_matrix
+    return adjacency_matrix, all_elements
