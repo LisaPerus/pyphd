@@ -331,7 +331,7 @@
             "group_name" : "gpeMapt4c",
             "additional_conn_file_covariates" : ["Omega3_low"],
             "extract_group" : true,
-            "groups_info" : {"0" : {"1:omega3+IM" : "1:omega3+IM", "3:IM" : "3:IM", "2:omega3" : "2:omega3", "4:ctrl" : "4:ctrl"}, "-1" : {"0" : "1"}},
+            "groups_info" : {"0" : {"1:omega3+IM" : "1:omega3+IM", "3:IM" : "3:IM", "2:omega3" : "2:omega3", "4:ctrl" : "4:ctrl"}, "-1" : {"0.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "DHA_EPA_sup_only_gpeMapt4c"},
             "erase_cols" : ["Omega3_low"],
             "rename_file" : {"gpeMapt4c" : "DHA_EPA_sup_only_gpeMapt4c", "Omega3_low" : ""}
@@ -342,7 +342,7 @@
             "group_name" : "gpeMapt4c",
             "additional_conn_file_covariates" : ["Omega3_low"],
             "extract_group" : true,
-            "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"0" : "1"}},
+            "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "DHA_EPA_sup_only_Omega3_plus_IM_1_Placebo_0"},
             "erase_cols" : ["Omega3_low"],
             "rename_file" : {"gpeMapt4c" : "DHA_EPA_sup_only_Omega3_plus_IM_1_Placebo_0", "Omega3_low" : ""}
@@ -353,7 +353,7 @@
             "group_name" : "gpeMapt4c",
             "additional_conn_file_covariates" : ["Omega3_low"],
             "extract_group" : true,
-            "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"0" : "1"}},
+            "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "DHA_EPA_sup_only_Omega3_1_Placebo_0"},
             "erase_cols" : ["Omega3_low"],
             "rename_file" : {"gpeMapt4c" : "DHA_EPA_sup_only_Omega3_1_Placebo_0", "Omega3_low" : ""}
@@ -364,7 +364,7 @@
             "group_name" : "gpeMapt4c",
             "additional_conn_file_covariates" : ["Omega3_low"],
             "extract_group" : true,
-            "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"0" : "1"}},
+            "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "DHA_EPA_sup_only_IM_1_Placebo_0"},
             "erase_cols" : ["Omega3_low"],
             "rename_file" : {"gpeMapt4c" : "DHA_EPA_sup_only_IM_1_Placebo_0", "Omega3_low" : ""}
