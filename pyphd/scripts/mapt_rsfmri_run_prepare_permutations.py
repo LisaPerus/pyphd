@@ -197,7 +197,7 @@ for tp in inputs["timepoints"]:
     conn_file = extract_connectivities(
         inputs["group_name"], tp=tp, center_name=inputs["center"],
         covariates=conn_file_additional_covariates, network=None,
-        conn_file_pattern=None, datafile=None, outdir=tp_model_dir,
+        conn_file_pattern=None, datafile=None, outdir=model_dir,
         conn_datapath=None, tp_name=None)
 
     # > Extract subgroup if necessary
