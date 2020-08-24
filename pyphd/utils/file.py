@@ -33,3 +33,50 @@ def get_file_size(path_file):
     """
     size = os.stat(path_file).st_size
     return size
+
+
+def check_dir_copy(indir, copy_dir):
+    """Check if one directory is a copy of another, if the
+       two directories have the same contents.
+
+    Parameters
+    ----------
+    indir: str
+        Path to input directory content that was copied.
+    copy_dir: str
+        Path to copy directory.
+
+    Returns
+    -------
+    exact_copy: bool
+        True if copy_dir content is the same as indir content.
+    diff: list of str
+        content in indir that is not in copy_dir
+    """
+
+    diff = []
+
+    # List of files and directories in indir
+    to_check_files = []
+    to_check_dirs = []
+
+    # Walk through the directories
+    print("Cd to {0} ...".format(indir))
+    os.chdir(indir)
+    for root, dirnames, filenames in os.walk("."):
+        to_check_files += [os.path.join(root, x) for x in filenames]
+        to_check_dirs += [os.path.join(root, x) for x in dirnames]
+
+    # Go to copy dir and check that file and dirs have been copied correctly
+    print("Cd to {0} ...".format(copy_dir))
+    os.chdir(copy_dir)
+    exact_copy = True
+    for directory in to_check_dirs:
+        if not os.path.isdir(directory):
+            exact_copy = False
+            diff.append(directory)
+    for fid in to_check_files:
+        if not os.path.isfile(fid):
+            exact_copy = False
+            diff.append(fid)
+    return exact_copy, diff
