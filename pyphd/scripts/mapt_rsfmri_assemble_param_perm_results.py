@@ -428,7 +428,8 @@ if parametric_json["subjects_info"] != permutation_json["subjects_info"]:
 json_output = {"subjects_info": permutation_json["subjects_info"],
                "commands_scripts": permutation_json["commands_scripts"],
                "output_files": {
-               "with_covariates": {}, "without_covariates": {}}}
+               "with_covariates": {}, "without_covariates": {}},
+               "nb_conns_with_normal_distrib_doublechecked_with_perm": {}}
 
 # Get alternative perm dir stat files
 alternative_permdirs = {}
@@ -444,6 +445,9 @@ if inputs["alt_perm_statfile_pattern"] is not None:
 
 # Assemble data
 for type_analysis in ["without_covariates", "with_covariates"]:
+    json_output[
+        "nb_conns_with_normal_distrib_doublechecked_with_perm"][
+            type_analysis] = {}
     for tp in inputs["timepoints"]:
 
         # Get for an analyses files with/without covariates
@@ -561,6 +565,10 @@ for type_analysis in ["without_covariates", "with_covariates"]:
 
         # Add output file to json output log
         json_output["output_files"][type_analysis][tp] = out_csv
+        json_output[
+            "nb_conns_with_normal_distrib_doublechecked_with_perm"][
+                type_analysis][
+                    tp] = nb_normally_distribution_connectivity_check
 
 
 """
