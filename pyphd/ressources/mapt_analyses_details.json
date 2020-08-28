@@ -648,7 +648,8 @@
         "groups_info" : {},
         "rename_cols" : {},
         "erase_cols" : [],
-        "rename_file" : {}
+        "rename_file" : {},
+        "keep_apoe_cov_stats" : false
         },
     "Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0" : 
             {
@@ -659,7 +660,8 @@
             "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "No_Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0" : 
             {
@@ -670,7 +672,8 @@
             "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0" : 
             {
@@ -681,7 +684,8 @@
             "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "No_Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0" : 
             {
@@ -692,7 +696,8 @@
             "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0" : 
             {
@@ -703,7 +708,8 @@
             "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "No_Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0" : 
             {
@@ -714,7 +720,8 @@
             "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "Ge2RF_DecCOMP0399MRI_APOE4_HRD" : 
         {
@@ -724,7 +731,8 @@
         "groups_info" : {},
         "rename_cols" : {},
         "erase_cols" : [],
-        "rename_file" : {}
+        "rename_file" : {},
+        "keep_apoe_cov_stats" : false
         },
     "Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3_1_Pl_0" : 
             {
@@ -735,7 +743,8 @@
             "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "No_Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3_1_Pl_0" : 
             {
@@ -746,7 +755,8 @@
             "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0" : 
             {
@@ -757,7 +767,8 @@
             "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "No_Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0" : 
             {
@@ -768,7 +779,8 @@
             "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_IM_1_Pl_0" : 
             {
@@ -779,7 +791,8 @@
             "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_IM_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "No_Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_IM_1_Pl_0" : 
             {
@@ -790,7 +803,8 @@
             "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_IM_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "Ge2RF_DecMMSE0399MRI_APOE4_HRD" : 
         {
@@ -800,7 +814,8 @@
         "groups_info" : {},
         "rename_cols" : {},
         "erase_cols" : [],
-        "rename_file" : {}
+        "rename_file" : {},
+        "keep_apoe_cov_stats" : false
         },
     "Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3_1_Pl_0" : 
             {
@@ -811,7 +826,8 @@
             "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "No_Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3_1_Pl_0" : 
             {
@@ -822,7 +838,8 @@
             "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0" : 
             {
@@ -833,9 +850,10 @@
             "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
-    "No_Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0" : 
+    "No_Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0" :
             {
             "models" : ["ttest", "glm"],
             "group_name" : "gpeMapt4c",
@@ -844,7 +862,8 @@
             "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_IM_1_Pl_0" : 
             {
@@ -855,7 +874,8 @@
             "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_IM_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "No_Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_IM_1_Pl_0" : 
             {
@@ -866,7 +886,8 @@
             "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_IM_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "DecMMSE0399MRI_only_O3_1_Pl_0" : 
             {
@@ -901,7 +922,7 @@
             "erase_cols" : ["Declin_MMSE_0399_MAPT_MRI"],
             "rename_file" : {"gpeMapt4c" : "DecMMSE0399MRI_only_O3pIM_1_Pl_0", "Declin_MMSE_0399_MAPT_MRI" : ""}
             },
-    "No_DecMMSE0399MRI_only_O3pIM_1_Pl_0" : 
+    "No_DecMMSE0399MRI_only_O3pIM_1_Pl_0" :
             {
             "models" : ["ttest", "glm"],
             "group_name" : "gpeMapt4c",
@@ -942,7 +963,8 @@
         "groups_info" : {},
         "rename_cols" : {},
         "erase_cols" : [],
-        "rename_file" : {}
+        "rename_file" : {},
+        "keep_apoe_cov_stats" : false
         },
     "Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3_1_Pl_0" : 
             {
@@ -953,7 +975,8 @@
             "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "No_Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3_1_Pl_0" : 
             {
@@ -964,7 +987,8 @@
             "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3pIM_1_Pl_0" : 
             {
@@ -975,7 +999,8 @@
             "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3pIM_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "No_Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3pIM_1_Pl_0" : 
             {
@@ -986,7 +1011,8 @@
             "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3pIM_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_IM_1_Pl_0" : 
             {
@@ -997,7 +1023,8 @@
             "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_IM_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "No_Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_IM_1_Pl_0" : 
             {
@@ -1008,7 +1035,8 @@
             "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_IM_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecCOMP0399MRI_MMSEi30_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false            
             },
     "Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD" : 
         {
@@ -1018,7 +1046,8 @@
         "groups_info" : {},
         "rename_cols" : {},
         "erase_cols" : [],
-        "rename_file" : {}
+        "rename_file" : {},
+        "keep_apoe_cov_stats" : false
         },
     "Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3_1_Pl_0" : 
             {
@@ -1029,7 +1058,8 @@
             "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "No_Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3_1_Pl_0" : 
             {
@@ -1040,7 +1070,8 @@
             "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3pIM_1_Pl_0" : 
             {
@@ -1051,7 +1082,8 @@
             "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3pIM_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "No_Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3pIM_1_Pl_0" : 
             {
@@ -1062,7 +1094,8 @@
             "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3pIM_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_IM_1_Pl_0" : 
             {
@@ -1073,7 +1106,8 @@
             "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_IM_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "No_Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_IM_1_Pl_0" : 
             {
@@ -1084,7 +1118,8 @@
             "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_IM_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_inf_30_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "DecCOMP0399MRI_only_O3_1_Pl_0" : 
             {
@@ -1160,7 +1195,8 @@
         "groups_info" : {},
         "rename_cols" : {},
         "erase_cols" : [],
-        "rename_file" : {}
+        "rename_file" : {},
+        "keep_apoe_cov_stats" : false
         },
     "Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0" : 
             {
@@ -1171,7 +1207,8 @@
             "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "No_Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0" : 
             {
@@ -1182,7 +1219,8 @@
             "groups_info" : {"0" : {"2:omega3" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0" : 
             {
@@ -1193,7 +1231,8 @@
             "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "No_Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0" : 
             {
@@ -1204,7 +1243,8 @@
             "groups_info" : {"0" : {"1:omega3+IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_O3pIM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0" : 
             {
@@ -1215,7 +1255,8 @@
             "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"1.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             },
     "No_Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0" : 
             {
@@ -1226,6 +1267,7 @@
             "groups_info" : {"0" : {"3:IM" : "1", "4:ctrl" : "0"}, "-1" : {"0.0" : "1"}},
             "rename_cols" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0"},
             "erase_cols" : ["Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6"],
-            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""}
+            "rename_file" : {"gpeMapt4c" : "No_Ge2RF_DecMMSE0399MRI_MMSEie28_APOE4_HRD_only_IM_1_Pl_0", "Ge_2_RF_Declin_MMSE_0399_MAPT_MRI_MMSE_M0_ie_28_APOE4_scoreCAIDE_ge_6" : ""},
+            "keep_apoe_cov_stats" : false
             }
 }
