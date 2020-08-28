@@ -236,7 +236,8 @@ def run_jobs_batch(pbs_files, error_files, cmds, user, queue,
 
                     # >>> if jobs are not in the queuing list, start time
                     # count
-                    if check_jobs_finished_running(jobs_ids):
+                    if (check_jobs_finished_running(jobs_ids) and
+                            start_time is None):
                         start_time = time.time()
                     all_error_logs_written = True
                     all_pbs_files_not_run = []
@@ -249,8 +250,10 @@ def run_jobs_batch(pbs_files, error_files, cmds, user, queue,
                     # has elapsed write jobs as error
                     if start_time is not None:
                         elapsed_time = time.time() - start_time
-                        if elapsed_time > 40:
+                        print("Elapsed time : ", elapsed_time)
+                        if elapsed_time > 10:
                             if logfile is not None:
+                                print("Generating error files takes too much time, writing logs...")
                                 for idx, pbs_file in enumerate(batch):
                                     append_pbs_logs_to_logfile(
                                         log_file=logfile,
@@ -261,6 +264,7 @@ def run_jobs_batch(pbs_files, error_files, cmds, user, queue,
                             break
                     if all_error_logs_written:
                         if logfile is not None:
+                            print("Writting all logs...")
                             for idx, pbs_file in enumerate(batch):
                                 append_pbs_logs_to_logfile(
                                     log_file=logfile,
@@ -392,20 +396,20 @@ def append_pbs_logs_to_logfile(log_file, pbs_file, qsub_errorcode,
         if error files corresponding to the PBS commands are not found
         write jobs as error.
     """
-    with open(logfile, "at") as open_file:
+    with open(log_file, "at") as open_file:
         cmd, output_log, error_log = get_cmd_logfile_from_pbs_file(
             pbs_file)
         line = "cluster_" + os.path.basename(
             pbs_file)
-        line += "_cmd = "
+        line += "_cmd = ["
         line += str(cmd)
         line += "]\n"
         line += "cluster_" + os.path.basename(
             pbs_file)
 
         # Keep qsub error msg if qsub error is not null
-        if qqsub_errorcode != 0:
-            error_code = qqsub_errorcode
+        if qsub_errorcode != 0:
+            error_code = qsub_errorcode
             error_msg = qsub_err_msg
         else:
             if error_log is None:
