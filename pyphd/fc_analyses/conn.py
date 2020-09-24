@@ -312,14 +312,19 @@ def extract_group(conn_file, groups_info={}, rename_cols={}, erase_cols=[],
         del outdata[col_to_erase]
 
     # Rename columns
-    new_colnames = []
-    for old_name, new_name in rename_cols.items():
-        for idx, col in enumerate(outdata.columns):
-            if col == old_name:
-                new_colnames.append(new_name)
-            else:
-                new_colnames.append(col)
-    outdata.columns = new_colnames
+    if len(rename_cols) != 0:
+        new_colnames = []
+        if len(rename_cols) != 1:
+            raise NotImplementedError(
+                "Following code works only for renaming one col. "
+                "Lazy developper will update it later.")
+        for old_name, new_name in rename_cols.items():
+            for idx, col in enumerate(outdata.columns):
+                if col == old_name:
+                    new_colnames.append(new_name)
+                else:
+                    new_colnames.append(col)
+        outdata.columns = new_colnames
 
     # Create outfile
     outdir = os.path.dirname(conn_file)
