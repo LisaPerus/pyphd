@@ -18,8 +18,9 @@ from pprint import pprint
 import pandas as pd
 import numpy as np
 from pyphd.fc_analyses.conn import extract_connectivities, extract_group
-from pyphd.constants import (SCRIPTS_STATS, COVARIATES_RSFMRI_ANALYSES,
-                             ANALYSES_DETAILS_JSON, CONN_INPUTS)
+from pyphd.constants import (SCRIPTS_STATS, MODELS_COVARIATES,
+                             RSFMRI_TEMPORAL_COVARIATES, ANALYSES_DETAILS_JSON,
+                             CONN_INPUTS, MAPT_RSFMRI_COV_TYPES)
 
 # Script documentation
 DOC = """
@@ -52,7 +53,6 @@ python3 $SCRIPT_DIR/GIT_REPOS/pyphd/pyphd/scripts/mapt_rsfmri_run_parametric_tes
     -o /tmp \
     -G \
     -V 2
-
 #    -J ~/PHD/SCRIPTS/fMRI_ANALYSIS/trash_scripts/rerun_analysis_inter_intra_networks.json \
 
 """
@@ -163,6 +163,9 @@ else:
     inputs["rename_cols"] = {}
     inputs["rename_file"] = {}
     inputs["erase_cols"] = []
+covariates_info = group_extraction_info[analysis_name]["covariates"]
+add_cov_spe_timepoints = group_extraction_info[
+    analysis_name]["add_cov_spe_timepoints"]
 
 conn_file_additional_covariates = None
 if "additional_conn_file_covariates" in group_extraction_info[
@@ -187,208 +190,209 @@ if not os.path.isdir(analysis_dir):
 
 for tp in inputs["timepoints"]:
 
-    # > Create tp/model dir and statistics dir
-    # Note 06/08/2020 : previous code version could go wrong
-    # if multiple processes with the same group_name and subgroup extraction,
-    # with access to the SAME files were run in parallel.
-    # To avoid this issue analysis are run in specific analysis dir.
-    tp_dir = os.path.join(analysis_dir, tp)
-    if not os.path.isdir(tp_dir):
-        os.mkdir(tp_dir)
-    tp_model_dir = os.path.join(tp_dir, inputs["models"][0])
-    if not os.path.isdir(tp_model_dir):
-        os.mkdir(tp_model_dir)
-    statistics_dir = os.path.join(tp_model_dir, "statistics")
-    if not os.path.isdir(statistics_dir):
-        os.mkdir(statistics_dir)
+    # For each model, extract connectivities, group data and run test
+    for model in inputs["models"]:
 
-    # > Extract connectivity file
-    conn_file = extract_connectivities(
-        inputs["group_name"], tp=tp, center_name=inputs["center"],
-        covariates=conn_file_additional_covariates, network=None,
-        conn_file_pattern=None, datafile=None, outdir=tp_model_dir,
-        conn_datapath=None, tp_name=None)
+        # > Create tp/model dir and statistics dir
+        # Note 06/08/2020 : previous code version could go wrong
+        # if multiple processes with the same group_name and
+        # subgroup extraction, with access to the SAME files were run in
+        # parallel.
+        # To avoid this issue analysis are run in specific analysis dir.
+        tp_dir = os.path.join(analysis_dir, tp)
+        if not os.path.isdir(tp_dir):
+            os.mkdir(tp_dir)
+        tp_model_dir = os.path.join(tp_dir, model)
+        if not os.path.isdir(tp_model_dir):
+            os.mkdir(tp_model_dir)
 
-    # > Extract subgroup if necessary
-    group_colname = inputs["group_name"]
-    if inputs["extract_group"]:
-        groups_info = {}
-        for elt, elt_data in inputs["groups_info"].items():
-            groups_info[int(elt)] = elt_data
-        conn_file = extract_group(
-            conn_file, groups_info=groups_info,
-            rename_cols=inputs["rename_cols"],
-            erase_cols=inputs["erase_cols"],
-            rename_file=inputs["rename_file"])
-        if group_colname in inputs["rename_cols"]:
-            group_colname = inputs["rename_cols"][group_colname]
+        # A model can be tested with different covariates, information about
+        # all this is store in all_model_information
+        # > outdir
+        # > list of covs
+        all_model_information = {}
 
-    # > Get number of subjects by group
-    conn_data = pd.read_csv(conn_file).dropna()
-    sub_col = conn_data[group_colname]
-    sub_groups = np.unique(sub_col)
-    subjects_info["without_covariates"][tp] = {}
-    for gpe in sub_groups:
-        cpt_gpe = 0
-        for elt in sub_col:
-            if elt == gpe:
-                cpt_gpe += 1
-        subjects_info["without_covariates"][tp][str(gpe)] = str(cpt_gpe)
+        # Get if model needs covariates
+        if model in covariates_info.keys():
 
-    # > If defined check that the number of expected connections is good
-    if inputs["expected_nb_conn"] is not None:
-        conn_data_cols = conn_data.columns
-        if len(conn_data_cols) - 1 != inputs["expected_nb_conn"]:
-            raise ValueError(
-                "Not expected number of connections in file {0}".format(
-                    conn_file))
+            # Model can be tested with different sets of covariates
+            for model_cov in covariates_info[model]:
 
-    # > Run statistical test
-    cmd = ["Rscript", "--vanilla", SCRIPTS_STATS[inputs["models"][0]],
-           "-d", conn_file,
-           "-o", statistics_dir,
-           "-g", group_colname,
-           "-v"]
-    proc = subprocess.Popen(cmd,
-                            stdin=subprocess.PIPE,
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE)
-    stdout, stderr = proc.communicate()
-    if proc.returncode == 1:
-        raise ValueError(
-            "Command '{0}' failed : {1}".format(" ".join(cmd), stderr))
-    msg_out = stdout.decode("utf-8").strip("\n").split("[1] \"Ouput : \"")
-    msg = msg_out[0]
-    output = msg_out[-1]
-    output_test = output.replace("[1] ", "").replace("\"", "")
-    outputs["without_covariates"][tp] = output_test
-    commands_stats["without_covariates"][tp] = " ".join(cmd)
-    print(output_test)
+                # create model cov dir
+                model_cov_dir = os.path.join(tp_model_dir, model_cov)
+                if not os.path.isdir(model_cov_dir):
+                    os.mkdir(model_cov_dir)
 
-"""
-Process with covariates
-"""
-for tp in inputs["timepoints"]:
+                # get set of covariates
+                list_covariates = MODELS_COVARIATES[model_cov]
 
-    # > Create tp/model dir and statistics dir
-    tp_dir = os.path.join(analysis_dir, tp)
-    if not os.path.isdir(tp_dir):
-        os.mkdir(tp_dir)
-    tp_model_dir = os.path.join(tp_dir, inputs["models"][1])
-    if not os.path.isdir(tp_model_dir):
-        os.mkdir(tp_model_dir)
-    statistics_dir = os.path.join(tp_model_dir, "statistics")
-    if not os.path.isdir(statistics_dir):
-        os.mkdir(statistics_dir)
+                # some covariates may be added depending on the timepoint for
+                # the data (e.g : cov -> delay between mri and beginning of
+                # the treatment)
+                if add_cov_spe_timepoints:
+                    list_covariates = list_covariates + [
+                        RSFMRI_TEMPORAL_COVARIATES[tp]]
 
-    # If APOE has been added as a group delete it will be added twice with
-    # the covariates. Delete the first APOE from the covariates.
-    if "keep_apoe_cov_stats" in group_extraction_info[analysis_name].keys():
-        if not group_extraction_info[analysis_name]["keep_apoe_cov_stats"]:
-            COVARIATES_RSFMRI_ANALYSES = [
-                x for x in COVARIATES_RSFMRI_ANALYSES if x != "APOE4"]
+                # append subgroup (named here additional covariates in the
+                # covariates list) : used to create subgroups of subjects
+                if conn_file_additional_covariates is not None:
+                    covariates_extract_conn = list_covariates + \
+                                              conn_file_additional_covariates
+                else:
+                    covariates_extract_conn = list_covariates
 
-    if tp == "M0":
-        covariates_tp = COVARIATES_RSFMRI_ANALYSES + ["Delay_IntIRMM0_V1_days"]
-    else:
-        covariates_tp = COVARIATES_RSFMRI_ANALYSES + ["intIRM36-V1"]
-    if conn_file_additional_covariates is not None:
-        covariates_extract_conn = covariates_tp + conn_file_additional_covariates
-    else:
-        covariates_extract_conn = covariates_tp
-
-    # Extract connectivities
-    conn_file = extract_connectivities(inputs["group_name"], tp=tp,
-                                       center_name=inputs["center"],
-                                       covariates=covariates_extract_conn,
-                                       outdir=tp_model_dir)
-
-    # > Extract subgroup if necessary
-    group_colname = inputs["group_name"]
-    if inputs["extract_group"]:
-        groups_info = {}
-        for elt, elt_data in inputs["groups_info"].items():
-            groups_info[int(elt)] = elt_data
-        conn_file = extract_group(
-            conn_file, groups_info=groups_info,
-            rename_cols=inputs["rename_cols"],
-            erase_cols=inputs["erase_cols"],
-            rename_file=inputs["rename_file"])
-        if group_colname in inputs["rename_cols"]:
-            group_colname = inputs["rename_cols"][group_colname]
-
-    # > Get number of subjects by group
-    conn_data = pd.read_csv(conn_file).dropna()
-    sub_col = conn_data[group_colname]
-    sub_groups = np.unique(sub_col)
-    subjects_info["with_covariates"][tp] = {}
-    for gpe in sub_groups:
-        cpt_gpe = 0
-        for elt in sub_col:
-            if elt == gpe:
-                cpt_gpe += 1
-        subjects_info["with_covariates"][tp][str(gpe)] = str(cpt_gpe)
-
-    # > Run statistical test
-
-    # >> Replace intIRM36-V1 by intIRM36_V1 for RScript
-    covariates_tp_rscript = []
-    for elt in covariates_tp:
-        if elt != "intIRM36-V1":
-
-            # Keep or not APOE E4 covariate
-            if "keep_apoe_cov_stats" in group_extraction_info[
-                    analysis_name].keys():
-                if (not group_extraction_info[analysis_name][
-                        "keep_apoe_cov_stats"] and elt == "APOE4"):
-                    continue
-            covariates_tp_rscript.append(elt)
+                all_model_information[model_cov] = {}
+                all_model_information[model_cov][
+                    "covariates"] = list_covariates
+                all_model_information[model_cov][
+                    "covariates_extract"] = covariates_extract_conn
+                all_model_information[model_cov][
+                    "has_covariates"] = True
+                all_model_information[model_cov][
+                    "outdir"] = model_cov_dir
         else:
-            covariates_tp_rscript.append("intIRM36_V1")
+            all_model_information[model] = {}
+            all_model_information[model]["covariates"] = None
+            all_model_information[model][
+                "covariates_extract"] = conn_file_additional_covariates
+            all_model_information[model]["has_covariates"] = False
+            all_model_information[model]["outdir"] = tp_model_dir
 
-    # > If defined check that the number of expected connections is good
-    if inputs["expected_nb_conn"] is not None:
-        conn_data_cols = conn_data.columns
-        nb_conn = len(conn_data_cols) - 1 - len(covariates_tp_rscript)
-        if nb_conn != inputs["expected_nb_conn"]:
-            raise ValueError(
-                "Not expected number of connections in file {0}".format(
-                    conn_file))
+        # For each model specification extract connectivities
+        # and subgroup of subjects
+        for model_spe, model_spe_data in all_model_information.items():
+            conn_file = extract_connectivities(
+                inputs["group_name"], tp=tp, center_name=inputs["center"],
+                covariates=model_spe_data["covariates_extract"], network=None,
+                conn_file_pattern=None, datafile=None,
+                outdir=model_spe_data["outdir"], conn_datapath=None,
+                tp_name=None)
 
-    # >> Run script
-    cmd = ["Rscript", "--vanilla", SCRIPTS_STATS[inputs["models"][1]],
-           "-d", conn_file,
-           "-o", statistics_dir,
-           "-g", group_colname,
-           "-c", " ".join(covariates_tp_rscript)]
+            group_colname = inputs["group_name"]
+            if inputs["extract_group"]:
+                groups_info = {}
+                for elt, elt_data in inputs["groups_info"].items():
+                    groups_info[int(elt)] = elt_data
+                conn_file = extract_group(
+                    conn_file, groups_info=groups_info,
+                    rename_cols=inputs["rename_cols"],
+                    erase_cols=inputs["erase_cols"],
+                    rename_file=inputs["rename_file"])
+                if group_colname in inputs["rename_cols"]:
+                    group_colname = inputs["rename_cols"][group_colname]
 
-    if inputs["models"][1] == "ancova":
-
-        # Covariate type for "age", "sexe", "NIVSCOL", "APOE4" and delay
-        # Check that APOE has to be kept in the covariates
-        type_covariates = []
-        for elt in covariates_tp_rscript:
-            if elt in ["sexe", "NIVSCOL", "APOE4"]:
-                type_covariates.append("Categorical")
+            # > Get number of subjects by group
+            conn_data = pd.read_csv(conn_file).dropna()
+            sub_col = conn_data[group_colname]
+            sub_groups = np.unique(sub_col)
+            if not model_spe_data["has_covariates"]:
+                subjects_info["without_covariates"][tp] = {}
+                for gpe in sub_groups:
+                    cpt_gpe = 0
+                    for elt in sub_col:
+                        if elt == gpe:
+                            cpt_gpe += 1
+                    subjects_info["without_covariates"][tp][
+                        str(gpe)] = str(cpt_gpe)
             else:
-                type_covariates.append("Continuous")
-        cmd += ["-t", " ".join(type_covariates)]
-    cmd += ["-v"]
-    proc = subprocess.Popen(cmd,
-                            stdin=subprocess.PIPE,
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE)
-    stdout, stderr = proc.communicate()
-    if proc.returncode == 1:
-        raise ValueError(
-            "Command '{0}' failed : {1}".format(" ".join(cmd), stderr))
-    msg_out = stdout.decode("utf-8").strip("\n").split("[1] \"Ouput : \"")
-    msg = msg_out[0]
-    output = msg_out[-1]
-    output_test = output.replace("[1] ", "").replace("\"", "")
-    outputs["with_covariates"][tp] = output_test
-    commands_stats["with_covariates"][tp] = " ".join(cmd)
-    print(output_test)
+                if model_spe not in subjects_info["with_covariates"].keys():
+                    subjects_info["with_covariates"][model_spe] = {}
+                subjects_info["with_covariates"][model_spe][tp] = {}
+                for gpe in sub_groups:
+                    cpt_gpe = 0
+                    for elt in sub_col:
+                        if elt == gpe:
+                            cpt_gpe += 1
+                    subjects_info["with_covariates"][model_spe][tp][
+                        str(gpe)] = str(cpt_gpe)
+
+            # > If defined check that number of expected connections is good
+            if inputs["expected_nb_conn"] is not None:
+                conn_data_cols = conn_data.columns
+                if len(conn_data_cols) - 1 != inputs["expected_nb_conn"]:
+                    raise ValueError(
+                        "Not expected nb of connections in file {0}".format(
+                            conn_file))
+
+            # > Create statistics_dir
+            statistics_dir = os.path.join(
+                model_spe_data["outdir"], "statistics")
+            if not os.path.isdir(statistics_dir):
+                os.mkdir(statistics_dir)
+
+            # > If covariates get their type
+            covariates_types = []
+            if model_spe_data["covariates"] is not None:
+                for cov in model_spe_data["covariates"]:
+                    covariates_types.append(MAPT_RSFMRI_COV_TYPES[cov])
+
+            # > Transform - to _ in covariate names for Rscript
+            if model_spe_data["covariates"] is not None:
+                covariates_model = []
+                for cov in model_spe_data["covariates"]:
+                    covariates_model.append(cov.replace("-", "_"))
+
+            # > Run statistical test for ttest/anova
+            if model in ["ttest", "anova"]:
+                cmd = ["Rscript", "--vanilla", SCRIPTS_STATS[model],
+                       "-d", conn_file,
+                       "-o", statistics_dir,
+                       "-g", group_colname,
+                       "-v"]
+
+            # > glm/ancova
+            elif model in ["glm", "ancova"]:
+                cmd = ["Rscript", "--vanilla", SCRIPTS_STATS[model],
+                       "-d", conn_file,
+                       "-o", statistics_dir,
+                       "-g", group_colname,
+                       "-c", " ".join(covariates_model),
+                       "-t", " ".join(covariates_types)]
+
+            elif model == "two_way_anova":
+
+                # >> get subgroup col name
+                subgroup_colname = group_extraction_info[
+                    analysis_name]["subgroup_two_way_anova"]
+
+                # >> two way anova
+                cmd = ["Rscript", "--vanilla", SCRIPTS_STATS[model],
+                       "-d", conn_file,
+                       "-o", statistics_dir,
+                       "-g", group_colname,
+                       "-s", subgroup_colname,
+                       "-c", " ".join(covariates_model),
+                       "-t", " ".join(covariates_types)]
+            else:
+                raise ValueError("Unknown model : {0}".format(model))
+
+            # Run cmd
+            proc = subprocess.Popen(cmd,
+                                    stdin=subprocess.PIPE,
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE)
+            stdout, stderr = proc.communicate()
+            if proc.returncode == 1:
+                raise ValueError(
+                    "Command '{0}' failed : {1}".format(" ".join(cmd), stderr))
+            msg_out = stdout.decode(
+                "utf-8").strip("\n").split("[1] \"Ouput : \"")
+            msg = msg_out[0]
+            output = msg_out[-1]
+            output_test = output.replace("[1] ", "").replace("\"", "")
+
+            if model_spe_data["has_covariates"]:
+                outputs["without_covariates"][tp] = output_test
+                commands_stats["without_covariates"][tp] = " ".join(cmd)
+            else:
+                if model_spe not in outputs["with_covariates"].keys():
+                    outputs["with_covariates"][model_spe] = {}
+                if model_spe not in commands_stats["with_covariates"].keys():
+                    commands_stats["with_covariates"][model_spe] = {}
+                outputs["with_covariates"][model_spe][tp] = output_test
+                commands_stats[
+                    "with_covariates"][model_spe][tp] = " ".join(cmd)
+            print(output_test)
 
 
 """
