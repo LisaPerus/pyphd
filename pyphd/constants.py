@@ -156,8 +156,34 @@ parent_dir = os.path.dirname(__file__)
 SCRIPTS_STATS = {"ttest" : os.path.join(SCRIPT_DIR, "GIT_REPOS", "RPhd", "scripts", "ttest_ind.R"),
                  "anova" : os.path.join(SCRIPT_DIR, "GIT_REPOS", "RPhd", "scripts", "anova.R"),
                  "glm" : os.path.join(SCRIPT_DIR, "GIT_REPOS", "RPhd", "scripts", "glm_two_groups_plus_covariates.R"),
-                 "ancova" : os.path.join(SCRIPT_DIR, "GIT_REPOS", "RPhd", "scripts", "ancova.R")
+                 "ancova" : os.path.join(SCRIPT_DIR, "GIT_REPOS", "RPhd", "scripts", "ancova.R"),
+                 "two_way_anova" : os.path.join(SCRIPT_DIR, "GIT_REPOS", "RPhd", "scripts", "two_way_anova.R")
 }
+
+# Different model with different covariates can be used
+MODELS_COVARIATES = {
+    "m1" : ["age", "sexe", "NIVSCOL_UNI"],
+    "m2" : ["age", "sexe", "NIVSCOL", "APOE4"]
+}
+
+# Covariates linked to data time acquisition can be added for resting state
+# analyses
+RSFMRI_TEMPORAL_COVARIATES = {
+    "M0" : "Delay_IntIRMM0_V1_days",
+    "M36" : "intIRM36-V1",
+    "M36-M0" : "intIRM36-V1"
+}
+# Mapt resting state covariate types
+MAPT_RSFMRI_COV_TYPES = {
+    "age" : "Continuous",
+    "sexe" : "Categorical",
+    "NIVSCOL_UNI" : "Categorical",
+    "NIVSCOL" : "Continuous",
+    "APOE4" : "Categorical",
+    "Delay_IntIRMM0_V1_days" : "Continuous",
+    "intIRM36-V1" : "Continuous"
+}
+
 COVARIATES_RSFMRI_ANALYSES = ["age", "sexe", "NIVSCOL", "APOE4"]
 ANALYSES_DETAILS_JSON = os.path.join(
     parent_dir, "ressources", "mapt_analyses_details.json")
