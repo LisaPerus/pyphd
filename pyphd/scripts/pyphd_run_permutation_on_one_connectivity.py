@@ -109,6 +109,14 @@ def get_cmd_line_args():
         "-A", "--alternate-palm", type=is_file,
         help="Alternate palm bin file.")
     parser.add_argument(
+        "-P", "--save-parametric", action="store_true",
+        help="Save parametric model pvalues.")
+    parser.add_argument(
+        "-Q", "--quick-check-model", action="store_true",
+        help="Perform a quick check to get t/f and parametric p values of "
+             "the model. Useful to check if we specified correctly the model. "
+             "-P option is activated and 20 permutations are performed.")
+    parser.add_argument(
         "-T", "--two-tail", action="store_true",
         help="If set, perform two-tailed test.")
     parser.add_argument(
@@ -151,8 +159,16 @@ if verbose > 0:
 """
 Run Palm
 """
-palm_outdir = os.path.join(
-    inputs["outdir"], inputs["outname"] + "_palm_output")
+
+# Check that test is not only a quick check
+if inputs["quick_check_model"]:
+    inputs["nb_permutations"] = 20
+    inputs["save_parametric"] = True
+    palm_outdir = os.path.join(
+        inputs["outdir"], inputs["outname"] + "_palm_quickcheck_output")
+else:
+    palm_outdir = os.path.join(
+        inputs["outdir"], inputs["outname"] + "_palm_output")
 if not os.path.isdir(palm_outdir):
     os.mkdir(palm_outdir)
 
@@ -184,6 +200,7 @@ stat_val, pval_unc, p_fwe = palm(
     output_basename=palm_output_basename,
     nb_permutations=inputs["nb_permutations"],
     twotail=inputs["two_tail"],
+    saveparametric=inputs["save_parametric"],
     alternate_palm_bin=inputs["alternate_palm"],
     singularity_cmd=singularity_cmd)
 outputs["{0}_palm_stat_val".format(conn_basename)] = stat_val
