@@ -256,7 +256,8 @@ def extract_connectivities(group_name, tp=None, center_name=None,
 
 
 def extract_group(conn_file, groups_info={}, rename_cols={}, erase_cols=[],
-                  rename_file={}):
+                  rename_file={}, create_interaction_col=False,
+                  interaction_cols=[]):
     """Extract from connectivities values file group and subgroups of subjects.
 
     /!\ conn_file MUST HAVE A ONE LINE HEADER /!\
@@ -275,8 +276,8 @@ def extract_group(conn_file, groups_info={}, rename_cols={}, erase_cols=[],
         replace them with.
         E.g : {0 : {"4:ctrl" : "0", "3:IM" : "1"}, -1 : {"1" : "1"}}
         will keep subjects with values 4:ctrl and 3:IM in the first column (
-        and replace these values by 0 and 1) but also have value 1 in the last
-        column.
+        and replace these values by 0 and 1) but and subjects with value 1 in
+        the last column.
     rename_cols : dict
         Keys are col ids in file, and values are new columns name in output
         file.
@@ -287,6 +288,22 @@ def extract_group(conn_file, groups_info={}, rename_cols={}, erase_cols=[],
         E.g : infile = "connectitivies_gpeMapt4c.txt"
               rename_file = {"gpeMapt4c" : "IM_1_Placebo_0"}
               outfile = "connectitivies_IM_1_Placebo_0"
+    create_interaction_col: bool
+        if True, create a column with caracteristics from multiple cols
+        specified in interaction_cols. For example if
+        interaction_cols = ["subGpe", "mainGpe"] with
+        mainGpe    subGpe
+          gpe1      s1
+          gpe2      s2
+          gpe3      s2
+        a new column subGpe_mainGpe will be created:
+        subGpe_mainGpe
+            s1_gpe1
+            s2_gpe2
+            s2_gpe3
+    /!\ WARNING : this step is done before renaming columns /!\
+    interaction_cols : list of str
+        list of columns used to create interaction columns.
 
     Returns
     -------
@@ -299,6 +316,8 @@ def extract_group(conn_file, groups_info={}, rename_cols={}, erase_cols=[],
     outdata = conn_data.copy()
 
     # Select subjects in subgroups
+    # Note 30/09/2020 : if there are nan values in subgroups it may delete
+    # some lines
     for col, col_data in groups_info.items():
         outdata = outdata[outdata.iloc[:, col].isin(list(col_data.keys()))]
 
@@ -306,6 +325,17 @@ def extract_group(conn_file, groups_info={}, rename_cols={}, erase_cols=[],
     for col, col_data in groups_info.items():
         for old_name, new_name in col_data.items():
             outdata.iloc[:, col][outdata.iloc[:, col] == old_name] = new_name
+
+    # Eventually create interaction columns
+    if create_interaction_col:
+        interaction_col = []
+        for index, row in outdata.iterrows():
+            row_int_value = row[interaction_cols]
+            row_int_value = [str(x) for x in row_int_value]
+            row_int_value = "_:x:_".join(row_int_value)
+            interaction_col.append(row_int_value)
+        int_colname = "_:x:_".join(interaction_cols)
+        outdata[int_colname] = interaction_col
 
     # Erase columns
     for col_to_erase in erase_cols:
