@@ -188,15 +188,37 @@ COVARIATES_RSFMRI_ANALYSES = ["age", "sexe", "NIVSCOL", "APOE4"]
 ANALYSES_DETAILS_JSON = os.path.join(
     parent_dir, "ressources", "mapt_analyses_details.json")
 
+# Contrasts files to test for group differences with or without covariate
+# adjustment
 MAPT_RSFMRI_CONTRAST_FILES = {
-        "ttest" : os.path.join(SCRIPT_DIR, "fMRI_ANALYSIS", "contrasts", "ttest.txt"),
-        "glm_4covs" : os.path.join(SCRIPT_DIR, "fMRI_ANALYSIS", "contrasts", "glm_2gpes_4covs.txt"),
-        "glm_5covs" : os.path.join(SCRIPT_DIR, "fMRI_ANALYSIS", "contrasts", "glm_2gpes_5covs.txt"),
-        "anova_4gpes" : [os.path.join(SCRIPT_DIR, "fMRI_ANALYSIS", "contrasts", "anova_4gpes.txt"), os.path.join(SCRIPT_DIR, "fMRI_ANALYSIS", "contrasts", "anova_4gpes_fcontrast.txt")],
-        "ancova_4gpes_4covs" : [os.path.join(SCRIPT_DIR, "fMRI_ANALYSIS", "contrasts", "ancova_4gpes_4covs.txt"), os.path.join(SCRIPT_DIR, "fMRI_ANALYSIS", "contrasts", "ancova_4gpes_4covs_fcontrast.txt")],
-        "ancova_4gpes_5covs" : [os.path.join(SCRIPT_DIR, "fMRI_ANALYSIS", "contrasts", "ancova_4gpes_5covs.txt"), os.path.join(SCRIPT_DIR, "fMRI_ANALYSIS", "contrasts", "ancova_4gpes_4covs_fcontrast.txt")]
+    "nb_groups" : { 
+        "2" : {
+            "nb_covs" : {
+                "0" : {"tcontrast" : os.path.join(SCRIPT_DIR, "fMRI_ANALYSIS", "contrasts", "ttest.txt")},
+                "4" : {"tcontrast" : os.path.join(SCRIPT_DIR, "fMRI_ANALYSIS", "contrasts", "glm_2gpes_4covs.txt")},
+                "5" : {"tcontrast" : os.path.join(SCRIPT_DIR, "fMRI_ANALYSIS", "contrasts", "glm_2gpes_5covs.txt")}
+                    }
+                },
+        "4" :  {
+            "nb_covs" : {
+                "0" : {"tcontrast" : os.path.join(SCRIPT_DIR, "fMRI_ANALYSIS", "contrasts", "anova_4gpes.txt"), "fcontrast" : os.path.join(SCRIPT_DIR, "fMRI_ANALYSIS", "contrasts", "anova_4gpes_fcontrast.txt")},
+                "4" : {"tcontrast" : os.path.join(SCRIPT_DIR, "fMRI_ANALYSIS", "contrasts", "ancova_4gpes_4covs.txt"), "fcontrast" : os.path.join(SCRIPT_DIR, "fMRI_ANALYSIS", "contrasts", "ancova_4gpes_4covs_fcontrast.txt")},
+                "5" : {"tcontrast" : os.path.join(SCRIPT_DIR, "fMRI_ANALYSIS", "contrasts", "ancova_4gpes_5covs.txt"), "fcontrast" : os.path.join(SCRIPT_DIR, "fMRI_ANALYSIS", "contrasts", "ancova_4gpes_4covs_fcontrast.txt")}
+                }
+            }
+        }
 }
 
+# Contrasts files to test for groups interaction with or without covariate
+# adjustment
+MAPT_RSFMRI_CONTRAST_FILES_INTERACTIONS = {
+        "nb_groups" : {
+            "2_x_4" : {
+                "nb_covs" :
+                    {"4" : {"tcontrast" : os.path.join(SCRIPT_DIR, "fMRI_ANALYSIS", "contrasts", "two_way_anova_2_levels_x_4_levels_4covs.txt"), "fcontrast" : os.path.join(SCRIPT_DIR, "fMRI_ANALYSIS", "contrasts", "two_way_anova_2_levels_x_4_levels_4covs_fcontrast.txt")}}
+                }
+        }
+}
 
 # /!\ Warning here uses conn rscores pattern
 CONN_INPUTS = {
