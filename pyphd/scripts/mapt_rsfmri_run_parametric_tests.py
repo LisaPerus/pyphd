@@ -382,9 +382,6 @@ for tp in inputs["timepoints"]:
             output_test = output.replace("[1] ", "").replace("\"", "")
 
             if model_spe_data["has_covariates"]:
-                outputs["without_covariates"][tp] = output_test
-                commands_stats["without_covariates"][tp] = " ".join(cmd)
-            else:
                 if model_spe not in outputs["with_covariates"].keys():
                     outputs["with_covariates"][model_spe] = {}
                 if model_spe not in commands_stats["with_covariates"].keys():
@@ -392,6 +389,10 @@ for tp in inputs["timepoints"]:
                 outputs["with_covariates"][model_spe][tp] = output_test
                 commands_stats[
                     "with_covariates"][model_spe][tp] = " ".join(cmd)
+            else:
+                outputs["without_covariates"][tp] = output_test
+                commands_stats[
+                    "without_covariates"][tp] = " ".join(cmd)
             print(output_test)
 
 
