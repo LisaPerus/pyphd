@@ -26,8 +26,8 @@ from pyconnectome.wrapper import FSLWrapper
 
 
 def palm(indata, design_file, contrast_file, f_contrast, output_basename,
-         nb_permutations, twotail=False, alternate_palm_bin=None,
-         singularity_cmd=None):
+         nb_permutations, twotail=False, saveparametric=False,
+         alternate_palm_bin=None, singularity_cmd=None):
     """ Wraps FSL PALM command.
     ---------------------------
 
@@ -48,6 +48,8 @@ def palm(indata, design_file, contrast_file, f_contrast, output_basename,
     twotail: bool
         Run two-tailed tests for all the t-contrasts instead of
         one-tailed.
+    saveparametric: bool
+        Option to save parametric pval.
     alternate_palm_bin: str
         Path to alternate palm bin file : useful for cluster.
     singularity_cmd : list of str
@@ -75,6 +77,8 @@ def palm(indata, design_file, contrast_file, f_contrast, output_basename,
         cmd += ["-f", f_contrast]
     if twotail:
         cmd.append("-twotail")
+    if saveparametric:
+        cmd.append("-saveparametric")
     proc = subprocess.Popen(cmd,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
