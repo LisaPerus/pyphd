@@ -20,8 +20,8 @@ import numpy as np
 from pyphd.fc_analyses.conn import extract_connectivities, extract_group
 from pyphd.constants import (
     MAPT_RSFMRI_CONTRAST_FILES, ANALYSES_DETAILS_JSON,
-        MAPT_RSFMRI_CONTRAST_FILES_INTERACTIONS, MODELS_COVARIATES,
-            RSFMRI_TEMPORAL_COVARIATES, SCRIPT_DIR)
+    MAPT_RSFMRI_CONTRAST_FILES_INTERACTIONS, MODELS_COVARIATES,
+    RSFMRI_TEMPORAL_COVARIATES, SCRIPT_DIR)
 
 
 # Script documentation
@@ -298,14 +298,12 @@ for tp in inputs["timepoints"]:
             # > Get number of subjects by group
             conn_data = pd.read_csv(conn_file).dropna()
 
-            # > if main group is tested
-            if not create_interaction_col:
-                sub_col = conn_data[group_colname]
+            # > if interaction is tested change group colname
+            if create_interaction_col:
+                group_colname = "_:x:_".join(interaction_cols)
 
-            # > else if interaction is tested
-            else:
-                sub_col = conn_data["_:x:_".join(interaction_cols)]
-
+            # > get group subjects unique values
+            sub_col = conn_data[group_colname]
             sub_groups = np.unique(sub_col)
             if not model_spe_data["has_covariates"]:
                 subjects_info["without_covariates"][tp] = {}
