@@ -14,6 +14,7 @@ from argparse import RawTextHelpFormatter
 from datetime import datetime
 from pprint import pprint
 from decimal import Decimal
+from collections import OrderedDict
 
 # Third party imports
 import pandas as pd
@@ -25,22 +26,16 @@ Assemble MAPT resting state analysis parametric and permutation test results
 ----------------------------------------------------------------------------
 
 python3.5 $SCRIPT_DIR/GIT_REPOS/pyphd/pyphd/scripts/mapt_rsfmri_assemble_param_perm_results.py \
-    -a Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_IM_1_Pl_0 \
-    -p $MEDIA_SCRIPT/MAPT_rsfmri/MONTPELLIER_ONLY/TESTS_WITH_SUBJECTS_COMMON_AT_M0_M36/PARAMETRIC_TESTS/Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_IM_1_Pl_0.json \
-    -e $MEDIA_SCRIPT/MAPT_rsfmri/MONTPELLIER_ONLY/TESTS_WITH_SUBJECTS_COMMON_AT_M0_M36/PERMUTATION_TESTS/Ge2RF_DecMMSE0399MRI_MMSEinf30_APOE4_HRD_only_IM_1_Pl_0.json \
-    -o /tmp/assemble
-
-python3.5 $SCRIPT_DIR/GIT_REPOS/pyphd/pyphd/scripts/mapt_rsfmri_assemble_param_perm_results.py \
-    -a CDR05_only_gpeMapt4c \
-    -p $MEDIA_SCRIPT/MAPT_rsfmri/MONTPELLIER_ONLY/TESTS_WITH_SUBJECTS_COMMON_AT_M0_M36/PARAMETRIC_TESTS/CDR05_only_gpeMapt4c.json \
-    -e $MEDIA_SCRIPT/MAPT_rsfmri/MONTPELLIER_ONLY/TESTS_WITH_SUBJECTS_COMMON_AT_M0_M36/PERMUTATION_TESTS/CDR05_only_gpeMapt4c.json \
-    -o /tmp/assemble \
-    -P M0:$MEDIA_SCRIPT/MAPT_rsfmri/MONTPELLIER_ONLY/TESTS_WITH_SUBJECTS_COMMON_AT_M0_M36/PERMUTATION_TESTS/CDR05_only_gpeMapt4c/M0 \
-       M36:$MEDIA_SCRIPT/MAPT_rsfmri/MONTPELLIER_ONLY/TESTS_WITH_SUBJECTS_COMMON_AT_M0_M36/PERMUTATION_TESTS/CDR05_only_gpeMapt4c/M36 \
-       M36-M0:$MEDIA_SCRIPT/MAPT_rsfmri/MONTPELLIER_ONLY/TESTS_WITH_ALL_SUBJECTS_AT_TRANSVERSAL/PERMUTATION_TESTS/CDR05_only_gpeMapt4c/M36-M0 \
-    -S "M36-M0:$MEDIA_SCRIPT/MAPT_rsfmri/MONTPELLIER_ONLY/TESTS_WITH_ALL_SUBJECTS_AT_TRANSVERSAL/PERMUTATION_TESTS/statistics/M36-M0/<model>_conn_connectivities_CDR05_only_gpeMapt4c_0399_diff_rscores_POST-PRE*.csv"
-
-
+    -r $MEDIA_SCRIPT/MAPT_rsfmri/MONTPELLIER_ONLY/TESTS_WITH_SUBJECTS_COMMON_AT_M0_M36/PARAMETRIC_TESTS/CDR_x_gpeMapt4c/M0/two_way_anova/m1/statistics/two_way_anova__conn_connectivities_CDR_x_gpeMapt4c_0399_rscores_common_subjects_timesteps_PREPOST_at_PREage_sexe_NIVSCOL_UNI_Delay_IntIRMM0_V1_days_.csv \
+    -l $MEDIA_SCRIPT/MAPT_rsfmri/MONTPELLIER_ONLY/TESTS_WITH_SUBJECTS_COMMON_AT_M0_M36/PERMUTATION_TESTS/CDR_x_gpeMapt4c/M0/two_way_anova/m1/CDR_x_gpeMapt4c_palm_output/perm_results_assembled.csv \
+    -k palm_dat_fstat_c10 palm_dat_fstat_c9 palm_dat_fstat_uncp_c10 palm_dat_fstat_uncp_c9 palm_dat_fstat_uncparap_c10 palm_dat_fstat_uncparap_c9 palmtwo_tail_dat_tstat_c8 \
+       palmtwo_tail_dat_tstat_uncp_c8 palmtwo_tail_dat_tstat_uncparap_c8 \
+    -o /tmp/test \
+    -a mainGroup:secondGroup_P \
+    -m palm_dat_fstat_uncp_c10 \
+    -t mainGroup:secondGroup_F_splithere_palm_dat_fstat_c10 mainGroup_gpeMapt4c_F_splithere_palm_dat_fstat_c9 \
+    -C mainGroup:secondGroup_P_splithere_palm_dat_fstat_uncparap_c10 mainGroup_gpeMapt4c_P_splithere_palm_dat_fstat_uncparap_c9 subGroup_scoreCDR1_P_splithere_palmtwo_tail_dat_tstat_uncparap_c8 \
+    -V 1
 """
 
 
@@ -75,39 +70,45 @@ def get_cmd_line_args():
     # Required arguments
     required = parser.add_argument_group("required arguments")
     required.add_argument(
-        "-a", "--analysis-name", type=str, required=True,
-        help="Analysis name.")
+        "-r", "--parametric-file", type=is_file, required=True,
+        help="Parametric file.")
     required.add_argument(
-        "-p", "--parametric-json", type=is_file, required=True,
-        help="Paramatric tests json summary file.")
+        "-l", "--permutation-file", type=is_file, required=True,
+        help="Permutation file.")
     required.add_argument(
-        "-e", "--permutation-json", type=is_file, required=True,
-        help="Permutation tests json summary file.")
+        "-k", "--perm-keep-cols", type=str, required=True, nargs="+",
+        help="Columns to keep from permutation file.")
     required.add_argument(
-        "-o", "--outdir",
-        type=is_directory, required=True, metavar="<path>",
-        help="Path to the output directory.")
+        "-a", "--r-pval-col", required=True, type=str,
+        help="R pval column of interest in parametric file. This parametric "
+             "pvalues will be added to the final pvalues if connectivity "
+             "distribution is normal.")
+    required.add_argument(
+        "-m", "--perm-pval-col", required=True, type=str,
+        help="Pval column of interest in permutation file. This permutation "
+             "pvalues will be added to the parametric pvalues if connectivity "
+             "distribution is not normal.")
+    required.add_argument(
+        "-t", "--stat-check-col", required=True, type=str, nargs="+",
+        help="Columns with stat values to check. First value is R stat column "
+             "second column is Palm stat column. Each pair of column is "
+             "separated by || . E.g : T-value/Rank||palm_dat_tstat_c1. "
+             "Check will be done between R and palm stat values for each "
+             "connection.")
+    required.add_argument(
+        "-o", "--outdir", type=is_directory, required=True, metavar="<path>",
+        help="Output directory.")
+
+    # Optional arguments
     parser.add_argument(
-        "-T", "--timepoints", type=str, nargs="+",
-        default=["M0", "M36", "M36-M0"], help="Timepoints")
-    parser.add_argument(
-        "-P", "--alt-perm-outdir", type=str, nargs="+",
-        help="If previous permutation tests have been run for specific "
-             "timepoints, specify alternative output "
-             "directory with permutation results, written in the form "
-             "timepoint:outdir. Eg : M0:/tmp")
-    parser.add_argument(
-        "-S", "--alt-perm-statfile-pattern", type=str, nargs="+",
-        help="If previous permutation tests have been run for specific "
-             "timepoints, specify alternative output "
-             "file pattern containing assembled permutation results."
-             "This file is the same as separate connections results stored "
-             "in alt-perm-outdir, but it may happen that to free space disk "
-             "only assembled perm file was kept and not perm outdir."
-             "Argument is given in the form file:<model>_file, where <model> "
-             "is a pattern that will be replaced by each model tested."
-             "Eg : M0:<model>_conn_connectivities_CDR05_only_gpeMapt4c_0399_"
-             "diff_rscores_POST-PRE*s.csv")
+        "-C", "--check-parametric-pval-col", type=str, nargs="+",
+        help="If parametric test pvalue has been computed through palm, "
+             "compare this pvalue to R parametric pval. "
+             "First value is R pval column, second column is Palm pval column."
+             "Each pair of column is separated by || ."
+             "E.g : P-value/Rank||palm_dat_tstat_uncparap_c1. "
+             "Check will be done between R and palm pvalues for each "
+             "connection.")
     parser.add_argument(
         "-V", "--verbose",
         type=int, choices=[0, 1, 2], default=1,
@@ -142,449 +143,354 @@ Functions
 """
 
 
-def get_perm_conn_statvals(conn, type_of_test, perm_outdir=None,
-                           alt_perm_dir=None, alt_perm_file=None,
-                           expect_to_find_perm_data=True):
+def compare_palm_and_r_values(data, filename, palm_stat_col, r_stat_col,
+                              r_pcol, palm_paramp_col=[]):
     """
-    Return stat and pval values for a connection
-    --------------------------------------------
-
-    Steps:
-    1) Determine stat filename patterns corresponding to the type of test run
-    2) Check if permutation data exist for the connection in perm_outdir,
-       alt_perm_outdir or alt_perm_file (in this order)
-    3) Check if it conn permutation value was expected to be computed
-    4) Return perm stat and p values
+    Function to compare results between R and palm
+    ----------------------------------------------
 
     Parameters:
     -----------
-    conn: str
-        connection name.
-    type_of_test: str
-        type of test. Can be ttest, glm, anova or ancova.
-    perm_outdir: str
-        path to permutation outdir. Can be None if it is not specified in json
-        permutation file.
-    alt_perm_dir: str
-        if perm_outdir does not contain data for connection check if data
-        is there.
-    alt_perm_file: str
-        if conn permutation result is not found in perm_outdir, alt_perm_dir
-        check if it exist in alt_perm_file.
-    expect_to_find_perm_data: bool
-        if connection is not found in perm_outdir, alt_perm_dir or
-        alt_perm_file it may not have been computed if its distribution was
-        normal. If connection is not expected to be found and is not found in
-        perm_outdir, alt_perm_dir or alt_perm_file returns "Not Computed"
-        for stat and p vals.
+    data: pandas dataframe
+        Dataframe with assembled R and palm results
+    filename: str
+        Parametric R results file name.
+    palm_stat_col: list of str
+        Palm stat value column names. Each column in the list will be
+        compared to colum in r_stat_col at the same index.
+    r_stat_col: list of str
+        R stat value column names.
+    palm_paramp_col: list of str
+        Palm data eventual column with parametric pvalues. Each column in the
+        list will be compared to colum in r_pcol at the same index.
+    r_pcol: list of str
+        R data pvalues colname.
 
     Returns:
     --------
-    perm_stat_val: float
-        perm stat val
-    perm_pval : float
-        perm pval
+    connections_checked_stats: list of str
+        list of connections for which stat value were checked between R
+        and Palm
+    connections_checked_pvals: list of str
+        list of connections for which pvalues were checked between R
+        and Palm
     """
 
-    # Define stat and pval file pattern
-    stat_file_pattern = None
-    pval_file_pattern = None
+    connections_checked_stats = []
+    connections_checked_pvals = []
+    for conn in data.index:
 
-    if type_of_test in ["ttest", "glm"]:
-        stat_file_pattern = "{0}_*dat_tstat.csv".format(conn)
-        pval_file_pattern = "{0}_*dat_tstat_uncp.csv".format(conn)
-    elif type_of_test in ["anova", "ancova"]:
-        stat_file_pattern = "{0}_*dat_fstat_c4.csv".format(conn)
-        pval_file_pattern = "{0}_*dat_fstat_uncp_c4.csv".format(conn)
-    else:
-        raise ValueError("Unknown type of test {0}".format(type_of_test))
+        # Check stat values similarities
+        connection_checked = 0
+        for idx_col, rcol in enumerate(r_stat_col):
 
-    # Check for conn permutation files in perm outdir
-    files_in_perm_outdir = True
-    if perm_outdir is not None:
-        permutation_stat_file = glob.glob(
-            os.path.join(perm_outdir, "*palm_output", stat_file_pattern))
-        permutation_pval_file = glob.glob(
-            os.path.join(perm_outdir, "*palm_output", pval_file_pattern))
-        if len(permutation_stat_file) > 1:
-            raise ValueError(
-                "Multiple permutations file {0}".format(permutation_stat_file))
-        if len(permutation_stat_file) == 0:
-            files_in_perm_outdir = False
-    else:
-        files_in_perm_outdir = False
+            # If R test is wilcoxon, welch or kruskall wallis test it is
+            # useless to compare to palm test, skipping.
+            # If permutation was not performed also skip.
+            if "Test" in data.columns:
+                if (data.loc[conn, "Test"] in [
+                    "Wilcoxon rank sum test",
+                    "Wilcoxon rank sum test with continuity correction",
+                        "Welch Two Sample t-test", "Kruskal-Wallis"]):
+                    continue
+            if data.loc[conn, palm_stat_col[idx_col]] == "Not computed":
+                continue
 
-    # Check for conn permutation files in alt perm outdir
-    files_in_alt_perm_outdir = True
-    if not files_in_perm_outdir:
-        if alt_perm_dir is None:
-            files_in_alt_perm_outdir = False
-        else:
-            permutation_stat_file = glob.glob(
-                os.path.join(
-                    alt_perm_dir, type_of_test, "*palm_output",
-                    stat_file_pattern))
-            permutation_pval_file = glob.glob(
-                os.path.join(
-                    alt_perm_dir, type_of_test, "*palm_output",
-                    pval_file_pattern))
-            if len(permutation_stat_file) > 1:
-                raise ValueError(
-                    "Multiple permutations file {0}".format(
-                        permutation_stat_file))
-            if len(permutation_stat_file) == 0:
-                files_in_alt_perm_outdir = False
+            r_stat_val = data.loc[conn, rcol]
+            palm_stat_val = data.loc[conn, palm_stat_col[idx_col]]
+            r_stat_val = Decimal(r_stat_val)
+            r_stat_val = float(round(r_stat_val, 4))
 
-    # Check for conn permutation files in alt perm statfile
-    if (not files_in_perm_outdir) and (not files_in_alt_perm_outdir):
-        if alt_perm_file is not None:
+            if r_stat_val != palm_stat_val:
+                msg = "Different stat values file {0} conn {1}".format(
+                    filename, conn)
+                msg += " contrast {0} : ".format(palm_stat_col[idx_col])
+                msg += "{0} vs {1}".format(str(r_stat_val), str(palm_stat_val))
+                raise ValueError(msg)
+            connection_checked += 1
+        if connection_checked == len(r_stat_col):
+            connections_checked_stats.append(conn)
 
-            # > Define column names for stat and pval
-            stat_col = None
-            pval_col = "P-value"
-            if type_of_test in ["ttest", "glm"]:
-                stat_col = "T-value"
-            elif type_of_test in ["anova", "ancova"]:
-                stat_col = "F-value"
-            else:
-                raise ValueError(
-                    "Unknown type of test {0}".format(type_of_test))
+        # Eventually check parametric pvalues similarities
+        connection_checked = 0
+        for idx_col, palmcol in enumerate(palm_paramp_col):
 
-            # > Read file
-            stat_data = pd.read_csv(alt_perm_file, index_col=0)
-            perm_stat_val = stat_data.loc[conn, stat_col]
-            perm_pval = stat_data.loc[conn, pval_col]
-        else:
+            # If R test is wilcoxon, welch or kruskall wallis test it is
+            # useless to compare to palm test, skipping.
+            # If permutation was not performed also skip.
+            if "Test" in data.columns:
+                if (data.loc[conn, "Test"] in [
+                    "Wilcoxon rank sum test",
+                    "Wilcoxon rank sum test with continuity correction",
+                        "Welch Two Sample t-test", "Kruskal-Wallis"]):
+                    continue
+            if data.loc[conn, palmcol] == "Not computed":
+                continue
 
-            # > If not permutation data is not found it is either expected
-            # because permutation may not have been run if connectivity
-            # distribution was normal (often the case with the latest test,
-            # to save time permutation were run only on connectiions with
-            # non normal distribution)
-            if expect_to_find_perm_data:
-                raise ValueError(
-                    "Could not find permutation data for conn {0}".format(
-                        conn))
-            else:
-                perm_stat_val = "Not computed"
-                perm_pval = "Not computed"
-    else:
-        # Read stat and pval and return values
-        permutation_stat_file = permutation_stat_file[0]
-        permutation_pval_file = permutation_pval_file[0]
-        with open(permutation_stat_file, "rt") as open_file:
-            perm_stat_val = open_file.readline().strip("\n")
-        with open(permutation_pval_file, "rt") as open_file:
-            perm_pval = open_file.readline().strip("\n")
-        perm_stat_val = float(perm_stat_val)
-        perm_pval = float(perm_pval)
+            r_param_pval = data.loc[conn, r_pcol[idx_col]]
+            palm_param_pval = data.loc[conn, palmcol]
+            r_param_pval = Decimal(r_param_pval)
+            r_param_pval = float(round(r_param_pval, 4))
+            if r_param_pval != palm_param_pval:
+                print(data.loc[conn, palm_stat_col[idx_col]])
+                msg = "Different pvalues file {0} conn {1}".format(
+                    filename, conn)
+                msg += " contrast {0} : ".format(palmcol)
+                msg += "{0} vs {1}".format(
+                    str(r_param_pval), str(palm_param_pval))
+                raise ValueError(msg)
+            connection_checked += 1
+        if connection_checked == len(palm_paramp_col):
+            connections_checked_pvals.append(conn)
 
-    return perm_stat_val, perm_pval
+    return connections_checked_stats, connections_checked_pvals
 
 
-def get_stats_values(conn, type_of_test, normal_distribution,
-                     analysis_parametric_data,
-                     perm_dir=None, alt_perm_dir=None, alt_perm_file=None):
+def add_pval_col(
+    param_data, perm_data, perm_pval_col, r_pval_col,
+        distribution_col="Normality of residuals (Shapiro p-val > 0.05)"):
     """
-    Function to get parametric and permutation test values and pvalues
-    ------------------------------------------------------------------
-
-    Steps:
-    1) Get parametric tests stat and pvals
-    2) Get permutation tests stat and pvals
-    3) Round stat values at 4 digits
-    4) Check if parametric and permutation stat value are the same (not for all
-       connections)
-    5) Return stat and pvalues and if stat values have been checked between
-       parametric and permutation tests.
+    Function to compute add new pvalues column.
+    -------------------------------------------
 
     Parameters:
     -----------
-    conn: str
-        connection name.
-    type_of_test: str
-        type of test. Can be ttest, glm, anova or ancova.
-    normal_distribution: bool
-        if connection has normal distribution.
-    analysis_parametric_data: pandas Dataframe
-        dataframe with connections and results from R scripts.
-    perm_dir: str
-        path to permutation outdir. Can be None if it is not specified in json
-        permutation file.
-    alt_perm_dir: str
-        if perm_outdir does not contain data for connection check if data
-        is there.
-    alt_perm_file: str
-        if conn permutation result is not found in perm_outdir, alt_perm_dir
-        check if it exist in alt_perm_file.
+    param_data: pandas dataframe
+        parametric data
+    perm_data: pandas dataframe
+        permutation data
+    perm_pval_col: str
+        column name for permutation pvalues.
+    r_pval_col: str
+        column name for parametric test (r) pvalues.
+    distribution_col: str
+        column name for normality of the test
+
+    Returns:
+    -------
+    final_pvals: list of float
+        list of assembled pvalues
+    """
+    final_pvals = []
+    for conn in param_data.index:
+        normal_distrib_conn = param_data.loc[conn, distribution_col]
+        if normal_distrib_conn:
+            final_pvals.append(param_data.loc[conn, r_pval_col])
+        else:
+            final_pvals.append(param_data.loc[conn, r_pval_col])
+    return final_pvals
+
+
+def fdrcorrection_intra_inter_networks(
+    conns, pvalues,
+        inter=[["Sal_", "DMN_"], ["Sal_", "ECN_"], ["DMN_", "ECN_"]]):
+
+    """
+    FDR correction by inter-intra networks
+    --------------------------------------
+
+    Parameters:
+    -----------
+    conns: list of str
+        list of connections.
+    pvalues: list of float
+        list of pvalues for each connection.
+    inter: list of str
+        pattern in names of inter networks connections
 
     Returns:
     --------
-    parametric_stat: str/float
-        parametric test stat value
-    parametric_pval: str/float
-        parametric test pvalue
-    round_permutation_stat: str/float
-        permutation test stat value, rounded.
-    permutation_pval:
-        permutation test p value
-    check_adequacy_between_param_perm: bool
-        whether stat values have been compared between parametric and
-        permutation tests.
+    ordered_pvalues_list:
+        ordered pvalues corrected by intra/internetwork fdr correction.
     """
 
-    check_adequacy_between_param_perm = False
+    # Get all inter and intra networks connections
+    inter_networks_conns = {}
+    intra_networks_conns = {}
+    for idx_conn, conn in enumerate(conns):
+        inter_elts_idx = None
+        for idx, inter_elts in enumerate(inter):
+            elts_in_conn = 0
+            for elt in inter_elts:
+                if elt in conn:
+                    elts_in_conn += 1
+            if elts_in_conn == len(inter_elts):
+                if inter_elts_idx is None:
+                    inter_elts_idx = idx
+                else:
+                    msg = "Cant determine internetwork connection for conn {0}"
+                    raise ValueError(msg.format(conn))
+                inter_networks_conns[conn] = pvalues[idx_conn]
+        if conn not in inter_networks_conns.keys():
+            intra_networks_conns[conn] = pvalues[idx_conn]
 
-    # Get parametric stat and pval
-    conn_name = conn.replace(".", "_to_")
-    parametric_pval = analysis_parametric_data.loc[conn, "P-value"]
-    if type_of_test == "ttest":
-        parametric_stat = analysis_parametric_data.loc[conn, "T-value/Rank"]
-    elif type_of_test == "glm":
-        parametric_stat = analysis_parametric_data.loc[conn, "t-value"]
-    else:
-        parametric_stat = analysis_parametric_data.loc[conn, "F-value"]
+    # Check expected number of connection
+    # TODO : change these harcoded values
+    if len(intra_networks_conns.keys()) != 408:
+        raise ValueError(
+            "Unexpected number of intranetworks connections : {0}".format(
+                str(len(intra_networks_conns.keys()))))
 
-    # Get permutation stat and pvals
-    expect_to_find_perm_data = None
-    if normal_distribution:
-        expect_to_find_perm_data = False
-    else:
-        expect_to_find_perm_data = True
-    perm_stat_val, permutation_pval = get_perm_conn_statvals(
-        conn=conn_name,
-        type_of_test=type_of_test,
-        perm_outdir=perm_dir,
-        alt_perm_dir=alt_perm_dir,
-        alt_perm_file=alt_perm_file,
-        expect_to_find_perm_data=expect_to_find_perm_data)
+    if len(inter_networks_conns.keys()) != 817:
+        raise ValueError(
+            "Unexpected number of intranetworks connections : {0}".format(
+                str(len(inter_networks_conns.keys()))))
 
-    # Round values and check that stats values are the same
-    if perm_stat_val != "Not computed":
-        perm_stat_val = Decimal(perm_stat_val)
-        round_permutation_stat = round(perm_stat_val, 4)
-        abs_permutation_stat = abs(round_permutation_stat)
-    else:
-        round_permutation_stat = "Not computed"
+    # Correct pvalues for inter networks
+    internetwork_conns = list(inter_networks_conns.keys())
+    internetwork_conns_pvalues = []
+    for conn in internetwork_conns:
+        internetwork_conns_pvalues.append(inter_networks_conns[conn])
+    rejected_inter_net, fdr_corr_pvalues_inter_net = fdrcorrection(
+        pvals=internetwork_conns_pvalues,
+        alpha=0.05,
+        method='indep')
 
-    parametric_stat = Decimal(parametric_stat)
-    round_parametric_stat = round(parametric_stat, 4)
-    abs_parametric_stat = abs(round_parametric_stat)
+    # Same for intranetworks
+    intranetwork_conns = list(intra_networks_conns.keys())
+    intranetwork_conns_pvalues = []
+    for conn in intranetwork_conns:
+        intranetwork_conns_pvalues.append(intra_networks_conns[conn])
+    rejected_intra_net, fdr_corr_pvalues_intra_net = fdrcorrection(
+        pvals=intranetwork_conns_pvalues,
+        alpha=0.05,
+        method='indep')
 
-    # Check if parametric and permutation stat value are the same
-    if perm_stat_val != "Not computed":
-        if type_of_test in ["ttest", "anova"]:
+    # Concatenante all pvalues together
+    final_pvalues = {}
+    for idx, conn in enumerate(internetwork_conns):
+        final_pvalues[conn] = {
+            "p": fdr_corr_pvalues_inter_net[idx],
+            "rejected": rejected_inter_net[idx]}
+    for idx, conn in enumerate(intranetwork_conns):
+        final_pvalues[conn] = {
+            "p": fdr_corr_pvalues_intra_net[idx],
+            "rejected": rejected_intra_net[idx]}
+    if len(final_pvalues.keys()) != 1225:
+        raise ValueError(
+            "Unexpected number of concatenated pvals : {0}".format(
+                str(len(final_pvalues.keys()))))
+    ordered_pvalues_list = []
+    rejected_pvalues_list = []
+    for conn in conns:
+        ordered_pvalues_list.append(final_pvalues[conn]["p"])
+        rejected_pvalues_list.append(final_pvalues[conn]["rejected"])
 
-            # > If non parametric was used in parametric tests scripts
-            # (by default R scripts perform non parametric tests if connection
-            # distribution is not normal) or if Welch correction was used for
-            # ttest do not check if permutation stat value and stat value
-            # from R 'parametric test' scripts are the same (they will not be).
-            # There should be at least one connection with normal distribution
-            # where permutation test was also run to check that parametric
-            # and permutation scripts to the same test (same absolute stat
-            # value)
-            if analysis_parametric_data.loc[conn, "Test"] not in [
-                "Wilcoxon rank sum test",
-                "Wilcoxon rank sum test with continuity correction",
-                "Welch Two Sample t-test",
-                    "Kruskal-Wallis"]:
-                if abs_parametric_stat != abs_permutation_stat:
-                    print(conn_name, type_of_test)
-                    raise ValueError(
-                        "Different stat values {0} and {1}".format(
-                            str(abs_parametric_stat),
-                            str(abs_permutation_stat)))
-                check_adequacy_between_param_perm = True
-        else:
-            if abs_parametric_stat != abs_permutation_stat:
-                print(conn_name, type_of_test)
-                raise ValueError(
-                    "Different stat values {0} and {1}".format(
-                        str(abs_parametric_stat), str(abs_permutation_stat)))
-            check_adequacy_between_param_perm = True
-
-    return (parametric_stat, parametric_pval, round_permutation_stat,
-            permutation_pval, check_adequacy_between_param_perm)
+    return ordered_pvalues_list, rejected_pvalues_list
 
 
 """
 End Functions
 """
+# Get param + perm data
+param_file = inputs["parametric_file"]
+perm_file = inputs["permutation_file"]
+
 # Read data
-with open(inputs["parametric_json"], "rt") as open_file:
-    parametric_json = json.load(open_file)
-with open(inputs["permutation_json"], "rt") as open_file:
-    permutation_json = json.load(open_file)
+param_data = pd.read_csv(param_file, index_col=0)
+perm_data = pd.read_csv(perm_file)
 
-# Check same number of subjects in parametric & permutation tests
-if parametric_json["subjects_info"] != permutation_json["subjects_info"]:
-    print(parametric_json["subjects_info"])
-    print(permutation_json["subjects_info"])
+# Rename connection in perm data
+perm_data.index = [x.replace("_to_", ".") for x in perm_data["Conn"]]
+
+# Add all cols to each param file
+perm_keep_cols = inputs["perm_keep_cols"]
+perm_keep_cols_info = OrderedDict()
+for conn in param_data.index:
+    for col in perm_keep_cols:
+        if col not in perm_keep_cols_info.keys():
+            perm_keep_cols_info[col] = []
+
+        # > Add not computed value
+        if conn not in perm_data.index:
+            perm_keep_cols_info[col].append("Not computed")
+        else:
+            perm_keep_cols_info[col].append(perm_data.loc[conn, col])
+for col in sorted(perm_keep_cols):
+    param_data[col] = perm_keep_cols_info[col]
+
+# Check stat val for normal distrib + eventually pvals uncparap
+stats_check_r = []
+stats_check_palm = []
+for both_cols in inputs["stat_check_col"]:
+    both_cols = both_cols.split("_splithere_")
+    r_col = both_cols[0]
+    palm_col = both_cols[1]
+    stats_check_r.append(r_col)
+    stats_check_palm.append(palm_col)
+pvals_check_r = []
+pvals_check_palm = []
+
+for both_cols in inputs["check_parametric_pval_col"]:
+    both_cols = both_cols.split("_splithere_")
+    r_col = both_cols[0]
+    palm_col = both_cols[1]
+    pvals_check_r.append(r_col)
+    pvals_check_palm.append(palm_col)
+conn_checked_stats, conn_checked_pvals = compare_palm_and_r_values(
+    data=param_data,
+    filename=param_file,
+    palm_stat_col=stats_check_palm,
+    r_stat_col=stats_check_r,
+    palm_paramp_col=pvals_check_palm,
+    r_pcol=pvals_check_r)
+if len(conn_checked_stats) == 0:
     raise ValueError(
-        "Different number of subjects in parametric and permutation json.")
+        "{0} vs {1} : difference between R and palm should be checked for "
+        "at least 1 conn.".format(param_file, perm_file))
 
-# Prepare json output for parametric + permutations tests
-json_output = {"subjects_info": permutation_json["subjects_info"],
-               "commands_scripts": permutation_json["commands_scripts"],
-               "output_files": {
-               "with_covariates": {}, "without_covariates": {}},
-               "nb_conns_with_normal_distrib_doublechecked_with_perm": {}}
+# Create col with pvalues from parametric and perm tests
+assembled_pvals = add_pval_col(
+    param_data=param_data,
+    perm_data=perm_data,
+    perm_pval_col=inputs["perm_pval_col"],
+    r_pval_col=inputs["r_pval_col"],
+    distribution_col="Normality of residuals (Shapiro p-val > 0.05)")
+out_data = param_data
+out_data[
+    "Permutation pval (only for test with non normal data)"] = assembled_pvals
 
-# Get alternative perm dir stat files
-alternative_permdirs = {}
-alternative_statfiles_patterns = {}
-if inputs["alt_perm_outdir"] is not None:
-    for elt in inputs["alt_perm_outdir"]:
-        tp, permdir = elt.split(":")
-        alternative_permdirs[tp] = permdir
-if inputs["alt_perm_statfile_pattern"] is not None:
-    for elt in inputs["alt_perm_statfile_pattern"]:
-        tp, perm_statfile_pattern = elt.split(":")
-        alternative_statfiles_patterns[tp] = perm_statfile_pattern
+# FDR correction
+rejected, fdr_corr_pvalues = fdrcorrection(
+    pvals=assembled_pvals,
+    alpha=0.05,
+    method='indep')
+out_data[
+    "Corrected p-val (BH) (include permutation results)"] = fdr_corr_pvalues
+col = "Survive FDR correction at q-FDR < 0.05 (include permutation results)"
+out_data[col] = rejected
 
-# Assemble data
-for type_analysis in ["without_covariates", "with_covariates"]:
-    json_output[
-        "nb_conns_with_normal_distrib_doublechecked_with_perm"][
-            type_analysis] = {}
-    for tp in inputs["timepoints"]:
+# Bonus : FDR corr by intra-inter network
+(ordered_pvalues_list,
+    rejected_pvalues_list) = fdrcorrection_intra_inter_networks(
+        conns=list(out_data.index),
+        pvalues=assembled_pvals,
+        inter=[["Sal_", "DMN_"], ["Sal_", "ECN_"], ["DMN_", "ECN_"]])
+colname = "Corrected p-val (BH-inter + BH-intra) (include permutation results)"
+out_data[colname] = ordered_pvalues_list
+colname = "Survive FDR correction at q-FDR < 0.05 (BH-inter + BH-intra) "
+colname += "(include permutation results)"
+out_data[colname] = rejected_pvalues_list
 
-        # Get for an analyses files with/without covariates
-        analysis_parametric_file = parametric_json[
-            "output_files"][type_analysis][tp].strip("\n")
-        type_of_test = os.path.basename(analysis_parametric_file).split("_")[0]
+# Create csv output for analysis and timepoint and model
+out_csv = os.path.join(
+    inputs["outdir"], os.path.basename(param_file).replace(
+        ".csv", "_plus_perm_results.csv"))
+out_data.to_csv(out_csv, index=True)
 
-        # Check if permutation dir exists in json file
-        analysis_permutation_dir = None
-        if tp in permutation_json["outdirs"][type_analysis].keys():
-            analysis_permutation_dir = permutation_json["outdirs"][
-                type_analysis][tp]
-
-        print(inputs["analysis_name"], tp, type_of_test)
-
-        # Read parametric data
-        analysis_parametric_data = pd.read_csv(
-            analysis_parametric_file, index_col=0)
-
-        # Stores results
-        connections = analysis_parametric_data.index
-        perm_stat_values = []
-        perm_pvalues = []
-
-        # Check that a normally distributed connection has been confronted
-        # to permutation test
-        normally_distribution_connectivity_check = False
-        nb_normally_distribution_connectivity_check = 0
-        normal_distribution_col = "Normal distribution within the groups (Shapiro p-val > 0.05)"
-        if normal_distribution_col not in analysis_parametric_data.columns:
-            normal_distribution_col = "Normality of residuals (Shapiro p-val > 0.05)"
-
-        # Check if alt_perm_dir is given for this timepoint
-        alt_perm_dir = None
-        if tp in alternative_permdirs.keys():
-            alt_perm_dir = alternative_permdirs[tp]
-
-        # Check if alt_perm_pattern is given for this timepoint and if
-        # an alternative perm stat file can be found
-        alt_perm_file = None
-        if tp in alternative_statfiles_patterns.keys():
-            alt_perm_pattern = alternative_statfiles_patterns[tp]
-            alt_perm_pattern = alt_perm_pattern.replace(
-                "<model>", type_of_test)
-            alt_perm_file = glob.glob(alt_perm_pattern)
-            if len(alt_perm_file) == 0:
-                raise ValueError(
-                    "Cannot find alt stat file from pattern {0}".format(
-                        alternative_statfiles_patterns[tp]))
-            if len(alt_perm_file) > 1:
-                raise ValueError(
-                    "Multiple alt files found from pattern {0} : {1}".format(
-                        alternative_statfiles_patterns[tp], alt_perm_file))
-            alt_perm_file = alt_perm_file[0]
-
-        for conn in connections:
-            conn_distribution = analysis_parametric_data.loc[
-                conn, normal_distribution_col]
-            (parametric_stat, parametric_pval, round_permutation_stat,
-             permutation_pval,
-             check_adequacy_between_param_perm) = get_stats_values(
-                conn=conn,
-                type_of_test=type_of_test,
-                normal_distribution=conn_distribution,
-                analysis_parametric_data=analysis_parametric_data,
-                perm_dir=analysis_permutation_dir,
-                alt_perm_dir=alt_perm_dir,
-                alt_perm_file=alt_perm_file)
-
-            # > Add perm stat value
-            perm_stat_values.append(round_permutation_stat)
-
-            # > If normal distribution, add to permutation pvalues parametric
-            # pvalue
-            if conn_distribution:
-                perm_pvalues.append(parametric_pval)
-            else:
-                perm_pvalues.append(permutation_pval)
-
-            # > If stat val difference between parametric and permutation was
-            # tested, report it
-            if check_adequacy_between_param_perm:
-                normally_distribution_connectivity_check = True
-                nb_normally_distribution_connectivity_check += 1
-
-        # Check that stat val difference between parametric and permutation was
-        # tested, for at least one connection
-        # If it is not the case, fail the assembling of all results.
-        if not normally_distribution_connectivity_check:
-            raise ValueError("Difference between parametric and permutation "
-                             "tests should be checked for at least "
-                             "one connection.")
-
-        # Create new output data
-        new_analysis_data = analysis_parametric_data.copy()
-        new_analysis_data["Permutation stat val"] = perm_stat_values
-        new_analysis_data["Permutation pval (only for test with non normal data)"] = perm_pvalues
-
-        # Correct using fdr
-        rejected, fdr_corr_pvalues = fdrcorrection(
-            pvals=new_analysis_data["Permutation pval (only for test with non normal data)"],
-            alpha=0.05,
-            method='indep')
-        new_analysis_data["Corrected p-val (BH) (include permutation results)"] = fdr_corr_pvalues
-        new_analysis_data["Survive FDR correction at q-FDR < 0.05 (include permutation results)"] = rejected
-
-        # Create csv output for analysis and timepoint and model
-        tp_dir = os.path.join(inputs["outdir"], tp)
-        if not os.path.isdir(tp_dir):
-            os.mkdir(tp_dir)
-        out_csv = os.path.join(
-            tp_dir, os.path.basename(analysis_parametric_file).replace(
-                ".csv", "_plus_perm_results.csv"))
-        new_analysis_data.to_csv(out_csv, index=True)
-
-        # Add output file to json output log
-        json_output["output_files"][type_analysis][tp] = out_csv
-        json_output[
-            "nb_conns_with_normal_distrib_doublechecked_with_perm"][
-                type_analysis][
-                    tp] = nb_normally_distribution_connectivity_check
+# Add output file to json output log
+outputs["output_file"] = out_csv
+outputs["nb_conns_with_stat_doublechecked_with_perm"] = len(
+    conn_checked_stats)
+outputs["nb_conns_with_pvals_doublechecked_with_perm"] = len(
+    conn_checked_pvals)
 
 
 """
 Write logs
 """
-
-# Write json output log
-json_log_file = os.path.join(
-    inputs["outdir"], inputs["analysis_name"] + ".json")
-with open(json_log_file, "wt") as open_file:
-    json.dump(json_output, open_file, sort_keys=True, check_circular=True,
-              indent=4)
-outputs["Json file"] = json_log_file
-
 # Write inputs/outputs logs
-logdir = os.path.join(inputs["outdir"], "logs", inputs["analysis_name"])
+logdir = os.path.join(inputs["outdir"], "logs")
 if not os.path.isdir(logdir):
     os.makedirs(logdir)
 output_basename = "mapt_rsfmri_assemble_param_perm_results"
