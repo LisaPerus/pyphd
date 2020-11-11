@@ -253,3 +253,58 @@ def delete_im_first_volumes(im_file, nb_vol, outdir, erase=True):
                 im_file))
     nibabel.save(new_im, new_im_file)
     return new_im_file
+
+
+def get_roi_correspondance_to_atlas_file(roi_infile, atlas, roi_val=1):
+    """Returns for a nifti image containing a ROI values of an atlas for
+    all the voxels in the ROI.
+    ---------------------------------------------------------------------
+
+    Parameters
+    ----------
+    roi_infile: str
+        path to 3D image.
+    atlas: str
+        path to atlas image.
+    roi_val: int
+        intensity value of ROI of interest in roi_infile.
+
+    Returns
+    -------
+    coord_values: dict
+        dictionnary with for each atlas value number of voxels from the roi.
+    percentage_values: dict
+        same as coord_values but with percentage values.
+    """
+
+    # Extract roi infile voxels coordinates
+    im = nibabel.load(roi_infile)
+    atlas_im = nibabel.load(atlas)
+    coordinates_array = np.where(im.get_data() == roi_val)
+    coordinates = []
+    for idx, elt in enumerate(coordinates_array[0]):
+        coordinates.append(
+            [elt, coordinates_array[1][idx], coordinates_array[2][idx]])
+
+    coord_values = {}
+    for coord in coordinates:
+
+        # Get these voxel coordinates in mm
+        coord_mm = get_vox_to_mm_pos(coord, im.affine)
+
+        # Transform to atlas voxel coordinates
+        atlas_vox_coord = get_mm_to_vox_pos(coord_mm, atlas_im.affine)
+
+        # Get values for each of these coordinates in atlas
+        val_atlas = atlas_im.get_data()[atlas_vox_coord]
+
+        if val_atlas not in coord_values:
+            coord_values[val_atlas] = 1
+        else:
+            coord_values[val_atlas] += 1
+
+    # Get percentage for each value
+    percentage_values = {}
+    for val, nb_voxels in coord_values.items():
+        percentage_values[val] = (nb_voxels / len(coordinates)) * 100
+    return coord_values, percentage_values
