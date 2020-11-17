@@ -20,7 +20,8 @@ import numpy as np
 from pyphd.fc_analyses.conn import extract_connectivities, extract_group
 from pyphd.constants import (SCRIPTS_STATS, MODELS_COVARIATES,
                              RSFMRI_TEMPORAL_COVARIATES, ANALYSES_DETAILS_JSON,
-                             CONN_INPUTS, MAPT_RSFMRI_COV_TYPES)
+                             CONN_INPUTS, MAPT_RSFMRI_COV_TYPES,
+                             CONN_NETWORKS_ANALYSES)
 
 # Script documentation
 DOC = """
@@ -107,6 +108,12 @@ def get_cmd_line_args():
         "-G", "--extract-group", action="store_true",
         help="Option to extract subgroup.")
     parser.add_argument(
+        "-C", "--conn-network-analysis", type=str,
+        help="Name of Conn network analysis. The corresponding conn path will "
+             "be selected in the CONN_NETWORKS_ANALYSES variable in constants "
+             "file. If none is specified CONN_INPUTS variable in constant "
+             "file is selected.")
+    parser.add_argument(
         "-J", "--group-json", type=is_file,
         help="Json with group extraction info", default=ANALYSES_DETAILS_JSON)
     parser.add_argument(
@@ -173,6 +180,7 @@ if "additional_conn_file_covariates" in group_extraction_info[
     conn_file_additional_covariates = group_extraction_info[
         analysis_name]["additional_conn_file_covariates"]
 
+
 """
 Process without covariates
 """
@@ -189,6 +197,21 @@ if not os.path.isdir(analysis_dir):
     os.mkdir(analysis_dir)
 
 for tp in inputs["timepoints"]:
+
+    # Select conn data information if specific conn network analysis is
+    # specified
+    if inputs["conn_network_analysis"] is not None:
+        conn_network_analysis = CONN_NETWORKS_ANALYSES[
+            inputs["conn_network_analysis"]][tp]
+        conn_file_pattern = conn_network_analysis["conn_file_pattern"]
+        datafile = conn_network_analysis["datafile"]
+        conn_datapath = conn_network_analysis["conn_datapath"]
+        tp_name = conn_network_analysis["timepoint_name"]
+    else:
+        conn_file_pattern = None
+        datafile = None
+        conn_datapath = None
+        tp_name = None
 
     # For each model, extract connectivities, group data and run test
     for model in inputs["models"]:
@@ -264,9 +287,9 @@ for tp in inputs["timepoints"]:
             conn_file = extract_connectivities(
                 inputs["group_name"], tp=tp, center_name=inputs["center"],
                 covariates=model_spe_data["covariates_extract"], network=None,
-                conn_file_pattern=None, datafile=None,
-                outdir=model_spe_data["outdir"], conn_datapath=None,
-                tp_name=None)
+                conn_file_pattern=conn_file_pattern, datafile=datafile,
+                outdir=model_spe_data["outdir"], conn_datapath=conn_datapath,
+                tp_name=tp_name)
 
             group_colname = inputs["group_name"]
             if inputs["extract_group"]:
