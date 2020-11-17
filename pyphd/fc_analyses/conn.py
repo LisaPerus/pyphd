@@ -619,3 +619,260 @@ def create_adjacency_matrix(connections, connections_values,
             conn[1], conn[0]] = connections_values[idx]
 
     return adjacency_matrix, all_elements
+
+
+def parse_conn_roi_to_roi_output_conn_line(line, statistic):
+    """
+    Parse conn roi to roi output textfile exported from the GUI connection
+    line.
+
+    Parameters
+    ----------
+    line: str
+        line to parse.
+    statistic: str
+        statistic used (T or F).
+
+    Returns
+    -------
+    conn: list of str
+        name of ROIs in the connection
+    conn_name: str
+        connection name.
+    stats_info: list of str
+        list of pvalues
+    df: str
+        degree of freedom
+    residuals: str
+        residuals for connection
+    """
+    if statistic == "T":
+        line = line.split("T(")
+    else:
+        line = line.split("F(")
+
+    # Get conn name
+    conn = line[0]
+    conn = conn.replace("Connection ", "")
+    conn = conn.strip(" ")
+    conn = conn.split(" -")
+    conn = [x.strip(" ") for x in conn]
+    conn_name = ".".join(conn)
+    if len(conn) != 2:
+        raise ValueError(
+            "Could not split correctly connection : " + str(conn_name))
+    conn_details = line[1]
+    conn_details = conn_details.split(") = ")
+    df_and_residuals = conn_details[0]
+    stats_info = conn_details[1]
+    df_and_residuals = df_and_residuals.split(",")
+    df = df_and_residuals[0]
+    residuals = df_and_residuals[1]
+    stats_info = stats_info.split(" ")
+    stats_info = [x for x in stats_info if len(x) != 0]
+
+    return conn, conn_name, stats_info, df, residuals
+
+
+def parse_conn_roi_to_roi_output_textfile(
+        conn_textfile, method, statistic, conn_version, outfile):
+    """
+    Parse conn roi to roi output textfile exported from the GUI, to
+    reorganize it into a csv file with information for each connection.
+
+    Parameters
+    ----------
+    conn_textfile: str
+        path to Conn ROI-to-ROI textfile.
+    method: str
+        name of the correction method, can be 2_SPC, 3_TFCE, 6_NBS.
+    statistic : str
+        name of statistic used, T or F.
+    conn_version: str
+        conn version
+    outfile: str
+        path to output file
+
+    Returns
+    -------
+    outfile: str
+        path to parsed conn file
+    """
+    if conn_version != "Conn19c":
+        raise ValueError(
+            "Parsing is not available for versions other than Conn19c")
+
+    # Read data
+    with open(conn_textfile, "rt") as open_file:
+        lines = open_file.readlines()
+
+    # SPC or NBS
+    if method == "2_SPC" or method == "6_NBS":
+        if method == "2_SPC":
+            unit = "Cluster"
+        else:
+            unit = "Network"
+        conn_roi_header = ["ROI1", "ROI2", unit]
+        header = [unit + "_score_stat", unit + "_score_punc",
+                  unit + "_score_pFDR",
+                  unit + "_score_pFWE", unit + "_Mass_stat",
+                  unit + "_Mass_punc", unit + "_Mass_pFDR",
+                  unit + "_Mass_pFWE", unit + "_size_stat",
+                  unit + "_size_punc", unit + "_size_pFDR",
+                  unit + "_size_pFWE"]
+        connections_header_cols = ["Conn_stat", "Conn_punc", "Conn_FDR"]
+        results = {}
+        unit_nb = 0
+        nb_line = 0
+        for line in lines[1:]:
+            nb_line += 1
+            if len(line.strip("\n").strip(" ")) == 0:
+                continue
+            if ("Cluster" in line) or ("Network" in line):
+                unit_nb += 1
+                if unit_nb in results.keys():
+                    raise ValueError(
+                        "Cluster/Network doublon for : {0}".format(
+                            conn_textfile))
+                results[unit_nb] = {
+                    "Connections": {}}
+                line = line.strip("\n").split("Score = ")
+                line_scores = line[1].split(" ")
+                line_scores = [x for x in line_scores if len(x) != 0]
+
+                # > 4 elements are expected (score, punc, pFDR, pFWE)
+                if len(line_scores) != 4:
+                    msg = "Unexpected nb of elements at line " + str(nb_line)
+                    msg += " file " + conn_textfile
+                    raise ValueError(msg)
+
+                results[unit_nb][unit + "_score_stat"] = line_scores[0]
+                results[unit_nb][unit + "_score_punc"] = line_scores[1]
+                results[unit_nb][unit + "_score_pFDR"] = line_scores[2]
+                results[unit_nb][unit + "_score_pFWE"] = line_scores[3]
+            elif "Connection " not in line:
+                if "Mass = " in line:
+                    line_split = "Cluster_Mass"
+                    type_score = "Mass"
+                    line = line.strip("\n").split("Mass = ")
+                elif "Size = ":
+                    line_split = "Cluster_size"
+                    line = line.strip("\n").split("Size = ")
+                    type_score = "size"
+                else:
+                    raise ValueError(
+                        "{0} cannot determine how to process line {1}".format(
+                            conn_textfile, str(nb_line)))
+                line_scores = line[1].split(" ")
+                line_scores = [x for x in line_scores if len(x) != 0]
+
+                # > 4 elements are expected (score, punc, pFDR, pFWE)
+                if len(line_scores) != 4:
+                    msg = "Unexpected nb of elements at line " + str(nb_line)
+                    msg += " file " + conn_textfile
+                    raise ValueError(msg)
+
+                results[unit_nb][
+                    unit + "_" + type_score + "_stat"] = line_scores[0]
+                results[unit_nb][
+                    unit + "_" + type_score + "_punc"] = line_scores[1]
+                results[unit_nb][
+                    unit + "_" + type_score + "_pFDR"] = line_scores[2]
+                results[unit_nb][
+                    unit + "_" + type_score + "_pFWE"] = line_scores[3]
+            else:
+                (conn, conn_name, pvals_info, df,
+                    residuals) = parse_conn_roi_to_roi_output_conn_line(
+                        line, statistic=statistic)
+                if conn_name in results[unit_nb]["Connections"].keys():
+                    raise ValueError(
+                        "Doublon connections : {0}".format(conn_name))
+                results[unit_nb]["Connections"][conn_name] = {}
+                results[unit_nb]["Connections"][conn_name]["ROI1"] = conn[0]
+                results[unit_nb]["Connections"][conn_name]["ROI2"] = conn[1]
+                results[unit_nb]["Connections"][conn_name][
+                    "Conn_stat"] = pvals_info[0]
+                results[unit_nb]["Connections"][conn_name][
+                    "Conn_punc"] = pvals_info[1]
+                results[unit_nb]["Connections"][conn_name][
+                    "Conn_FDR"] = pvals_info[2]
+
+    # TFCE
+    elif method == "3_TFCE":
+        unit = "Cluster"
+        conn_roi_header = ["ROI1", "ROI2", unit]
+        header = ["Cluster_Peak_TFCE_stat", "Cluster_Peak_TFCE_punc",
+                  "Cluster_Peak_TFCE_pFDR", "Cluster_Peak_TFCE_pFWE"]
+        connections_header_cols = ["Conn_stat", "Conn_punc", "Conn_FDR"]
+        results = {}
+        cluster_nb = 0
+        nb_line = 0
+        for line in lines[1:]:
+            nb_line += 1
+            if len(line.strip("\n").strip(" ")) == 0:
+                continue
+            if unit in line:
+                cluster_nb += 1
+                if cluster_nb in results.keys():
+                    raise ValueError(
+                        "Cluster doublon for 2_SPC : {0} cluster {1}".format(
+                            conn_textfile, str(cluster_nb)))
+                results[cluster_nb] = {
+                    "Cluster_Peak_TFCE_stat": None,
+                    "Cluster_Peak_TFCE_punc": None,
+                    "Cluster_Peak_TFCE_pFDR": None,
+                    "Cluster_Peak_TFCE_pFWE": None,
+                    "Connections": {}}
+                line = line.strip("\n").split("TFCE = ")
+                line_scores = line[1].split(" ")
+                line_scores = [x for x in line_scores if len(x) != 0]
+
+                # > 4 elements are expected (score, punc, pFDR, pFWE)
+                if len(line_scores) != 4:
+                    msg = "Unexpected nb of elements at line " + str(nb_line)
+                    msg += " file " + conn_textfile
+                    raise ValueError(msg)
+                results[cluster_nb]["Cluster_Peak_TFCE_stat"] = line_scores[0]
+                results[cluster_nb]["Cluster_Peak_TFCE_punc"] = line_scores[1]
+                results[cluster_nb]["Cluster_Peak_TFCE_pFDR"] = line_scores[2]
+                results[cluster_nb]["Cluster_Peak_TFCE_pFWE"] = line_scores[3]
+            elif "Connection " in line:
+                line = line.strip("\n")
+                (conn, conn_name, pvals_info, df,
+                    residuals) = parse_conn_roi_to_roi_output_conn_line(
+                        line, statistic=statistic)
+                if conn_name in results[cluster_nb]["Connections"].keys():
+                    raise ValueError(
+                        "Doublon connections : {0}".format(conn_name))
+                results[cluster_nb]["Connections"][conn_name] = {}
+                results[cluster_nb]["Connections"][conn_name]["ROI1"] = conn[0]
+                results[cluster_nb]["Connections"][conn_name]["ROI2"] = conn[1]
+                results[cluster_nb]["Connections"][conn_name][
+                    "Conn_stat"] = pvals_info[0]
+                results[cluster_nb]["Connections"][conn_name][
+                    "Conn_punc"] = pvals_info[1]
+                results[cluster_nb]["Connections"][conn_name][
+                    "Conn_FDR"] = pvals_info[2]
+            else:
+                raise ValueError(
+                    "Cannot recognize how to parse line " + str(nb_line) + ".")
+    # Other method
+    else:
+        raise ValueError(
+            "Parsing not implemented for method {0}.".format(method))
+
+    # Write output
+    with open(outfile, "wt") as open_file:
+        open_file.write(",".join(
+            conn_roi_header + header + connections_header_cols))
+        open_file.write("\n")
+        for unit, unit_data in results.items():
+            for conn, conn_data in unit_data["Connections"].items():
+                line = [conn_data["ROI1"], conn_data["ROI2"], str(unit)]
+                for col in header:
+                    line.append(unit_data[col])
+                for col in connections_header_cols:
+                    line.append(conn_data[col].strip("\n"))
+                open_file.write(",".join(line))
+                open_file.write("\n")
+    return outfile
