@@ -157,7 +157,8 @@ SCRIPTS_STATS = {"ttest" : os.path.join(SCRIPT_DIR, "GIT_REPOS", "RPhd", "script
                  "anova" : os.path.join(SCRIPT_DIR, "GIT_REPOS", "RPhd", "scripts", "anova.R"),
                  "glm" : os.path.join(SCRIPT_DIR, "GIT_REPOS", "RPhd", "scripts", "glm_two_groups_plus_covariates.R"),
                  "ancova" : os.path.join(SCRIPT_DIR, "GIT_REPOS", "RPhd", "scripts", "ancova.R"),
-                 "two_way_anova" : os.path.join(SCRIPT_DIR, "GIT_REPOS", "RPhd", "scripts", "two_way_anova.R")
+                 "two_way_anova" : os.path.join(SCRIPT_DIR, "GIT_REPOS", "RPhd", "scripts", "two_way_anova.R"),
+                 "posthoc_two_way_anova" : os.path.join(SCRIPT_DIR, "GIT_REPOS", "RPhd", "scripts", "posthoc_two_way_anova.R")
 }
 
 # Different model with different covariates can be used
@@ -293,4 +294,113 @@ CONN_INPUTS_OLD = {
         "conn_datapath" : os.path.join(MEDIA_SCRIPT, "MAPT_Conn_Montpellier_Bordeaux_Toulouse", "conn_analysis", "results", "firstlevel", "SBC_04_Grecius_R50", "diff_zscores_Condition002-Condition001"),
         "timepoint_name" : "diff_zscores_POST-PRE"
         }
+}
+
+# Path to conn roi-to-roi analyses outputs for Cambridge R7 atlas
+# (zscores for MAPT common subjects at M0/M36/M36-M0)
+R7_CONN_INPUTS_ZSCORES = {
+    "M0" : {
+        "conn_file_pattern" : "resultsROI_Subject*_Condition001.mat",
+        "datafile" : os.path.join(os.getenv("HOME"), "PHD", "NOTES", "Conn_input_Montpellier_Bordeaux_Toulouse_MAPT.csv"),
+        "outdir" : None,
+        "conn_datapath" : os.path.join(MEDIA_SCRIPT, "MAPT_Conn_Montpellier_Bordeaux_Toulouse", "conn_analysis", "results", "firstlevel", "SBC_01_Cambridge_R7_ROI_to_ROI"),
+        "timepoint_name" : "zscores_common_subjects_timesteps_PREPOST_at_PRE"
+    },
+    "M36" : {
+        "conn_file_pattern" : "resultsROI_Subject*_Condition002.mat",
+        "datafile" : os.path.join(os.getenv("HOME"), "PHD", "NOTES", "Conn_input_Montpellier_Bordeaux_Toulouse_MAPT.csv"),
+        "outdir" : None,
+        "conn_datapath" : os.path.join(MEDIA_SCRIPT, "MAPT_Conn_Montpellier_Bordeaux_Toulouse", "conn_analysis", "results", "firstlevel", "SBC_01_Cambridge_R7_ROI_to_ROI"),
+        "timepoint_name" : "zscores_common_subjects_timesteps_PREPOST_at_POST"
+    },
+    "M36-M0" : {
+        "conn_file_pattern" : "diff_zscores_resultsROI_*_Condition001*_Condition002.mat",
+        "datafile" : os.path.join(os.getenv("HOME"), "PHD", "NOTES", "Conn_input_Montpellier_Bordeaux_Toulouse_MAPT.csv"),
+        "outdir" : None,
+        "conn_datapath" : os.path.join(MEDIA_SCRIPT, "MAPT_Conn_Montpellier_Bordeaux_Toulouse", "conn_analysis", "results", "firstlevel", "SBC_01_Cambridge_R7_ROI_to_ROI", "diff_zscores_Condition002-Condition001"),
+        "timepoint_name" : "diff_zscores_POST-PRE"
+    }
+}
+
+# > For R7 atlas resampled
+R7_RESAMPLED_CONN_INPUTS_ZSCORES = {
+    "M0" : {
+        "conn_file_pattern" : "resultsROI_Subject*_Condition001.mat",
+        "datafile" : os.path.join(os.getenv("HOME"), "PHD", "NOTES", "Conn_input_Montpellier_Bordeaux_Toulouse_MAPT.csv"),
+        "outdir" : None,
+        "conn_datapath" : os.path.join(MEDIA_SCRIPT, "MAPT_Conn_Montpellier_Bordeaux_Toulouse", "conn_analysis", "results", "firstlevel", "SBC_06_RESAMP_FUNC_R7"),
+        "timepoint_name" : "zscores_common_subjects_timesteps_PREPOST_at_PRE"
+    },
+    "M36" : {
+        "conn_file_pattern" : "resultsROI_Subject*_Condition002.mat",
+        "datafile" : os.path.join(os.getenv("HOME"), "PHD", "NOTES", "Conn_input_Montpellier_Bordeaux_Toulouse_MAPT.csv"),
+        "outdir" : None,
+        "conn_datapath" : os.path.join(MEDIA_SCRIPT, "MAPT_Conn_Montpellier_Bordeaux_Toulouse", "conn_analysis", "results", "firstlevel", "SBC_06_RESAMP_FUNC_R7"),
+        "timepoint_name" : "zscores_common_subjects_timesteps_PREPOST_at_POST"
+    },
+    "M36-M0" : {
+        "conn_file_pattern" : "diff_zscores_resultsROI_*_Condition001*_Condition002.mat",
+        "datafile" : os.path.join(os.getenv("HOME"), "PHD", "NOTES", "Conn_input_Montpellier_Bordeaux_Toulouse_MAPT.csv"),
+        "outdir" : None,
+        "conn_datapath" : os.path.join(MEDIA_SCRIPT, "MAPT_Conn_Montpellier_Bordeaux_Toulouse", "conn_analysis", "results", "firstlevel", "SBC_06_RESAMP_FUNC_R7", "diff_zscores_Condition002-Condition001"),
+        "timepoint_name" : "diff_zscores_POST-PRE"
+    }
+}
+
+# Path to conn roi-to-roi analyses outputs for Cambridge R36 atlas
+# (zscores for MAPT common subjects at M0/M36/M36-M0)
+R36_CONN_INPUTS_ZSCORES = {
+    "M0" : {
+        "conn_file_pattern" : "resultsROI_Subject*_Condition001.mat",
+        "datafile" : os.path.join(os.getenv("HOME"), "PHD", "NOTES", "Conn_input_Montpellier_Bordeaux_Toulouse_MAPT.csv"),
+        "outdir" : None,
+        "conn_datapath" : os.path.join(MEDIA_SCRIPT, "MAPT_Conn_Montpellier_Bordeaux_Toulouse", "conn_analysis", "results", "firstlevel", "SBC_02_Cambridge_R36_ROI_to_ROI"),
+        "timepoint_name" : "zscores_common_subjects_timesteps_PREPOST_at_PRE"
+    },
+    "M36" : {
+        "conn_file_pattern" : "resultsROI_Subject*_Condition002.mat",
+        "datafile" : os.path.join(os.getenv("HOME"), "PHD", "NOTES", "Conn_input_Montpellier_Bordeaux_Toulouse_MAPT.csv"),
+        "outdir" : None,
+        "conn_datapath" : os.path.join(MEDIA_SCRIPT, "MAPT_Conn_Montpellier_Bordeaux_Toulouse", "conn_analysis", "results", "firstlevel", "SBC_02_Cambridge_R36_ROI_to_ROI"),
+        "timepoint_name" : "zscores_common_subjects_timesteps_PREPOST_at_POST"
+    },
+    "M36-M0" : {
+        "conn_file_pattern" : "diff_zscores_resultsROI_*_Condition001*_Condition002.mat",
+        "datafile" : os.path.join(os.getenv("HOME"), "PHD", "NOTES", "Conn_input_Montpellier_Bordeaux_Toulouse_MAPT.csv"),
+        "outdir" : None,
+        "conn_datapath" : os.path.join(MEDIA_SCRIPT, "MAPT_Conn_Montpellier_Bordeaux_Toulouse", "conn_analysis", "results", "firstlevel", "SBC_02_Cambridge_R36_ROI_to_ROI", "diff_zscores_Condition002-Condition001"),
+        "timepoint_name" : "diff_zscores_POST-PRE"
+    }
+}
+
+R36_RESAMPLED_CONN_INPUTS_ZSCORES = {
+    "M0" : {
+        "conn_file_pattern" : "resultsROI_Subject*_Condition001.mat",
+        "datafile" : os.path.join(os.getenv("HOME"), "PHD", "NOTES", "Conn_input_Montpellier_Bordeaux_Toulouse_MAPT.csv"),
+        "outdir" : None,
+        "conn_datapath" : os.path.join(MEDIA_SCRIPT, "MAPT_Conn_Montpellier_Bordeaux_Toulouse", "conn_analysis", "results", "firstlevel", "SBC_07_RESAMP_R36"),
+        "timepoint_name" : "zscores_common_subjects_timesteps_PREPOST_at_PRE"
+    },
+    "M36" : {
+        "conn_file_pattern" : "resultsROI_Subject*_Condition002.mat",
+        "datafile" : os.path.join(os.getenv("HOME"), "PHD", "NOTES", "Conn_input_Montpellier_Bordeaux_Toulouse_MAPT.csv"),
+        "outdir" : None,
+        "conn_datapath" : os.path.join(MEDIA_SCRIPT, "MAPT_Conn_Montpellier_Bordeaux_Toulouse", "conn_analysis", "results", "firstlevel", "SBC_07_RESAMP_R36"),
+        "timepoint_name" : "zscores_common_subjects_timesteps_PREPOST_at_POST"
+    },
+    "M36-M0" : {
+        "conn_file_pattern" : "diff_zscores_resultsROI_*_Condition001*_Condition002.mat",
+        "datafile" : os.path.join(os.getenv("HOME"), "PHD", "NOTES", "Conn_input_Montpellier_Bordeaux_Toulouse_MAPT.csv"),
+        "outdir" : None,
+        "conn_datapath" : os.path.join(MEDIA_SCRIPT, "MAPT_Conn_Montpellier_Bordeaux_Toulouse", "conn_analysis", "results", "firstlevel", "SBC_07_RESAMP_R36", "diff_zscores_Condition002-Condition001"),
+        "timepoint_name" : "diff_zscores_POST-PRE"
+    }
+}
+
+# Conn network analyses list
+CONN_NETWORKS_ANALYSES = {
+    "R7" : R7_CONN_INPUTS_ZSCORES,
+    "R36" : R36_CONN_INPUTS_ZSCORES,
+    "R7_resampled" : R7_RESAMPLED_CONN_INPUTS_ZSCORES,
+    "R36_resampled" : R36_RESAMPLED_CONN_INPUTS_ZSCORES
 }
