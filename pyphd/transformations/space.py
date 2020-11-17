@@ -296,9 +296,11 @@ def get_roi_correspondance_to_atlas_file(roi_infile, atlas, roi_val=1):
         atlas_vox_coord = get_mm_to_vox_pos(coord_mm, atlas_im.affine)
 
         # Get values for each of these coordinates in atlas
-        val_atlas = atlas_im.get_data()[atlas_vox_coord]
+        atlas_vox_coord = [round(x) for x in atlas_vox_coord]
+        val_atlas = atlas_im.get_data()[
+            atlas_vox_coord[0], atlas_vox_coord[1], atlas_vox_coord[2]]
 
-        if val_atlas not in coord_values:
+        if val_atlas not in coord_values.keys():
             coord_values[val_atlas] = 1
         else:
             coord_values[val_atlas] += 1
