@@ -17,6 +17,7 @@
 # System imports
 import os
 from matplotlib import pyplot as plt
+from matplotlib_venn import venn2, venn3
 import matplotlib.patches as mpatches
 
 # Third-party imports
@@ -25,8 +26,9 @@ import numpy as np
 
 
 def venn_diagram(
-        groups, outdir, groups_names=None, png_basename="venn_diagram"):
-    """ Create a Venn diagram for two groups
+        groups, outdir, groups_names=None, png_basename="venn_diagram",
+        title=None):
+    """ Create a Venn diagram for two or three groups
 
     Parameters:
     -----------
@@ -38,6 +40,8 @@ def venn_diagram(
         path to output file
     png_basename: str
         basename for png outfile
+    title: str
+        figure title
 
     Returns:
     --------
@@ -46,10 +50,10 @@ def venn_diagram(
     """
 
     # Checks
-    if len(groups) > 5:
+    if len(groups) > 3:
         raise ValueError(
-            "Venn diagram with more than 5 groups is visually horrible."
-            "Please find another representation for your data.")
+            "This function does not support venn diagram for more than "
+            "3 groups.")
 
     for group in groups:
         if len(group) == 0:
@@ -64,13 +68,20 @@ def venn_diagram(
         for idx in range(len(groups)):
             groups_names.append("Set {0}".format(idx + 1))
         groups_names = tuple(groups_names)
-
     groups_sets = [set(x) for x in groups]
 
     # Plot and save img
-    venn2(groups_sets, groups_names)
+    if len(groups_sets) == 3:
+        venn3(groups_sets, groups_names)
+    else:
+        venn2(groups_sets, groups_names)
+
+    # > Add title
+    if title is not None:
+        plt.title(title)
     out_png = os.path.join(outdir, png_basename + ".png")
     plt.savefig(out_png)
+    plt.close()
 
     return out_png
 
