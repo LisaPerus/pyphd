@@ -374,12 +374,16 @@ outputs["Statistics report file"] = report_file
 """
 Write outputs
 """
-outfile = os.path.join(inputs["outdir"], inputs["analysis_name"] + ".json")
-with open(outfile, "wt") as open_file:
-    outdata = {"output_files": outputs, "subjects_info": subjects_info,
-               "commands_RScripts": commands_stats}
-    json.dump(outdata, open_file,
-              sort_keys=True, check_circular=True, indent=4)
+logdir = os.path.join(inputs["outdir"], "logs")
+if not os.path.isdir(logdir):
+    os.mkdir(logdir)
+for name, final_struct in [("inputs", inputs), ("outputs", outputs),
+                           ("runtime", runtime)]:
+    log_file = os.path.join(
+        logdir, "mapt_rsfmri_conn_posthoc_tests_{0}.json".format(name))
+    with open(log_file, "wt") as open_file:
+        json.dump(final_struct, open_file, sort_keys=True, check_circular=True,
+                  indent=4)
 if verbose > 0:
-    print("[Outputs]:")
-    print(outfile)
+    print("[Output]")
+    pprint(outputs)
