@@ -265,9 +265,10 @@ all_conns = conn_data.columns
 keep_conn = [group_colname]
 if subgroup_two_way_anova is not None:
     keep_conn += [subgroup_two_way_anova]
-for col in conn_data.columns:
-    if col in [x.replace("-", "_") for x in list_covariates]:
-        keep_conn += [col]
+if list_covariates is not None:
+    for col in conn_data.columns:
+        if col in [x.replace("-", "_") for x in list_covariates]:
+            keep_conn += [col]
 for conn in all_conns:
     conn = conn.split(":")
     for conn_to_compare in conn_of_interest:
