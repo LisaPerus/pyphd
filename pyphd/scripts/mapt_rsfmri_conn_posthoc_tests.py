@@ -286,17 +286,18 @@ statistic_dir = os.path.join(inputs["outdir"], "statistics")
 if not os.path.isdir(statistic_dir):
     os.mkdir(statistic_dir)
 if inputs["tukeytest"] == "two_way_anova":
-    covariates_type = []
-    for cov in list_covariates:
-        covariates_type.append(MAPT_RSFMRI_COV_TYPES[cov])
     cmd = ["Rscript", "--vanilla", SCRIPTS_STATS["posthoc_two_way_anova"],
            "-d", conn_file_with_selected_conns,
            "-g", group_colname,
            "-s", subgroup_two_way_anova,
-           "-c", " ".join([x.replace("-", "_") for x in list_covariates]),
-           "-t", " ".join(covariates_type),
            "-o", statistic_dir,
            "-v"]
+    if list_covariates is not None:
+        covariates_type = []
+        for cov in list_covariates:
+            covariates_type.append(MAPT_RSFMRI_COV_TYPES[cov])
+        cmd += ["-c", " ".join([x.replace("-", "_") for x in list_covariates]),
+                "-t", " ".join(covariates_type)]
     print(" ".join(cmd))
 else:
     raise ValueError("Post hoc tests implement only for two-way anova.")
