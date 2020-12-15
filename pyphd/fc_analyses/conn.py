@@ -685,7 +685,8 @@ def parse_conn_roi_to_roi_output_textfile(
     conn_textfile: str
         path to Conn ROI-to-ROI textfile.
     method: str
-        name of the correction method, can be 2_SPC, 3_TFCE, 6_NBS.
+        name of the correction method, can be 2_SPC, 3_TFCE, 6_NBS, 4_PUS or
+        0_ALL_CONNECTIONS.
     statistic : str
         name of statistic used, T or F.
     conn_version: str
@@ -856,6 +857,36 @@ def parse_conn_roi_to_roi_output_textfile(
             else:
                 raise ValueError(
                     "Cannot recognize how to parse line " + str(nb_line) + ".")
+
+    # Parametric Univariate Statistics (PUS) or All connections
+    elif method == "4_PUS" or method == "0_ALL_CONNECTIONS":
+        conn_roi_header = ["ROI1", "ROI2"]
+        header = []
+        connections_header_cols = ["Conn_stat", "Conn_punc", "Conn_FDR"]
+        unit = "No_unit"
+        results = {}
+        results[unit] = {}
+        results[unit]["Connections"] = {}
+        for line in lines[1:]:
+            if len(line.strip("\n").strip(" ")) == 0:
+                continue
+            line = line.strip("\n")
+            (conn, conn_name, pvals_info, df,
+                residuals) = parse_conn_roi_to_roi_output_conn_line(
+                    line, statistic=statistic)
+            if conn_name in results[unit]["Connections"].keys():
+                raise ValueError(
+                    "Doublon connections : {0}".format(conn_name))
+            results[unit]["Connections"][conn_name] = {}
+            results[unit]["Connections"][conn_name]["ROI1"] = conn[0]
+            results[unit]["Connections"][conn_name]["ROI2"] = conn[1]
+            results[unit]["Connections"][conn_name][
+                "Conn_stat"] = pvals_info[0]
+            results[unit]["Connections"][conn_name][
+                "Conn_punc"] = pvals_info[1]
+            results[unit]["Connections"][conn_name][
+                "Conn_FDR"] = pvals_info[2]
+
     # Other method
     else:
         raise ValueError(
