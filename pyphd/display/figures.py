@@ -19,6 +19,7 @@ import os
 from matplotlib import pyplot as plt
 from matplotlib_venn import venn2, venn3
 import matplotlib.patches as mpatches
+import pyphd.display.figures.venn as venn
 
 # Third-party imports
 from nilearn import plotting
@@ -48,13 +49,6 @@ def venn_diagram(
     out_png: str
         path to output png
     """
-
-    # Checks
-    if len(groups) > 3:
-        raise ValueError(
-            "This function does not support venn diagram for more than "
-            "3 groups.")
-
     for group in groups:
         if len(group) == 0:
             raise ValueError("Empty group! Venn diagram cannot be drawn")
@@ -71,10 +65,21 @@ def venn_diagram(
     groups_sets = [set(x) for x in groups]
 
     # Plot and save img
-    if len(groups_sets) == 3:
-        venn3(groups_sets, groups_names)
-    else:
+    if len(groups_sets) > 6:
+        raise ValueError("Cannot plot Venn diagram for more than 6 groups.")
+    elif len(groups_sets) == 2:
         venn2(groups_sets, groups_names)
+    elif len(groups_sets) == 3:
+        venn3(groups_sets, groups_names)
+    elif len(groups_sets) == 4:
+        labels = venn.get_labels(groups)
+        fig, ax = venn.venn4(labels, names=groups_names)
+    elif len(groups_sets) == 5:
+        labels = venn.get_labels(groups)
+        fig, ax = venn.venn5(labels, names=groups_names)
+    else:
+        labels = venn.get_labels(groups)
+        fig, ax = venn.venn6(labels, names=groups_names)
 
     # > Add title
     if title is not None:
