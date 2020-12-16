@@ -1011,7 +1011,7 @@ def conn_seed_level_fdr_correction(conn_parsed_textfile, outfile,
     # > All connections from seed to target and fdr corrected
     with open(outfile, "wt") as open_file:
         open_file.write(
-            "Seed,Target,Conn_punc,Conn_pFDR_seed_level_corrected\n")
+            "ROI1,ROI2,Conn_punc,Conn_pFDR_seed(ROI1)_level_corrected\n")
         for roi, roi_data in results.items():
             for target, pval_unc in results[roi]["pvalues"].items():
                 line = [roi, target, str(pval_unc),
@@ -1022,7 +1022,7 @@ def conn_seed_level_fdr_correction(conn_parsed_textfile, outfile,
     # > All connections from seed to target that survive threshold
     with open(outfile_threshold_alpha, "wt") as open_file:
         open_file.write(
-            "Seed,Target,Conn_punc,Conn_pFDR_seed_level_corrected\n")
+            "ROI1,ROI2,Conn_punc,Conn_pFDR_seed(ROI1)_level_corrected\n")
         for roi, roi_data in results.items():
             for target, pval_unc in results[roi]["pvalues"].items():
                 corrected_pval = results[roi]["pvalues_fdr_corrected"][target]
