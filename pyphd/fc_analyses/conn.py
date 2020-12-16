@@ -910,7 +910,8 @@ def parse_conn_roi_to_roi_output_textfile(
     return outfile
 
 
-def conn_seed_level_fdr_correction(conn_parsed_textfile, alpha=0.05,
+def conn_seed_level_fdr_correction(conn_parsed_textfile, outfile,
+                                   outfile_threshold_alpha, alpha=0.05,
                                    expected_nb_conns=None):
     """
     Imitate conn seed level FDR correction.
@@ -927,6 +928,10 @@ def conn_seed_level_fdr_correction(conn_parsed_textfile, alpha=0.05,
     outfile_threshold_alpha: str
         path to output file with FDR correction seed levels connections. Only
         connections under threshold are kept.
+    alpha: float
+        alpha level for fdr correction.
+    expected_nb_conns: int
+        expected number of targets for each seed.
 
     Returns
     -------
