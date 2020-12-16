@@ -25,6 +25,7 @@ from pyphd.constants import CONN_INPUTS
 from pyphd.fsl.utils import text2vest
 import pandas as pd
 from scipy.io import loadmat
+from statsmodels.stats.multitest import fdrcorrection
 
 
 def extract_connectivities(group_name, tp=None, center_name=None,
@@ -860,7 +861,7 @@ def parse_conn_roi_to_roi_output_textfile(
 
     # Parametric Univariate Statistics (PUS) or All connections
     elif method == "4_PUS" or method == "0_ALL_CONNECTIONS":
-        conn_roi_header = ["ROI1", "ROI2"]
+        conn_roi_header = ["ROI1", "ROI2", "Unit"]
         header = []
         connections_header_cols = ["Conn_stat", "Conn_punc", "Conn_FDR"]
         unit = "No_unit"
@@ -907,3 +908,122 @@ def parse_conn_roi_to_roi_output_textfile(
                 open_file.write(",".join(line))
                 open_file.write("\n")
     return outfile
+
+
+def conn_seed_level_fdr_correction(conn_parsed_textfile, alpha=0.05,
+                                   expected_nb_conns=None):
+    """
+    Imitate conn seed level FDR correction.
+
+    Parameters
+    ----------
+    conn_parsed_textfile: str
+        path to Conn ROI-to-ROI parsed textfile containing all connections
+        with p-unc values (parsed using parse_conn_roi_to_roi_output_textfile).
+        Input file header must contain ROI1 and ROI2 columns for connection
+        roi names and Conn_punc col for the connection uncorrected pvalue.
+    outfile: str
+        path to output file with FDR correction seed levels
+    outfile_threshold_alpha: str
+        path to output file with FDR correction seed levels connections. Only
+        connections under threshold are kept.
+
+    Returns
+    -------
+    outfile: str
+        path to output file with FDR correction seed levels
+    outfile_threshold_alpha: str
+        path to output file with FDR correction seed levels connections. Only
+        connections under threshold are kept.
+    """
+
+    # Load data
+    conn_data = pd.read_csv(conn_parsed_textfile)
+
+    # Get all roi names
+    all_rois = np.unique(list(conn_data["ROI1"]) + list(conn_data["ROI2"]))
+
+    # For each roi get all connections pvalues and do fdr correction
+    results = {}
+    for roi in all_rois:
+        nb_conns = 0
+        if roi in results.keys():
+            raise ValueError("ROI doublon : {0}".format(roi))
+        results[roi] = {}
+        results[roi]["pvalues"] = {}
+        results[roi]["pvalues_fdr_corrected"] = {}
+
+        target_rois_list = []
+        target_rois_list_pvalues = []
+
+        # > Get source roi to target connections
+        roi_subdata = conn_data[conn_data["ROI1"] == roi]
+        if roi_subdata.shape[0] != 0:
+
+            for idx, row in roi_subdata.iterrows():
+                if row["ROI2"] in results[roi]["pvalues"].keys():
+                    raise ValueError(
+                        "Double connection : {0} <-> {1}".format(
+                            roi, row["ROI2"]))
+                results[roi]["pvalues"][row["ROI2"]] = row["Conn_punc"]
+                target_rois_list.append(row["ROI2"])
+                target_rois_list_pvalues.append(row["Conn_punc"])
+                nb_conns += 1
+
+        roi_subdata = conn_data[conn_data["ROI2"] == roi]
+        if roi_subdata.shape[0] != 0:
+            for idx, row in roi_subdata.iterrows():
+                if row["ROI1"] in results[roi]["pvalues"].keys():
+                    raise ValueError(
+                        "Double connection : {0} <-> {1}".format(
+                            roi, row["ROI1"]))
+                results[roi]["pvalues"][row["ROI1"]] = row["Conn_punc"]
+                target_rois_list.append(row["ROI1"])
+                target_rois_list_pvalues.append(row["Conn_punc"])
+                nb_conns += 1
+
+        # > Check if number of connections from source to target is expected
+        if expected_nb_conns is not None:
+            if nb_conns != expected_nb_conns:
+                msg = "Not expected number of targets for roi {0} :".format(
+                    roi)
+                msg += "{1} instead of {2}".format(
+                    str(nb_conns), str(expected_nb_conns))
+                raise ValueError(msg)
+
+        # > Apply fdr and save corrected pvalues
+        rejected, pvalues_corrected = fdrcorrection(
+            target_rois_list_pvalues, alpha=alpha)
+        for idx_tg, target in enumerate(target_rois_list):
+            if target in results[roi]["pvalues_fdr_corrected"].keys():
+                raise ValueError(
+                    "Multiple target {0} from source {1} for corr pval".format(
+                        target, roi))
+            results[roi]["pvalues_fdr_corrected"][target] = pvalues_corrected[
+                idx_tg]
+
+    # Save data
+    # > All connections from seed to target and fdr corrected
+    with open(outfile, "wt") as open_file:
+        open_file.write(
+            "Seed,Target,Conn_punc,Conn_pFDR_seed_level_corrected\n")
+        for roi, roi_data in results.items():
+            for target, pval_unc in results[roi]["pvalues"].items():
+                line = [roi, target, str(pval_unc),
+                        str(results[roi]["pvalues_fdr_corrected"][target])]
+                open_file.write(",".join(line))
+                open_file.write("\n")
+
+    # > All connections from seed to target that survive threshold
+    with open(outfile_threshold_alpha, "wt") as open_file:
+        open_file.write(
+            "Seed,Target,Conn_punc,Conn_pFDR_seed_level_corrected\n")
+        for roi, roi_data in results.items():
+            for target, pval_unc in results[roi]["pvalues"].items():
+                corrected_pval = results[roi]["pvalues_fdr_corrected"][target]
+                if corrected_pval < alpha:
+                    line = [roi, target, str(pval_unc), str(corrected_pval)]
+                    open_file.write(",".join(line))
+                    open_file.write("\n")
+
+    return outfile, outfile_threshold_alpha
