@@ -19,7 +19,7 @@ import os
 from matplotlib import pyplot as plt
 from matplotlib_venn import venn2, venn3
 import matplotlib.patches as mpatches
-import pyphd.display.figures.venn as venn
+import pyphd.display.venn as venn
 
 # Third-party imports
 from nilearn import plotting
