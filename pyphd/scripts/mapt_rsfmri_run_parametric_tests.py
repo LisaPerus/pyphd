@@ -53,6 +53,7 @@ python3 $SCRIPT_DIR/GIT_REPOS/pyphd/pyphd/scripts/mapt_rsfmri_run_parametric_tes
     -g scoreCDR1 \
     -o /tmp \
     -G \
+    -C R7 \
     -V 2
 #    -J ~/PHD/SCRIPTS/fMRI_ANALYSIS/trash_scripts/rerun_analysis_inter_intra_networks.json \
 
@@ -331,8 +332,12 @@ for tp in inputs["timepoints"]:
 
             # > If defined check that number of expected connections is good
             if inputs["expected_nb_conn"] is not None:
+                other_cols = [sub_col]
+                if model_spe_data["has_covariates"]:
+                    other_cols += model_spe_data["covariates_extract"]
                 conn_data_cols = conn_data.columns
-                if len(conn_data_cols) - 1 != inputs["expected_nb_conn"]:
+                if len(conn_data_cols) - len(other_cols) != inputs[
+                        "expected_nb_conn"]:
                     raise ValueError(
                         "Not expected nb of connections in file {0}".format(
                             conn_file))
