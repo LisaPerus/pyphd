@@ -255,7 +255,8 @@ def delete_im_first_volumes(im_file, nb_vol, outdir, erase=True):
     return new_im_file
 
 
-def get_roi_correspondance_to_atlas_file(roi_infile, atlas, roi_val=1):
+def get_roi_correspondance_to_atlas_file(
+        roi_infile, atlas, roi_val=1, use_4D_atlas_vol=None):
     """Returns for a nifti image containing a ROI values of an atlas for
     all the voxels in the ROI.
     ---------------------------------------------------------------------
@@ -268,6 +269,8 @@ def get_roi_correspondance_to_atlas_file(roi_infile, atlas, roi_val=1):
         path to atlas image.
     roi_val: int
         intensity value of ROI of interest in roi_infile.
+    use_4D_atlas_vol: int
+        if atlas is a 4D volume, specify which volume is used.
 
     Returns
     -------
@@ -297,8 +300,13 @@ def get_roi_correspondance_to_atlas_file(roi_infile, atlas, roi_val=1):
 
         # Get values for each of these coordinates in atlas
         atlas_vox_coord = [round(x) for x in atlas_vox_coord]
-        val_atlas = atlas_im.get_data()[
-            atlas_vox_coord[0], atlas_vox_coord[1], atlas_vox_coord[2]]
+        if use_4D_atlas_vol is None:
+            val_atlas = atlas_im.get_data()[
+                atlas_vox_coord[0], atlas_vox_coord[1], atlas_vox_coord[2]]
+        else:
+            val_atlas = atlas_im.get_data()[
+                atlas_vox_coord[0], atlas_vox_coord[1], atlas_vox_coord[2],
+                    use_4D_atlas_vol]
 
         if val_atlas not in coord_values.keys():
             coord_values[val_atlas] = 1
