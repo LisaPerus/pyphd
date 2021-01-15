@@ -306,7 +306,7 @@ def get_roi_correspondance_to_atlas_file(
         else:
             val_atlas = atlas_im.get_data()[
                 atlas_vox_coord[0], atlas_vox_coord[1], atlas_vox_coord[2],
-                    use_4D_atlas_vol]
+                use_4D_atlas_vol]
 
         if val_atlas not in coord_values.keys():
             coord_values[val_atlas] = 1
