@@ -20,12 +20,14 @@ import glob
 import argparse
 
 # Third party imports
+import nibabel
 import numpy as np
 from pyphd.constants import CONN_INPUTS
 from pyphd.fsl.utils import text2vest
 import pandas as pd
 from scipy.io import loadmat
 from statsmodels.stats.multitest import fdrcorrection
+from scipy.ndimage import label
 
 
 def extract_connectivities(group_name, tp=None, center_name=None,
@@ -668,7 +670,10 @@ def parse_conn_roi_to_roi_output_conn_line(line, statistic):
     stats_info = conn_details[1]
     df_and_residuals = df_and_residuals.split(",")
     df = df_and_residuals[0]
-    residuals = df_and_residuals[1]
+    if statistic == "T":
+        residuals = "NA"
+    else:
+        residuals = df_and_residuals[1]
     stats_info = stats_info.split(" ")
     stats_info = [x for x in stats_info if len(x) != 0]
 
@@ -1032,3 +1037,64 @@ def conn_seed_level_fdr_correction(conn_parsed_textfile, outfile,
                     open_file.write("\n")
 
     return outfile, outfile_threshold_alpha
+
+
+def split_roi_network_by_features(network_imfile, outfile_basename):
+    """
+    Split network roi images by rois.
+
+    This function is useful if all rois in the network image are set to 1 and
+    there is no way to differentiate them by intensity.
+
+    This function is based on scipy.ndimage.label function.
+
+    Parameters
+    ----------
+    network_imfile: str
+        path to network image with multiple rois all set to the same intensity
+        value.
+    outfile_basename: str
+        path to output file basename without extension.
+
+
+    Returns
+    -------
+    outfiles: list of str
+       List of all roi images
+    """
+
+    # Load network image
+    network_im = nibabel.load(network_imfile)
+
+    # Get labels images
+    labelled_data, nb_components = label(network_im.get_data())
+
+    # Check that there is a good superposition of labelled data with network
+    # image if all values are set to 1
+    test_labelled_data = labelled_data.copy()
+    test_labelled_data[labelled_data > 0] = 1
+    comparison = test_labelled_data != network_im.get_data()
+    if comparison.all():
+        raise ValueError(
+            "Labelled data does not superpose with input network data.")
+
+    # Create a new image for each component
+    all_labels = np.unique(labelled_data)
+
+    # > Get rid of background
+    all_labels = [x for x in list(all_labels) if x != 0]
+
+    outfiles = []
+    for label_val in all_labels:
+        label_data = labelled_data.copy()
+        label_data[label_data != label_val] = 0
+        label_data[label_data == label_val] = 1
+
+        # > Save image
+        label_im = nibabel.Nifti1Image(
+            label_data, header=network_im.header, affine=network_im.affine)
+        label_imfile = outfile_basename + "_" + str(int(label_val)) + ".nii.gz"
+        nibabel.save(label_im, label_imfile)
+        outfiles.append(label_imfile)
+
+    return outfiles
