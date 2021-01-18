@@ -24,9 +24,8 @@ Map a subject freesurfer cortical thickness to fsaverage
 
 python3.5 $SCRIPT_DIR/GIT_REPOS/pyphd/pyphd/scripts/map_freesurfer_subject_thickness_to_fsaverage.py \
     -s 03990171AGE_M36 \
-    -d $NFS_CATI/MAPT/MAPT_T1MRI/database_freesurfer/freesurfer_v6_longitudinal/03/03990171AGE_M36/surf \
+    -d $NFS_CATI/MAPT/MAPT_T1MRI/database_freesurfer/freesurfer_v6_longitudinal/03 \
     -f ~/setup_freesurfer_i2bm.sh \
-    -i $NFS_CATI/MAPT/MAPT_T1MRI/database_freesurfer/freesurfer_v6_longitudinal/03 \
     -V 2
 
 """
@@ -66,13 +65,10 @@ def get_cmd_line_args():
         "-s", "--sid", type=str, required=True,
         help="Subject ID.")
     required.add_argument(
-        "-d", "--sid-surf-dir", type=is_directory, required=True,
-        help="Path to freesurfer subject surf directory.")
+        "-d", "--fs-sub-dir", type=is_directory,
+        help="Path to Freesurfer subjects directory.")
     required.add_argument(
         "-f", "--fs-sh", type=is_file, help="Path to Freesurfer sh file.")
-    required.add_argument(
-        "-i", "--fs-sub-dir", type=is_directory,
-        help="Path to Freesurfer subjects directory.")
 
     # Optional argument
     parser.add_argument(
@@ -109,7 +105,11 @@ if verbose > 0:
 os.environ["SUBJECTS_DIR"] = inputs["fs_sub_dir"]
 
 # Go to subject directory
-os.chdir(inputs["sid_surf_dir"])
+sid_surf_dir = os.path.join(inputs["fs_sub_dir"], inputs["sid"], "surf")
+if not os.path.isdir(sid_surf_dir):
+    raise ValueError(
+        "Cannot find surf directory for subject {0}".format(inputs["sid"]))
+os.chdir(sid_surf_dir)
 
 # Run mapping
 # > For left hemisphere
@@ -128,9 +128,9 @@ fscmd()
 
 # Check that output has been created
 output_lh_thick_fsaverage = os.path.join(
-    inputs["sid_surf_dir"], "lh.thickness.fsaverage.mgh")
+    sid_surf_dir, "lh.thickness.fsaverage.mgh")
 output_rh_thick_fsaverage = os.path.join(
-    inputs["sid_surf_dir"], "rh.thickness.fsaverage.mgh")
+    sid_surf_dir, "rh.thickness.fsaverage.mgh")
 if not os.path.isfile(output_lh_thick_fsaverage):
     raise ValueError(
         "Cannot find subject {0} lh thickness on fsaverage".format(
@@ -142,7 +142,7 @@ outputs["rh thickness fsaverage"] = output_rh_thick_fsaverage
 """
 Write outputs
 """
-logdir = os.path.join(inputs["sid_surf_dir"], "logs")
+logdir = os.path.join(sid_surf_dir, "logs")
 if not os.path.isdir(logdir):
     os.mkdir(logdir)
 for name, final_struct in [("inputs", inputs), ("outputs", outputs),
