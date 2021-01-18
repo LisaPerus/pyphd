@@ -14,6 +14,8 @@ from argparse import RawTextHelpFormatter
 from datetime import datetime
 from pprint import pprint
 
+# Third party imports
+from pyfreesurfer.wrapper import FSWrapper
 
 # Script documentation
 DOC = """
