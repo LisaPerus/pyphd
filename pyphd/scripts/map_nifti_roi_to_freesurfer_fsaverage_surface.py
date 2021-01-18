@@ -135,6 +135,11 @@ reg_file = os.path.join(
         inputs["anat_im"])))
 cmd = ["fslregister", "--s", "fsaverage", "--mov", inputs["anat_im"], "--reg",
        reg_file]
+fscmd = FSWrapper(cmd, inputs["fs_sh"])
+fscmd()
+if not os.path.isfile(reg_file):
+    raise ValueError("Cannot find T1 to fsaverage reg file {0}...".format(
+        reg_file))
 outputs["Transformation {0} to fsaverage".format(
         os.path.basename(inputs["anat_im"]))] = reg_file
 
