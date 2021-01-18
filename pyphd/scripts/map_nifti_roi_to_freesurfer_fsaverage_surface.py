@@ -130,7 +130,9 @@ if verbose > 0:
 os.chdir(inputs["freesurfer_fsaverage_surf_dir"])
 
 # Register anatomical image to fsaverage
-reg_file = "{0}_to_fsaverage.dat".format(os.path.basename(inputs["anat_im"]))
+reg_file = os.path.join(
+    inputs["outdir"], "{0}_to_fsaverage.dat".format(os.path.basename(
+        inputs["anat_im"])))
 cmd = ["fslregister", "--s", "fsaverage", "--mov", inputs["anat_im"], "--reg",
        reg_file]
 outputs["Transformation {0} to fsaverage".format(
@@ -148,7 +150,7 @@ for roi_im in inputs["roi_im"]:
                "--mov", roi_im,
                "--reg", reg_file,
                "--projdist-max", "0", "1", "0.1",
-               "--interp nearest",
+               "--interp", "nearest",
                "--hemi", side,
                "--out", outfile]
         fscmd = FSWrapper(cmd, inputs["fs_sh"])
