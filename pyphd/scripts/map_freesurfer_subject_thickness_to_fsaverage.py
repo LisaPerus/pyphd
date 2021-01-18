@@ -22,8 +22,6 @@ DOC = """
 Map a subject freesurfer cortical thickness to fsaverage
 --------------------------------------------------------
 
-/!\ Freesurfer must be activated in shell first /!\
-
 python3.5 $SCRIPT_DIR/GIT_REPOS/pyphd/pyphd/scripts/map_freesurfer_subject_thickness_to_fsaverage.py \
     -s 03990171AGE_M36 \
     -d $NFS_CATI/MAPT/MAPT_T1MRI/database_freesurfer/freesurfer_v6_longitudinal/03/03990171AGE_M36/surf \
@@ -95,7 +93,8 @@ Parse the command line.
 inputs, verbose = get_cmd_line_args()
 runtime = {
     "timestamp": datetime.now().isoformat(),
-    "tool": "map_freesurfer_subject_thickness_to_fsaverage.py"
+    "tool": "map_freesurfer_subject_thickness_to_fsaverage.py",
+    "freesurfer_version": FSWrapper([], inputs["fs_sh"]).version
 }
 outputs = {}
 if verbose > 0:
