@@ -318,3 +318,56 @@ def get_roi_correspondance_to_atlas_file(
     for val, nb_voxels in coord_values.items():
         percentage_values[val] = (nb_voxels / len(coordinates)) * 100
     return coord_values, percentage_values
+
+
+def split_im_by_x_axis(
+        im_file, outdir, x_val, side="inf", side_names=["rh", "lh"]):
+    """Split image on x axis.
+    Returns two images in same space as original image and with same dimension.
+    ---------------------------------------------------------------------------
+
+    Parameters
+    ----------
+    im_file: str
+        path to input image.
+    outdir: str
+        path to output directory.
+    x_val: int
+        value on x-axis on which to split image. Has to be in
+        !!VOXEL COORDINATES!!
+    side: str
+        if side is set to inf x values == x_val will be on the same image
+        as voxels with x values < x_val.
+
+    Returns
+    -------
+    split_im: list of str
+        list of split images
+    """
+    im = nibabel.load(im_file)
+    im_data = im.get_data()
+
+    # Mask data for voxels x < x_val and voxels x > x_val
+    inf_data = im_data.copy()
+    sup_data = im_data.copy()
+    if side == "inf":
+        inf_data[x_val + 1:, :, :] = 0
+        sup_data[: x_val + 1, :, :] = 0
+    elif side == "sup":
+        inf_data[x_val:, :, :] = 0
+        sup_data[: x_val, :, :] = 0
+    else:
+        raise ValueError("Unknown side : {0}".format(side))
+
+    # Save data
+    inf_im = nibabel.Nifti1Image(inf_data, affine=im.affine, header=im.header)
+    sup_im = nibabel.Nifti1Image(sup_data, affine=im.affine, header=im.header)
+    inf_output = os.path.join(
+        outdir, side_names[0] + "_" + os.path.basename(im_file))
+    sup_output = os.path.join(
+        outdir, side_names[1] + "_" + os.path.basename(im_file))
+    nibabel.save(inf_im, inf_output)
+    nibabel.save(sup_im, sup_output)
+    split_im = [inf_output, sup_output]
+
+    return split_im
