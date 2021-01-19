@@ -120,7 +120,8 @@ inputs, verbose = get_cmd_line_args()
 outputs = {}
 runtime = {
     "timestamp": datetime.now().isoformat(),
-    "tool": "get_freesurfer_subject_roi_thickness.py"
+    "tool": "get_freesurfer_subject_roi_thickness.py",
+    "freesurfer_version": FSWrapper([], inputs["fs_sh"]).version
 }
 
 # Set freesurfer subjects directory path
