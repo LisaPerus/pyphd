@@ -14,6 +14,8 @@ from argparse import RawTextHelpFormatter
 from datetime import datetime
 from pprint import pprint
 
+# Third party imports
+from pyfreesurfer.wrapper import FSWrapper
 
 # Script documentation
 DOC = """
@@ -33,8 +35,15 @@ space
 For 2) and 3) see script map_nifti_roi_to_freesurfer_fsaverage_surface.py
 For 4) see script map_freesurfer_subject_thickness_to_fsaverage.py
 
-python3.5 $SCRIPT_DIR/pyphd/pyphd/scripts/get_freesurfer_subject_roi_thickness.py \
-    -s ...
+python3.5 $SCRIPT_DIR/GIT_REPOS/pyphd/pyphd/scripts/get_freesurfer_subject_roi_thickness.py \
+    -s 03990171AGE_M0 \
+    -d $NFS_CATI/MAPT/MAPT_T1MRI/database_freesurfer/freesurfer_v6_longitudinal/03/ \
+    -f $HOME/setup_freesurfer_i2bm.sh \
+    -l /nfs/neurospin/cati/MAPT/MAPT_T1MRI/database_freesurfer/freesurfer_v6_longitudinal/03/roi_to_fsaverage_surface/lh.fsaverage.resliced_to_fsl6.0.0_MNI152_T1_2mm_braintemplate_cambridge_basc_multiscale_asym_scale036_cluster_35.0.mgh \
+    -r /nfs/neurospin/cati/MAPT/MAPT_T1MRI/database_freesurfer/freesurfer_v6_longitudinal/03/roi_to_fsaverage_surface/rh.fsaverage.resliced_to_fsl6.0.0_MNI152_T1_2mm_braintemplate_cambridge_basc_multiscale_asym_scale036_cluster_35.0.mgh \
+    -n ct_cambridge_basc_multiscale_asym_scale036_cluster_35 \
+    -o /tmp/test \
+    -V 2
 """
 
 
@@ -83,7 +92,7 @@ def get_cmd_line_args():
         "-r", "--rh-fsaverage-roi-surface-overlay", type=is_file, nargs="+",
         help="Path to Freesurfer fsaverage ROI overlay files for right hemi.")
     required.add_argument(
-        "-n", "--output-basename", type=is_file, nargs="+",
+        "-n", "--output-basename", type=str, nargs="+",
         help="Output files basenames. This basename will be added after sid "
              "and left/right hemi.")
     required.add_argument(
@@ -108,6 +117,7 @@ def get_cmd_line_args():
 Parse the command line.
 """
 inputs, verbose = get_cmd_line_args()
+outputs = {}
 runtime = {
     "timestamp": datetime.now().isoformat(),
     "tool": "get_freesurfer_subject_roi_thickness.py"
@@ -133,13 +143,13 @@ for idx_roi, roi_name in enumerate(inputs["output_basename"]):
                inputs["{0}_fsaverage_roi_surface_overlay".format(side)][
                 idx_roi],
                "--in", "{0}.thickness.fsaverage.mgh".format(side),
-               "--sum ", outfile]
+               "--sum", outfile]
         fscmd = FSWrapper(cmd, inputs["fs_sh"])
         fscmd()
         if not os.path.isfile(outfile):
             raise ValueError(
                 "Cannot find stat summary file {0}...".format(outfile))
-        outputs["{0} stats".format(roi_name)] = outfile
+        outputs["{0} {1} stats".format(roi_name, side)] = outfile
 
 
 """
