@@ -179,7 +179,9 @@ def save_tksurfer_im(tksurfer_cmd, output_file, fs_sh, tcl_script_file=None,
 
     # Write tcl script
     if tcl_script_file is None:
-        tcl_script_file = "tcl_script_" + output_file
+        ext_output_file = os.path.splitext(output_file)[1]
+        tcl_script_file = "tcl_script_" + output_file.replace(
+            ext_output_file, ".tcl")
     with open(tcl_script_file, "wt") as open_file:
         open_file.write("save_tiff {0}\n".format(output_file))
         open_file.write("exit 0")
