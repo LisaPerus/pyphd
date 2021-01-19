@@ -162,7 +162,8 @@ for name, final_struct in [("inputs", inputs), ("outputs", outputs),
                            ("runtime", runtime)]:
     log_file = os.path.join(
         logdir,
-        "get_freesurfer_subject_roi_thickness_{0}.json".format(name))
+        "get_freesurfer_subject_roi_thickness_{0}_{1}.json".format(
+            inputs["sid"], name))
     with open(log_file, "wt") as open_file:
         json.dump(final_struct, open_file, sort_keys=True, check_circular=True,
                   indent=4)
