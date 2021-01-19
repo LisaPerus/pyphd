@@ -188,7 +188,8 @@ def save_tksurfer_im(tksurfer_cmd, output_file, fs_sh, tcl_script_file=None,
 
     # Run cmd
     cmd = tksurfer_cmd + ["-tcl", tcl_script_file]
-    FSWrapper(cmd, fs_sh)
+    fscmd = FSWrapper(cmd, fs_sh)
+    fscmd()
 
     # Delete tcl file if needed
     if delete_tcl_script_file:
