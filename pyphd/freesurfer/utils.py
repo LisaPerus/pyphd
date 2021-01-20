@@ -18,7 +18,7 @@
 import os
 
 
-def parse_mri_segstats_output(mri_segstats_output, outdir):
+def parse_mri_segstats_output(mri_segstats_output):
     """ Parse Freesurfer mri_segstats output file
     ---------------------------------------------
 
@@ -26,8 +26,6 @@ def parse_mri_segstats_output(mri_segstats_output, outdir):
     ----------
     mri_segstats_output: str
         path to mri_segstats output file.
-    outdir: str
-        path to output directory.
 
     Returns
     -------
@@ -37,22 +35,34 @@ def parse_mri_segstats_output(mri_segstats_output, outdir):
 
     # Read file and find header line index
     header_idx = None
+    header_line = "# ColHeaders  Index SegId NVoxels Volume_mm3 "
+    header_line += "StructName Mean StdDev Min Max Range"
     with open(mri_segstats_output, "rt") as open_file:
         lines = open_file.readlines()
     for idx, line in enumerate(lines):
-        if "ColHeaders" in line:
+        if line.strip("\n").strip(" ") == header_line:
             header_idx = idx
+    if header_idx is None:
+        raise ValueError(
+            "Could not find file {0} header".format(mri_segstats_output))
+
+    # Index corresponding to element in line
+    HEADER_PARSING = {0: "ColHeaders", 1: "Index_SegId", 2: "NVoxels",
+                      3: "NVoxels_float", 4: "StructName",
+                      5: "Mean_ct", 6: "StdDev_ct", 7: "Min_ct",
+                      8: "Max_ct", 9: "Range_ct"}
 
     # Get for each region results
     reg_stats = {}
-    header_split = lines[header_idx].split(" ")
-    header_split = [
-        x for x in header_split if len(x) != 0]
     for idx_line, line in enumerate(lines[header_idx + 1:]):
-        line = line.split(" ")
+        line = line.strip("\n").split(" ")
         line = [x for x in line if len(x) != 0]
+        if len(line) != len(list(HEADER_PARSING.keys())):
+            raise ValueError(
+                "Cannot find good number of element in line:\n {0}".format(
+                    " ".join(line)))
         reg_stats[idx_line] = {}
-        for idx_elt, elt in enumerate(header_split):
+        for idx_elt, elt in HEADER_PARSING.items():
             reg_stats[idx_line][elt] = line[idx_elt]
     return reg_stats
 
