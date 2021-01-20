@@ -104,3 +104,52 @@ def save_tksurfer_im(tksurfer_cmd, output_file, fs_sh, tcl_script_file=None,
     # Delete tcl file if needed
     if delete_tcl_script_file:
         os.remove(tcl_script_file)
+
+
+def parse_aseg_stats_file(aseg_stats_file):
+    """ Parse Freesurfer aseg.stats file
+    ---------------------------------------------
+
+    Parameters
+    ----------
+    aseg_stats_file: str
+        path to aseg stats file.
+
+    Returns
+    -------
+    reg_stats: dict
+        parsed aseg stats file.
+    """
+
+    # Read file and find header line index
+    header_idx = None
+    header_line = "# ColHeaders  Index SegId NVoxels Volume_mm3 StructName "
+    header_line += "normMean normStdDev normMin normMax normRange"
+    with open(aseg_stats_file, "rt") as open_file:
+        lines = open_file.readlines()
+    for idx, line in enumerate(lines):
+        if line.strip("\n").strip(" ") == header_line:
+            header_idx = idx
+    if header_idx is None:
+        raise ValueError(
+            "Could not find file {0} header".format(aseg_stats_file))
+
+    # Index corresponding to element in line
+    HEADER_PARSING = {0: "ColHeaders", 1: "Index_SegId", 2: "NVoxels",
+                      3: "NVoxels_float", 4: "StructName",
+                      5: "normMean", 6: "normStdDev", 7: "normMin",
+                      8: "normMax", 9: "normRange"}
+
+    # Get for each region results
+    reg_stats = {}
+    for idx_line, line in enumerate(lines[header_idx + 1:]):
+        line = line.strip("\n").split(" ")
+        line = [x for x in line if len(x) != 0]
+        if len(line) != len(list(HEADER_PARSING.keys())):
+            raise ValueError(
+                "Cannot find good number of element in line:\n {0}".format(
+                    " ".join(line)))
+        reg_stats[idx_line] = {}
+        for idx_elt, elt in HEADER_PARSING.items():
+            reg_stats[idx_line][elt] = line[idx_elt]
+    return reg_stats
