@@ -48,7 +48,7 @@ def parse_mri_segstats_output(mri_segstats_output):
 
     # Index corresponding to element in line
     HEADER_PARSING = {0: "ColHeaders", 1: "Index_SegId", 2: "NVoxels",
-                      3: "NVoxels_float", 4: "StructName",
+                      3: "Volume_mm3", 4: "StructName",
                       5: "Mean_ct", 6: "StdDev_ct", 7: "Min_ct",
                       8: "Max_ct", 9: "Range_ct"}
 
@@ -136,7 +136,7 @@ def parse_aseg_stats_file(aseg_stats_file):
 
     # Index corresponding to element in line
     HEADER_PARSING = {0: "ColHeaders", 1: "Index_SegId", 2: "NVoxels",
-                      3: "NVoxels_float", 4: "StructName",
+                      3: "Volume_mm3", 4: "StructName",
                       5: "normMean", 6: "normStdDev", 7: "normMin",
                       8: "normMax", 9: "normRange"}
 
