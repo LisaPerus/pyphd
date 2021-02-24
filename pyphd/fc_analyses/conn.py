@@ -371,6 +371,234 @@ def extract_group(conn_file, groups_info={}, rename_cols={}, erase_cols=[],
     return outfile
 
 
+def extract_clinical_data_for_mapt_metrics(
+        datafile, mri_metrics_csv_file, outdir, subjects_na_var_delete=None,
+        columns_na_var_delete=None, tp=None, center_name=None, covariates=None,
+        cov_add_file_beginning=None, replace_cov_names={},
+        delete_sid_col=False):
+    """Extract and append clinical data information to MAPT MRI metrics csv
+       file.
+
+    Parameters
+    ----------
+    datafile : str
+        path to csv datafile listing subjects clinical characteristics. Must
+        have a 'Sid' column with subjects ids.
+    mri_metrics_csv_file: str
+        path to MRI metrics csv file. Must have a column with subject ids named
+        'Sid'.
+    outdir : str
+        path to output directory.
+    subjects_na_var_delete: list of str
+        List of NA values. If these values are found for a subject in one
+        column, this subject is deleted in mri_metrics_csv_file.
+    columns_na_var_delete: list of str
+        List of NA values in columns. If a column has only NA values it gets
+        deleted.
+    tp: str
+        Timepoint
+    center_name : str
+        Center name. If set, keep only subjects from this center.
+    covariates : list of str
+        list of covariates. Names must be the same as those in datafile
+        columns. The covariates will be added at the end of the file columns
+        in the same order as they are in the list. There can be an exception
+        for one covariate if the argument cov_add_file_beginning is set.
+    cov_add_file_beginning: str
+        name of one covariate to add to the beginning of the file.
+    replace_cov_names: dict
+        replace name of covariates added to file.
+    delete_sid_col: bool
+        If set to True delete sid column.
+
+    Returns
+    -------
+    outfile: str
+        Path to file subjects with all their connection
+    """
+
+    # Read data
+    with open(mri_metrics_csv_file, "rt") as open_file:
+        mri_metrics_lines = open_file.readlines()
+    with open(datafile, "rt") as open_file:
+        clinical_lines = open_file.readlines()
+
+    # Extract subjects by center if needed
+    new_lines = []
+    if center_name is not None:
+        sid_col = None
+        for idx, elt in enumerate(mri_metrics_lines[0].split(",")):
+            if elt == "Sid":
+                sid_col = idx
+        new_lines = [mri_metrics_lines[0]]
+        for line in mri_metrics_lines[1:]:
+            sid = line.split(",")[sid_col].replace("sub-", "")
+            sid_center = sid[0:4]
+            if sid_center == center_name:
+                new_lines.append(line)
+    else:
+        for line in mri_metrics_lines:
+            new_lines.append(line)
+
+    # Delete subjects if they have specific na values in one column
+    if subjects_na_var_delete is not None:
+        lines_no_na = []
+        lines_no_na.append(new_lines[0])
+        for line in new_lines[1:]:
+            keep_subject = True
+            for na_val in subjects_na_var_delete:
+                line_split = line.split(",")
+                if na_val in line_split:
+                    keep_subject = False
+            if keep_subject:
+                lines_no_na.append(line)
+    else:
+        for line in new_lines:
+            lines_no_na.append(line)
+
+    # Delete columns that have only NA values
+    lines_no_na_columns = []
+    if columns_na_var_delete is not None:
+
+        columns = lines_no_na[0].split(",")
+        col_data = {}
+
+        # > Get all elements for each column
+        for line in lines_no_na[1:]:
+            line = line.split(",")
+            for idx, col in enumerate(columns):
+                if col not in col_data.keys():
+                    col_data[col] = []
+                col_data[col].append(line[idx])
+
+        # > If col has only NA values, store col idx to delete
+        delete_cols_idx = []
+        for idx, col in enumerate(columns):
+            all_values = set(col_data[col])
+            for val in columns_na_var_delete:
+                if val in all_values:
+                    all_values.remove(val)
+            if len(all_values) == 0:
+                delete_cols_idx.append(idx)
+
+        # > Delete cols
+        lines_no_na_columns = []
+        for line in lines_no_na:
+            line = line.split(",")
+            new_line = []
+            for idx, elt in enumerate(line):
+                if idx not in delete_cols_idx:
+                    new_line.append(elt)
+            lines_no_na_columns.append(",".join(new_line))
+    else:
+        for line in lines_no_na:
+            lines_no_na_columns.append(line)
+
+    # Add data from clinical data
+    if covariates is not None:
+
+        # > Get subject col id in clinical data
+        clinical_header = clinical_lines[0].split(",")
+        clinical_sid_col = None
+        for idx, col in enumerate(clinical_header):
+            if col == "Sid":
+                clinical_sid_col = idx
+
+        # > Get for each covariate subjects values
+        # >> Get covariates columns id in clinical data
+        cov_clinical_ids = {}
+        for cov in covariates:
+            cov_id = None
+            for idx, col in enumerate(clinical_header):
+                if cov == col.strip("\n"):
+                    cov_id = idx
+            cov_clinical_ids[cov] = cov_id
+
+        # >> Store for each cov subject val
+        cov_subjects_clinical_data = {}
+        for line in clinical_lines[1:]:
+            line = line.split(",")
+            if len(line) != len(clinical_header):
+                raise ValueError("Bad parsing for clinical datafile.")
+            sid = line[clinical_sid_col]
+            for cov in covariates:
+                if cov not in cov_subjects_clinical_data.keys():
+                    cov_subjects_clinical_data[cov] = {}
+                cov_subjects_clinical_data[cov][sid] = line[
+                    cov_clinical_ids[cov]]
+
+        # > Add cov values to new_lines
+        sid_col_line_no_na_data = None
+        for idx, elt in enumerate(
+                lines_no_na_columns[0].strip("\n").split(",")):
+            if elt == "Sid":
+                sid_col_line_no_na_data = idx
+        for cov in covariates:
+            cov_data = cov_subjects_clinical_data[cov]
+            tmp_line = lines_no_na_columns[0].strip("\n").split(",")
+            if cov in replace_cov_names.keys():
+                cov_name = replace_cov_names[cov]
+            else:
+                cov_name = cov
+            if cov == cov_add_file_beginning:
+                tmp_line.insert(0, cov_name)
+            else:
+                tmp_line.append(cov_name)
+            lines_no_na_columns[0] = ",".join(tmp_line)
+            for idx in range(1, len(lines_no_na_columns)):
+                tmp_line = lines_no_na_columns[idx].strip("\n").split(",")
+                sid = tmp_line[sid_col_line_no_na_data]
+                if cov == cov_add_file_beginning:
+                    tmp_line.insert(0, cov_data[sid])
+                else:
+                    tmp_line.append(cov_data[sid])
+                lines_no_na_columns[idx] = ",".join(tmp_line)
+
+            # >> Increment subject column id if covariate was added to the
+            # beginning of the file.
+            if cov == cov_add_file_beginning:
+                sid_col_line_no_na_data += 1
+
+    # Delete Sid column
+    lines_final = []
+    if delete_sid_col:
+        sid_col_idx = None
+        for idx, col in enumerate(lines_no_na_columns[0].split(",")):
+            if col == "Sid":
+                sid_col_idx = idx
+        for line in lines_no_na_columns:
+            tmp_line = line.split(",")
+            new_line = []
+            for idx, elt in enumerate(tmp_line):
+                if idx != sid_col_idx:
+                    new_line.append(elt)
+            lines_final.append(",".join(new_line))
+    else:
+        lines_final = lines_no_na_columns
+
+    # Write outfile
+    outfile = os.path.join(outdir, os.path.basename(mri_metrics_csv_file))
+    ext_file = os.path.splitext(outfile)[1]
+    if center_name is not None:
+        outfile = outfile.replace(
+            ext_file, "_" + center_name + "_only" + ext_file)
+    if subjects_na_var_delete is not None:
+        outfile = outfile.replace(
+            ext_file, "_nasubsdel" + ext_file)
+    if columns_na_var_delete is not None:
+        outfile = outfile.replace(
+            ext_file, "_nacolsdel" + ext_file)
+    if covariates is not None:
+        outfile = outfile.replace(ext_file, "_".join(covariates) + ext_file)
+
+    with open(outfile, "wt") as open_file:
+        for line in lines_final:
+            open_file.write(line)
+            open_file.write("\n")
+
+    return outfile
+
+
 def sort_connectivities_by_pvals(conn_result_file, p_val_thresh,
                                  p_val_colname, save_info_columns):
     """Extract from a statistic test result file connectitivies under
@@ -1098,3 +1326,107 @@ def split_roi_network_by_features(network_imfile, outfile_basename):
         outfiles.append(label_imfile)
 
     return outfiles
+
+
+def mapt_conn_input_filter_add_info(
+    conn_input, output_file, filter_subjects, filter_colname,
+        keep_cols_conn_input, add_file=None, add_file_delete_cols=["Sid"]):
+    """
+    Filter MAPT csv conn input datafile and add additional info.
+    Function useful to select subgroup of subjects analysed in MAPT rsfmri
+    study and do annex analyses (for example on cortical thickness).
+
+    Parameters
+    ----------
+    conn_input: str
+        Path to conn input csv
+    output_file: str
+        Path to output file.
+    filter_subjects: dict
+        Dictionnary containing subgroups of subjects with their characteristics
+        in each column of Conn input.
+        Example : if I want to keep subjects CDR0 who underwent omega-3 diet
+        or did not underwent the diet.
+        filter_colname = "CDR0_only_O3_no_O3"
+        filter_subjects = {
+            "CDR0_only_O3" : {"scoreCDR1" : [0],
+                              "gpeMapt4c" : ["1:omega3+IM", "2:omega3"]},
+            "CDR0_only_no_O3" : {"scoreCDR1 = [0],
+                                 "gpeMapt4c" : ["3:IM", "4:ctrl"]}
+        }
+
+        This filtering will be saved in a new column of output_file.
+        Ouput file will have a new column CDR0_only_O3_no_O3 such as
+
+        Subject  CDR0_only_O3_no_O3  scoreCDR1   gpeMapt4c
+        Sub001   CDR0_only_O3        0           2:omega3
+        Sub002   CDR0_only_O3        0           1:omega3+IM
+        ...
+        Sub00n   CDR0_only_no_O3     0           4:ctrl
+
+    filter_colname: str
+        Name of new column of output_file representing characteristics of
+        filtered subjects.
+    keep_cols_conn_input: list of str
+        List of columns to keep in conn_input.
+    add_file: str
+        Path to additional file from which to add information to output.
+        This file first column must be named Sid and must contain subject
+        matching with the Sid column from conn_input.
+    add_file_delete_cols: list of str
+        List of column from additional not be added in output_file.
+    """
+
+    # Load data
+    data = pd.read_csv(conn_input, index_col=0)
+
+    # Add center (works only for MAPT rsfmri conn inputs)
+    center_col = []
+    for sub in data.index:
+        center_sub = sub.replace("sub-", "")[0:4]
+        center_col.append(center_sub)
+    data["Center"] = center_col
+
+    # Filter MAPT Conn input data
+    # > Keep subjects that fill all conditions
+    subjects_kept = []
+    subjects_kept_subgroups = []
+    for idx_row, row in data.iterrows():
+        subject_kept_for_one_subgroup = False
+        for subgroup, subgroup_elts in filter_subjects.items():
+            keep_subject = True
+            for col, col_elts_to_keep in subgroup_elts.items():
+                if row[col] not in col_elts_to_keep:
+                        keep_subject = False
+            if keep_subject and not subject_kept_for_one_subgroup:
+                subject_kept_for_one_subgroup = True
+                subjects_kept.append(row.name)
+                subjects_kept_subgroups.append(subgroup)
+            elif keep_subject and subject_kept_for_one_subgroup:
+                raise ValueError(
+                    "Subject {0} in multiple subgroups".format(row.name))
+
+    # > Filter
+    sub_data = data.loc[subjects_kept, :]
+    sub_data[filter_colname] = subjects_kept_subgroups
+
+    # Keep only some columns
+    sub_data = sub_data[keep_cols_conn_input]
+
+    # Add additional data
+    if add_file is not None:
+        add_data = pd.read_csv(add_file, index_col=0)
+        add_data_info = {}
+        for col in add_data.columns:
+                add_data_info[col] = []
+        for sub in sub_data.index:
+            for col in add_data.columns:
+                add_data_info[col].append(add_data.loc[sub, col])
+        for col, col_data in add_data_info.items():
+            if col not in add_file_delete_cols:
+                sub_data[col] = col_data
+
+    # Save data
+    sub_data.to_csv(output_file, index=True)
+
+    return output_file
