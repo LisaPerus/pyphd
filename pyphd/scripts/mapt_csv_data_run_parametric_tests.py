@@ -277,6 +277,25 @@ for idx_tp, tp in enumerate(inputs["timepoints"]):
             for cov in covariate_append:
                 if "-" in cov:
                     replace_cov_names[cov] = cov.replace("-", "_")
+
+            # > Save one file with subjects ID to double check data extraction
+            tp_varfile = extract_clinical_data_for_mapt_metrics(
+                    datafile=datafile,
+                    mri_metrics_csv_file=varfiles[idx_tp],
+                    outdir=model_spe_data["outdir"],
+                    subjects_na_var_delete=inputs[
+                        "na_variable_datafile_values"],
+                    columns_na_var_delete=["NaN", "NA"],
+                    tp=tp,
+                    center_name=inputs["center"],
+                    covariates=covariate_append,
+                    cov_add_file_beginning=group_colname,
+                    replace_cov_names=replace_cov_names,
+                    delete_sid_col=False)
+            ext = os.path.splitext(tp_varfile)[1]
+            os.rename(tp_varfile, tp_varfile.replace(ext, "_sids" + ext))
+
+            # > Save without subjects IDs
             tp_varfile = extract_clinical_data_for_mapt_metrics(
                     datafile=datafile,
                     mri_metrics_csv_file=varfiles[idx_tp],
