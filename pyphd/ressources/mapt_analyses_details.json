@@ -91,5 +91,125 @@
             "covariates" : {"two_way_anova" :  ["m1"]},
             "subgroup_two_way_anova" : "at_least_one_fried_criteria_baseline",
             "add_cov_spe_timepoints" : true
-        }
+        },
+    "0399_Ge2RF_DecComp0399MRI_APOE_HRDxgpeMapt4c":{
+            "models" : ["two_way_anova"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"1:omega3+IM" : "1:omega3+IM", "3:IM" : "3:IM", "2:omega3" : "2:omega3", "4:ctrl" : "4:ctrl"}, "-1" : {"0.0" : "NoGe2RF_DecComp0399MRI_APOE_HRD", "1.0" : "Ge2RF_DecComp0399MRI_APOE_HRD"}},
+            "rename_cols" : {},
+            "erase_cols" : [],
+            "rename_file" : {"gpeMapt4c" : "0399_Ge2RF_DecComp0399MRI_APOE_HRD_x_gpeMapt4c", "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6" : ""},
+            "covariates" : {"two_way_anova" :  ["m1"]},
+            "subgroup_two_way_anova" : "Ge_2_RF_Declin_Comp_0399_MAPT_MRI_APOE4_scoreCAIDE_ge_6",
+            "add_cov_spe_timepoints" : true
+        },
+    "O3_intakexEvolutionCDR":{
+
+            "models" : ["two_way_anova"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Evolution_CDR"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"1:omega3+IM" : "omega3", "3:IM" : "no_omega3", "2:omega3" : "omega3", "4:ctrl" : "no_omega3"}, "-1" : {"0_to_0" : "0_to_0", "0.5_to_0.5" : "0.5_to_0.5", "0_to_0.5" :  "0_to_0.5", "0.5_to_0" : "0.5_to_0"}},
+            "rename_cols" : {"gpeMapt4c" : "omega3_intake"},
+            "erase_cols" : [],
+            "rename_file" : {"gpeMapt4c" : "O3_intakexEvolutionCDR", "Evolution_CDR" : ""},
+            "covariates" : {"two_way_anova" :  ["m1"]},
+            "subgroup_two_way_anova" : "Evolution_CDR",
+            "add_cov_spe_timepoints" : true
+    },
+    "CDR0_only_O3_vs_noO3":{
+
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["scoreCDR1"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"1:omega3+IM" : "omega3", "3:IM" : "no_omega3", "2:omega3" : "omega3", "4:ctrl" : "no_omega3"}, "-1" : {"0.0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "CDR0_only_O3_vs_noO3"},
+            "erase_cols" : ["scoreCDR1"],
+            "rename_file" : {"gpeMapt4c" : "CDR0_only_O3_vs_noO3", "scoreCDR1" : ""},
+            "covariates" : {"glm" :  ["m1"]},
+            "add_cov_spe_timepoints" : true
+    },
+    "CDR0_stable_only_O3_vs_noO3":{
+
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Evolution_CDR"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"1:omega3+IM" : "omega3", "3:IM" : "no_omega3", "2:omega3" : "omega3", "4:ctrl" : "no_omega3"}, "-1" : {"0_to_0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "CDR0_stable_only_O3_vs_noO3"},
+            "erase_cols" : ["Evolution_CDR"],
+            "rename_file" : {"gpeMapt4c" : "CDR0_stable_only_O3_vs_noO3", "Evolution_CDR" : ""},
+            "covariates" : {"glm" :  ["m1"]},
+            "add_cov_spe_timepoints" : true
+    },
+    "CDR05_stable_only_O3_vs_noO3":{
+
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Evolution_CDR"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"1:omega3+IM" : "omega3", "3:IM" : "no_omega3", "2:omega3" : "omega3", "4:ctrl" : "no_omega3"}, "-1" : {"0.5_to_0.5" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "CDR05_stable_only_O3_vs_noO3"},
+            "erase_cols" : ["Evolution_CDR"],
+            "rename_file" : {"gpeMapt4c" : "CDR05_stable_only_O3_vs_noO3", "Evolution_CDR" : ""},
+            "covariates" : {"glm" :  ["m1"]},
+            "add_cov_spe_timepoints" : true
+    },
+    "CDR0_instable_only_O3_vs_noO3":{
+
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Evolution_CDR"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"1:omega3+IM" : "omega3", "3:IM" : "no_omega3", "2:omega3" : "omega3", "4:ctrl" : "no_omega3"}, "-1" : {"0_to_0.5" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "CDR0_instable_only_O3_vs_noO3"},
+            "erase_cols" : ["Evolution_CDR"],
+            "rename_file" : {"gpeMapt4c" : "CDR0_instable_only_O3_vs_noO3", "Evolution_CDR" : ""},
+            "covariates" : {"glm" :  ["m1"]},
+            "add_cov_spe_timepoints" : true
+    },
+    "CDR05_instable_only_O3_vs_noO3":{
+
+            "models" : ["ttest", "glm"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Evolution_CDR"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"1:omega3+IM" : "omega3", "3:IM" : "no_omega3", "2:omega3" : "omega3", "4:ctrl" : "no_omega3"}, "-1" : {"0.5_to_0" : "1"}},
+            "rename_cols" : {"gpeMapt4c" : "CDR05_instable_only_O3_vs_noO3"},
+            "erase_cols" : ["Evolution_CDR"],
+            "rename_file" : {"gpeMapt4c" : "CDR05_instable_only_O3_vs_noO3", "Evolution_CDR" : ""},
+            "covariates" : {"glm" :  ["m1"]},
+            "add_cov_spe_timepoints" : true
+    },
+    "CDR_x_O3":{
+
+            "models" : ["two_way_anova"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["scoreCDR1"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"1:omega3+IM" : "omega3", "3:IM" : "no_omega3", "2:omega3" : "omega3", "4:ctrl" : "no_omega3"}, "-1" : {"0.0" : "CDR0", "0.5" : "CDR05"}},
+            "rename_cols" : {},
+            "erase_cols" : [],
+            "rename_file" : {"gpeMapt4c" : "CDR_x_O3", "scoreCDR1" : ""},
+            "covariates" : {"two_way_anova" :  ["m1"]},
+            "subgroup_two_way_anova" : "scoreCDR1",
+            "add_cov_spe_timepoints" : true
+    },
+    "CDR0_Evolutionx_O3":{
+
+            "models" : ["two_way_anova"],
+            "group_name" : "gpeMapt4c",
+            "additional_conn_file_covariates" : ["Evolution_CDR"],
+            "extract_group" : true,
+            "groups_info" : {"0" : {"1:omega3+IM" : "omega3", "3:IM" : "no_omega3", "2:omega3" : "omega3", "4:ctrl" : "no_omega3"}, "-1" : {"0_to_0.5" : "0_to_0.5", "0_to_0" : "0_to_0"}},
+            "rename_cols" : {"Evolution_CDR" : "Evolution_CDR0"},
+            "erase_cols" : [],
+            "rename_file" : {"gpeMapt4c" : "CDR0_Evolutionx_O3", "Evolution_CDR" : ""},
+            "covariates" : {"two_way_anova" :  ["m1"]},
+            "subgroup_two_way_anova" : "Evolution_CDR0",
+            "add_cov_spe_timepoints" : true
+    }
 }
