@@ -203,6 +203,10 @@ def fsleyes_render(
     overlay_files=[],
     overlay_types=[],
     overlay_mask_colors=[],
+    hidex=False,
+    hidey=False,
+    hidez=False,
+    hide_cursor=False,
         mm_pos=None):
     """
     Create png snap of image using fsleyes render.
@@ -236,6 +240,16 @@ def fsleyes_render(
     # Center on mni coords if needed
     if mm_pos is not None:
         cmd += ["-wl"] + [str(x) for x in mm_pos]
+
+    # Hide view or cursor if necessary
+    if hidex:
+        cmd += ["--hidex"]
+    if hidey:
+        cmd += ["--hidey"]
+    if hidez:
+        cmd += ["--hidez"]
+    if hide_cursor:
+        cmd += ["--hideCursor"]
 
     cmd += ["-of", out_file]
     cmd += [im_file]
