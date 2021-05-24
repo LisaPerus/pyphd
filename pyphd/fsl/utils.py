@@ -113,7 +113,8 @@ def text2vest(indata, outdata, fsl_sh):
 
 
 def create_group_design_matrix(
-        datafile, gpe_col, outdir, covariates=None, demean=True):
+        datafile, gpe_col, outdir, covariates=None, merge_cols=None,
+        demean=True):
     """
     Create a group design matrix file from a csv file containing a column with
     group of subjects and other information.
@@ -145,8 +146,14 @@ def create_group_design_matrix(
         path to output directory
     covariates: list of str
         list of columns with covariates
+    merge_cols: list of str
+        contains names of columns that need to be merged. If set, all columns
+        will be merged and the merged column will become the new gpe_col.
+        WARNING :
     demean: bool
         if true, demean covariates.
+    nb_subjects[name]: dict
+        nb of subjects/variables per gpe_col level
 
     Returns
     -------
@@ -160,18 +167,49 @@ def create_group_design_matrix(
 
     # Read data
     data = pd.read_csv(datafile)
+
+    # Merge columns if necessary
+    if merge_cols is not None:
+        new_col = "_".join(merge_cols)
+        new_col_value = []
+        for idx, row in data.iterrows():
+            sub_val = row[merge_cols]
+            sub_val = "_".join(sub_val)
+            new_col_value.append(sub_val)
+        data[new_col] = new_col_value
+        gpe_col = new_col
     group_values = set(list(data[gpe_col]))
-    group_values = sorted(list(group_values))
+
+    # If group values come from a merged column
+    if merge_cols is not None:
+        group_values = []
+        if len(merge_cols) != 2:
+            raise NotImplementedError(
+                "Did not implement merge for more than 2 cols")
+        first_col_vals = set(data[merge_cols[0]])
+        second_col_vals = set(data[merge_cols[1]])
+        for col in first_col_vals:
+            for scol in second_col_vals:
+                val = col + "_" + scol
+                group_values.append(val)
+        for col in merge_cols:
+            del data[col]
+    else:
+        group_values = sorted(list(group_values))
+
     nb_gpe_cols = len(group_values)
 
     # Create columns for groups
     groups_dict = {}
+    nb_subjects = {}
     outdata = pd.DataFrame()
     for val in group_values:
         name = gpe_col + "_1_for_{0}".format(str(val))
+        nb_subjects[name] = 0
         col = []
         for elt in list(data[gpe_col]):
             if elt == val:
+                nb_subjects[name] += 1
                 col.append("1")
             else:
                 col.append("0")
@@ -192,7 +230,7 @@ def create_group_design_matrix(
     outdata.to_csv(design_file_with_header, index=False)
     outdata.to_csv(design_file, index=False, header=False, sep=" ")
 
-    return design_file, design_file_with_header, nb_gpe_cols
+    return design_file, design_file_with_header, nb_gpe_cols, nb_subjects
 
 
 def randomise(
@@ -279,7 +317,8 @@ def randomise(
     return stat_files, tfce_files, cmd
 
 
-def find_contrast(nb_gpe_cols, nb_covariates, model, one_sided=True):
+def find_contrast(nb_gpe_cols, nb_covariates, model, one_sided=True,
+                  multiple_levels_nb=None):
     """ Find pre-made contrast files for specific group comparison models.
     Parameters
     ----------
@@ -291,8 +330,6 @@ def find_contrast(nb_gpe_cols, nb_covariates, model, one_sided=True):
         Name of the statistic models used. Can be glm, ttest, anova, ancova.
     one_sided: bool
         If True outputs both opposite contrasts for t contrast.
-
-
     gpe_col: str
         name of column in datafile with group information.
     outdir: str
@@ -301,6 +338,9 @@ def find_contrast(nb_gpe_cols, nb_covariates, model, one_sided=True):
         list of columns with covariates
     demean: bool
         if true, demean covariates.
+    multiple_levels_nb: list of int
+        if model is complex (e.g : interaction between variable with multiple
+        level) each variable number of level is specified.
 
     Returns
     -------
@@ -369,12 +409,12 @@ def find_contrast(nb_gpe_cols, nb_covariates, model, one_sided=True):
                     os.path.realpath(__file__))),
                 "ressources", "contrasts", "anova_4gpes_fcontrast.txt")
             if nb_covariates == 4:
-                con_file = os.path.join(
+                contrast_file = os.path.join(
                     os.path.dirname(os.path.dirname(
                         os.path.realpath(__file__))),
                     "ressources", "contrasts", "ancova_4gpes_4covs.txt")
             elif nb_covariates == 5:
-                con_file = os.path.join(
+                contrast_file = os.path.join(
                     os.path.dirname(os.path.dirname(
                         os.path.realpath(__file__))),
                     "ressources", "contrasts", "ancova_4gpes_5covs.txt")
@@ -386,8 +426,28 @@ def find_contrast(nb_gpe_cols, nb_covariates, model, one_sided=True):
             raise NotImplementedError(
                 "Does not provide pre-made contrast file for ancova with more "
                 "or less than 4 groups")
+    elif model == "two_way_anova":
+        if multiple_levels_nb[0] == 2 and multiple_levels_nb[1] == 4:
+            if nb_covariates == 4:
+                contrast_file = os.path.join(
+                    os.path.dirname(os.path.dirname(
+                        os.path.realpath(__file__))),
+                    "ressources", "contrasts", "two_way_anova_2x4_4covs.txt")
+                fts_file = os.path.join(
+                    os.path.dirname(os.path.dirname(
+                        os.path.realpath(__file__))),
+                    "ressources", "contrasts",
+                    "two_way_anova_2x4_4covs_fcontrast.txt")
+            else:
+                raise ValueError(
+                    "Does not provide pre-made contrast file for 2x4 anova "
+                    "with more or less than 4 covariates")
+        else:
+            raise ValueError(
+                "Does not provide pre-made contrast file for two_way anova "
+                "other than 2x4 design")
     else:
         raise NotImplementedError(
-            "Do not provide contrast file other than for glm, ttest, anova "
-            "and ancova.")
+            "Do not provide contrast file other than for glm, ttest, anova, "
+            "ancova and two_way_anova.")
     return contrast_file, fts_file
