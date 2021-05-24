@@ -22,29 +22,21 @@ import pandas as pd
 
 
 def extract_dti_group_analysis_data(
-    dti_datafile, clinical_datafile, dti_data_sid_col, clinical_data_sid_col,
-        group_name, outdir, covariates=None, additional_outfile_name=None):
-    """Outputs file with merged info about dti and clinical data.
+        dti_datafile, cols_to_keep, outdir, additional_outfile_name=None):
+    """Extract from file with dti input and covariates covariate of interest
+       and path to dti file.
 
     Parameters
     ----------
     dti_datafile: str
-        Path to file containing path to dti scalar file and subjects ids.
-        Comma-separated.
-    clinical_datafile: str
-        Path to file containing for subjects clinical data.
-        Comma-separated.
-    dti_data_sid_col: str
-        Name of subjects IDs column in dti_datafile.
-    clinical_data_sid_col: str
-        Column with names of subjects IDs in clinical_datafile.
-    group_name: str
-        Add information from column group_name in clinical_datafile
-        for each subject.
+        Path to file containing path to dti scalar file and covariates.
+        Comma-separated. Need to be read with pandas because some covariate
+        have comma in one col.
+        Each scalar col is <scalar>_<timepoint>.
+    cols_to_keep: list of str
+        List of columns to keep in dti_datafile.
     outdir: str
-        Path to output directory.
-    covariates: list of str
-        list of covariates to add to outfile.
+        path to output directory
     additional_outfile_name: str
         add additional name to outfile.
 
@@ -55,40 +47,18 @@ def extract_dti_group_analysis_data(
     """
 
     # Read data
-    dti_data = pd.read_csv(dti_datafile)
-    clinical_data = pd.read_csv(clinical_datafile, sep=",")
-    clinical_data.index = clinical_data[clinical_data_sid_col]
+    dti_data = pd.read_csv(dti_datafile, header=0, dtype=str)
 
-    # Get group values from clinical_data
-    subjects = dti_data[dti_data_sid_col]
-    group_values = []
-    for sub in subjects:
-        group_values.append(clinical_data.loc[sub, group_name])
-
-    # Get covariates if necessary
-    covariates_data = {}
-    if covariates is not None:
-        for cov in covariates:
-            covariates_data[cov] = []
-            for sub in subjects:
-                covariates_data[cov].append(clinical_data.loc[sub, cov])
-
-    # Merge data
-    output_data = dti_data.copy()
-    output_data[group_name] = group_values
-    if len(covariates_data) != 0:
-        for cov in covariates:
-            output_data[cov] = covariates_data[cov]
+    # Get col to keep
+    dti_data = dti_data[cols_to_keep]
 
     # Save data
     outfile = os.path.join(outdir, "dti_data.txt")
     if additional_outfile_name is not None:
         outfile = outfile.replace(
             ".txt", "_" + additional_outfile_name + ".txt")
-    outfile = outfile.replace(".txt", "_{0}.txt".format(group_name))
-    if covariates is not None:
-        outfile = outfile.replace(
-            ".txt", "_{0}.txt".format("_".join(covariates)))
-    output_data.to_csv(outfile, index=False)
+    outfile = outfile.replace(
+        ".txt", "_{0}.txt".format("_".join(cols_to_keep)))
+    dti_data.to_csv(outfile, index=False)
 
     return outfile
