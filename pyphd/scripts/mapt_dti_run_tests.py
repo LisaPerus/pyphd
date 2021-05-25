@@ -118,12 +118,6 @@ def get_cmd_line_args():
         "-T", "--timepoints", type=str, nargs="+",
         help="Timepoint for each input scalar list.")
     parser.add_argument(
-        "-S", "--scalar-datafile-subcol", type=str, default="Sid",
-        help="Colname of subjects IDs in scalar list datafile.")
-    parser.add_argument(
-        "-D", "--scalar-datafile-dticol", type=str, default="FA_skel",
-        help="Colname of scalar files in scalar list datafile.")
-    parser.add_argument(
         "-A", "--scalars", type=str, default=["FA"], nargs="+",
         help="Scalar names.")
     parser.add_argument(
@@ -132,9 +126,6 @@ def get_cmd_line_args():
     parser.add_argument(
         "-F", "--manually-demean", action="store_true",
         help="Manually demean covariates when creating design file.")
-    parser.add_argument(
-        "-C", "--clinical-datafile-subcol", type=str, default="Sid",
-        help="Colname of subjects IDs in clinical datafile.")
     parser.add_argument(
         "-J", "--group-json", type=is_file,
         help="Json with group extraction info", default=ANALYSES_DETAILS_JSON)
