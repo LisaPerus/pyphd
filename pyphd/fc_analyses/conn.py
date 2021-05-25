@@ -26,9 +26,12 @@ from pyphd.constants import CONN_INPUTS
 from pyphd.fsl.utils import text2vest
 import pandas as pd
 from scipy.io import loadmat
-from statsmodels.stats.multitest import fdrcorrection
 from scipy.ndimage import label
 
+try:
+    from statsmodels.stats.multitest import fdrcorrection
+except ImportError:
+    print("Could not import statsmodels")
 
 def extract_connectivities(group_name, tp=None, center_name=None,
                            covariates=None, network=None,
