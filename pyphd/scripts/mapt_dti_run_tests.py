@@ -463,6 +463,8 @@ for scalar in inputs["scalars"]:
 
                 # > Run randomise
                 stat_dir = os.path.join(model_spe_data["outdir"], "stats")
+                if not os.path.isdir(stat_dir):
+                    os.mkdir(stat_dir)
                 out_test_file = os.path.join(stat_dir, model + "_" + model_spe)
                 stat_files, tfce_files, randomise_cmd = randomise(
                     input_file=outnii,
