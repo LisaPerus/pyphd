@@ -151,7 +151,7 @@ def get_cmd_line_args():
 Parse the command line.
 """
 inputs, verbose = get_cmd_line_args()
-fsl_version = FSLWrapper([], shfile=fsl_config).version
+fsl_version = FSLWrapper([], shfile=inputs["fsl_config"]).version
 runtime = {
     "timestamp": datetime.now().isoformat(),
     "tool": "mapt_dti_run_tests.py",
