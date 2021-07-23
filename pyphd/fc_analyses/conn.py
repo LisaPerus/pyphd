@@ -155,10 +155,12 @@ try:
 except ImportError:
     print("Could not import statsmodels")
 
+
 def extract_connectivities(group_name, tp=None, center_name=None,
                            covariates=None, network=None,
                            conn_file_pattern=None, datafile=None, outdir=None,
-                           conn_datapath=None, tp_name=None):
+                           conn_datapath=None, tp_name=None,
+                           rename_conns=None):
     """Extract connectivities values from Conn mat files.
 
     Parameters
@@ -194,6 +196,8 @@ def extract_connectivities(group_name, tp=None, center_name=None,
     tp_name: str
         Name added to output file. If set to None with tp not set to None,
         select CONN_INPUTS default tp_name.
+    rename_conns: dict
+        Dict to rename connection names.
 
     Returns
     -------
@@ -337,6 +341,23 @@ def extract_connectivities(group_name, tp=None, center_name=None,
                 sid_cov_data = lines[1:][idx].strip("\n").split(",")[
                                     covariates_col_ids[cov]]
                 covariates_results[cov].append(sid_cov_data)
+
+    # Rename connections if needed
+    if rename_conns is not None:
+        delete_conns = []
+        new_conn_results = {}
+        for conn, conn_data in conn_results.items():
+            delete_conns.append(conn)
+            conn = conn.split(":")
+            new_conn_name_first = rename_conns[conn[0]]
+            new_conn_name_second = rename_conns[conn[1]]
+            new_conn_results[
+                ":".join([
+                    new_conn_name_first, new_conn_name_second])] = conn_data
+        delta_cols = set(conn_results.keys()) - set(delete_conns)
+        for col in delta_cols:
+            new_conn_results[col] = conn_results[col]
+        conn_results = new_conn_results
 
     # Write results
     outfile = os.path.join(outdir, "conn_connectivities.txt")
@@ -1266,6 +1287,7 @@ def parse_conn_roi_to_roi_output_textfile(
                 open_file.write(",".join(line))
                 open_file.write("\n")
     return outfile
+
 
 def split_roi_network_by_features(network_imfile, outfile_basename):
     """
