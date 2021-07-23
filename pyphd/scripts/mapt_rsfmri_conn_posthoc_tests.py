@@ -122,11 +122,22 @@ def get_cmd_line_args():
         "-J", "--group-json", type=is_file,
         help="Json with group extraction info", default=ANALYSES_DETAILS_JSON)
     parser.add_argument(
+        "-R", "--rename-conn", type=is_file,
+        help="File used to rename conn in extract_connectivities."
+             "Must be semicolon separated")
+    parser.add_argument(
+        "-N", "--rename-conn-from-conn-of-interest-file", type=is_file,
+        help="File used to rename conn saved from conn results."
+             "Must be semicolon separated")
+    parser.add_argument(
         "-K", "--tukeytest", type=str,
         default="two_way_anova", help="Type of posthoc test to apply.")
     parser.add_argument(
         "-C", "--covmodel", type=str,
         help="Specify model if covariate have to be added.")
+    parser.add_argument(
+        "-D", "--do-not-add-tp-covs", action="store_true",
+        help="Do not add timepoint covariates.")
     parser.add_argument(
         "-I", "--conn-version", type=str, default="Conn19c",
         help="Conn version.")
@@ -180,8 +191,11 @@ inputs["group_name"] = group_extraction_info[analysis_name]["group_name"]
 inputs["extract_group"] = group_extraction_info[analysis_name]["extract_group"]
 models = group_extraction_info[analysis_name]["models"]
 covariates_info = group_extraction_info[analysis_name]["covariates"]
-add_cov_spe_timepoints = group_extraction_info[
-    analysis_name]["add_cov_spe_timepoints"]
+if not inputs["do_not_add_tp_covs"]:
+    add_cov_spe_timepoints = group_extraction_info[
+        analysis_name]["add_cov_spe_timepoints"]
+else:
+    add_cov_spe_timepoints = None
 conn_file_additional_covariates = None
 if "additional_conn_file_covariates" in group_extraction_info[
         analysis_name].keys():
@@ -210,9 +224,31 @@ parse_conn_roi_to_roi_output_textfile(
 outputs["Reorganised input conn results file"] = outfile
 
 # Get all connections that were statistically significant
+# > Check if conn of interest have to be renamed
+if inputs["rename_conn_from_conn_of_interest_file"] is not None:
+    rename_conn_from_conn_of_interest_file = {}
+    with open(inputs[
+              "rename_conn_from_conn_of_interest_file"], "rt") as open_file:
+        for line in open_file.readlines():
+            line = line.strip("\n").split(";")
+            rename_conn_from_conn_of_interest_file[line[0]] = line[1]
+else:
+    rename_conn_from_conn_of_interest_file = None
+
 reorganized_conn_data = pd.read_csv(outfile)
 for idx_row, row in reorganized_conn_data.iterrows():
-    conn_of_interest.append([row["ROI1"], row["ROI2"]])
+    if rename_conn_from_conn_of_interest_file is None:
+        conn_of_interest.append([row["ROI1"], row["ROI2"]])
+    else:
+        if row["ROI1"] in rename_conn_from_conn_of_interest_file.keys():
+            new_roi1 = rename_conn_from_conn_of_interest_file[row["ROI1"]]
+        else:
+            new_roi1 = row["ROI1"]
+        if row["ROI2"] in rename_conn_from_conn_of_interest_file.keys():
+            new_roi2 = rename_conn_from_conn_of_interest_file[row["ROI2"]]
+        else:
+            new_roi1 = row["ROI2"]
+        conn_of_interest.append([new_roi1, new_roi2])
 
 # Extract group and subgroup for all connections
 # > Check if covariates have to be added
@@ -224,7 +260,7 @@ if inputs["covmodel"] is not None:
     # some covariates may be added depending on the timepoint for
     # the data (e.g : cov -> delay between mri and beginning of
     # the treatment)
-    if add_cov_spe_timepoints:
+    if add_cov_spe_timepoints is not None:
         list_covariates = list_covariates + [
             RSFMRI_TEMPORAL_COVARIATES[inputs["timepoint"]]]
 if list_covariates is None:
@@ -237,6 +273,20 @@ else:
         add_covariates = list_covariates + conn_file_additional_covariates
     else:
         add_covariates = list_covariates
+
+# Rename connectivities after extraction if needed
+if inputs["rename_conn"] is not None:
+    rename_conns_data = pd.read_csv(inputs["rename_conn"], index_col=False)
+    rename_conns = {}
+    with open(inputs["rename_conn"], "rt") as open_file:
+        for line in open_file.readlines():
+            line = line.strip("\n").split(";")
+            if line[0] in rename_conns.keys():
+                raise ValueError("Doublon in renaming connectivity")
+            rename_conns[line[0]] = line[1]
+else:
+    rename_conns = None
+
 conn_file = extract_connectivities(
     inputs["group_name"], tp=inputs["timepoint"], center_name=inputs["center"],
     covariates=add_covariates, network=None,
@@ -244,7 +294,8 @@ conn_file = extract_connectivities(
     datafile=conn_inputs["datafile"],
     outdir=inputs["outdir"],
     conn_datapath=conn_inputs["conn_datapath"],
-    tp_name=conn_inputs["timepoint_name"])
+    tp_name=conn_inputs["timepoint_name"],
+    rename_conns=rename_conns)
 
 group_colname = inputs["group_name"]
 if inputs["extract_group"]:
