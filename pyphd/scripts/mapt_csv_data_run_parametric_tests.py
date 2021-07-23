@@ -107,8 +107,8 @@ def get_cmd_line_args():
 
     # Optional argument
     parser.add_argument(
-        "-A", "--na-variable-datafile-values", type=str, nargs="+",
-        help="NA values to delete subjects in variable datafile. If value is "
+        "-A", "--na-variable-datafile-values", type=str,
+        help="NA value to delete subjects in variable datafile. If value is "
              "found for one subject (one line) in one col, this subject is "
              "discarded.")
     parser.add_argument(
@@ -283,8 +283,8 @@ for idx_tp, tp in enumerate(inputs["timepoints"]):
                     datafile=datafile,
                     mri_metrics_csv_file=varfiles[idx_tp],
                     outdir=model_spe_data["outdir"],
-                    subjects_na_var_delete=inputs[
-                        "na_variable_datafile_values"],
+                    subjects_na_var_delete=[inputs[
+                        "na_variable_datafile_values"]],
                     columns_na_var_delete=["NaN", "NA"],
                     tp=tp,
                     center_name=inputs["center"],
@@ -300,8 +300,8 @@ for idx_tp, tp in enumerate(inputs["timepoints"]):
                     datafile=datafile,
                     mri_metrics_csv_file=varfiles[idx_tp],
                     outdir=model_spe_data["outdir"],
-                    subjects_na_var_delete=inputs[
-                        "na_variable_datafile_values"],
+                    subjects_na_var_delete=[inputs[
+                        "na_variable_datafile_values"]],
                     columns_na_var_delete=["NaN", "NA"],
                     tp=tp,
                     center_name=inputs["center"],
