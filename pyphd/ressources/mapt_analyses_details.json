@@ -8,8 +8,8 @@
             "rename_cols" : {},
             "erase_cols" : [],
             "rename_file" : {},
-            "covariates" : {"ancova" :  ["m1", "m3"]},
-            "add_cov_spe_timepoints" : true
+            "covariates" : {"ancova" :  ["m1", "m5"]},
+            "add_cov_spe_timepoints" : false
         },
     "CDR05_only_gpeMapt4c":
         {
@@ -65,7 +65,7 @@
         },
     "CDR_x_gpeMapt4c": 
         {
-            "models" : ["two_way_anova"],
+            "models" : ["two_way_anova", "two_way_ancova"],
             "group_name" : "gpeMapt4c",
             "additional_conn_file_covariates" : ["scoreCDR1"],
             "extract_group" : true,
@@ -73,14 +73,14 @@
             "rename_cols" : {},
             "erase_cols" : [],
             "rename_file" : {"gpeMapt4c" : "CDR_x_gpeMapt4c", "scoreCDR1" : ""},
-            "covariates" : {"two_way_anova" :  ["m1", "m3"]},
+            "covariates" : {"two_way_ancova" :  ["m1", "m5"]},
             "subgroup_two_way_anova" : "scoreCDR1",
-            "add_cov_spe_timepoints" : true
+            "add_cov_spe_timepoints" : false
         },
 
     "At_least_one_frailty_criteria_x_gpeMapt4c": 
         {
-            "models" : ["two_way_anova"],
+            "models" : ["two_way_anova", "two_way_ancova"],
             "group_name" : "gpeMapt4c",
             "additional_conn_file_covariates" : ["at_least_one_fried_criteria_baseline"],
             "extract_group" : true,
@@ -88,13 +88,13 @@
             "rename_cols" : {},
             "erase_cols" : [],
             "rename_file" : {"gpeMapt4c" : "At_least_one_frailty_criteria_x_gpeMapt4c", "at_least_one_fried_criteria_baseline" : ""},
-            "covariates" : {"two_way_anova" :  ["m1"]},
+            "covariates" : {"two_way_ancova" :  ["m1", "m5"]},
             "subgroup_two_way_anova" : "at_least_one_fried_criteria_baseline",
-            "add_cov_spe_timepoints" : true
+            "add_cov_spe_timepoints" : false
         },
     "MMSE_inf_30_x_gpeMapt4c": 
         {
-            "models" : ["two_way_anova"],
+            "models" : ["two_way_anova", "two_way_ancova"],
             "group_name" : "gpeMapt4c",
             "additional_conn_file_covariates" : ["MMSE_M0_inf_30"],
             "extract_group" : true,
@@ -102,13 +102,13 @@
             "rename_cols" : {},
             "erase_cols" : [],
             "rename_file" : {"gpeMapt4c" : "MMSE_inf_30_x_gpeMapt4c", "MMSE_M0_inf_30" : ""},
-            "covariates" : {"two_way_anova" :  ["m1"]},
+            "covariates" : {"two_way_ancova" :  ["m1", "m5"]},
             "subgroup_two_way_anova" : "MMSE_M0_inf_30",
-            "add_cov_spe_timepoints" : true
+            "add_cov_spe_timepoints" : false
         },
     "APOE_E4_x_gpeMapt4c": 
         {
-            "models" : ["two_way_anova"],
+            "models" : ["two_way_anova", "two_way_ancova"],
             "group_name" : "gpeMapt4c",
             "additional_conn_file_covariates" : ["APOE4"],
             "extract_group" : true,
@@ -116,13 +116,13 @@
             "rename_cols" : {},
             "erase_cols" : [],
             "rename_file" : {"gpeMapt4c" : "APOE_E4_x_gpeMapt4c", "APOE4" : ""},
-            "covariates" : {"two_way_anova" :  ["m1"]},
+            "covariates" : {"two_way_ancova" :  ["m1", "m5"]},
             "subgroup_two_way_anova" : "APOE4",
-            "add_cov_spe_timepoints" : true
+            "add_cov_spe_timepoints" : false
         },
     "DHA_EPA_sup_x_gpeMapt4c": 
         {
-            "models" : ["two_way_anova"],
+            "models" : ["two_way_anova", "two_way_ancova"],
             "group_name" : "gpeMapt4c",
             "additional_conn_file_covariates" : ["Omega3_low"],
             "extract_group" : true,
@@ -130,13 +130,13 @@
             "rename_cols" : {},
             "erase_cols" : [],
             "rename_file" : {"gpeMapt4c" : "DHA_EPA_sup_x_gpeMapt4c", "Omega3_low" : ""},
-            "covariates" : {"two_way_anova" :  ["m1"]},
+            "covariates" : {"two_way_anova" :  ["m1", "m5"]},
             "subgroup_two_way_anova" : "Omega3_low",
-            "add_cov_spe_timepoints" : true
+            "add_cov_spe_timepoints" : false
         },
     "High_risk_dementia_x_gpeMapt4c": 
         {
-            "models" : ["two_way_anova"],
+            "models" : ["two_way_anova", "two_way_ancova"],
             "group_name" : "gpeMapt4c",
             "additional_conn_file_covariates" : ["scoreCAIDE_ge_6"],
             "extract_group" : true,
@@ -144,13 +144,13 @@
             "rename_cols" : {},
             "erase_cols" : [],
             "rename_file" : {"gpeMapt4c" : "High_risk_dementia_x_gpeMapt4c", "scoreCAIDE_ge_6" : ""},
-            "covariates" : {"two_way_anova" :  ["m1"]},
+            "covariates" : {"two_way_anova" :  ["m1", "m5"]},
             "subgroup_two_way_anova" : "scoreCAIDE_ge_6",
-            "add_cov_spe_timepoints" : true
+            "add_cov_spe_timepoints" : false
         },
     "suv_pos_x_gpeMapt4c": 
         {
-            "models" : ["two_way_anova"],
+            "models" : ["two_way_anova", "two_way_ancova"],
             "group_name" : "gpeMapt4c",
             "additional_conn_file_covariates" : ["suv_t117"],
             "extract_group" : true,
@@ -158,9 +158,9 @@
             "rename_cols" : {},
             "erase_cols" : [],
             "rename_file" : {"gpeMapt4c" : "suv_pos_x_gpeMapt4c", "suv_t117" : ""},
-            "covariates" : {"two_way_anova" :  ["m1"]},
+            "covariates" : {"two_way_anova" :  ["m1", "m5"]},
             "subgroup_two_way_anova" : "suv_t117",
-            "add_cov_spe_timepoints" : true
+            "add_cov_spe_timepoints" : false
         },
     "0399_Ge2RF_DecComp0399MRI_APOE_HRDxgpeMapt4c":{
             "models" : ["two_way_anova"],
