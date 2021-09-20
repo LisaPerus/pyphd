@@ -115,6 +115,9 @@ def get_cmd_line_args():
         "-G", "--extract-group", action="store_true",
         help="Option to extract subgroup.")
     parser.add_argument(
+        "-D", "--do-not-add-tp-covs", action="store_true",
+        help="Do not add timepoint covariates.")
+    parser.add_argument(
         "-J", "--group-json", type=is_file,
         help="Json with group extraction info", default=ANALYSES_DETAILS_JSON)
     parser.add_argument(
@@ -165,8 +168,12 @@ else:
     inputs["rename_file"] = {}
     inputs["erase_cols"] = []
 covariates_info = group_extraction_info[analysis_name]["covariates"]
-add_cov_spe_timepoints = group_extraction_info[
-    analysis_name]["add_cov_spe_timepoints"]
+
+if not inputs["do_not_add_tp_covs"]:
+    add_cov_spe_timepoints = group_extraction_info[
+        analysis_name]["add_cov_spe_timepoints"]
+else:
+    add_cov_spe_timepoints = False
 
 conn_file_additional_covariates = None
 if "additional_conn_file_covariates" in group_extraction_info[
@@ -365,6 +372,16 @@ for idx_tp, tp in enumerate(inputs["timepoints"]):
                 covariates_model = []
                 for cov in model_spe_data["covariates"]:
                     covariates_model.append(cov.replace("-", "_"))
+
+            # > If filename is too long R cannot read it, move to directory
+            # and reduce namefile
+            if len(tp_varfile) > 300:
+                os.chdir(os.path.dirname(tp_varfile))
+                tp_varfile_copy = os.path.join(
+                    os.path.dirname(tp_varfile), "varfile.txt")
+                shutil.copyfile(tp_varfile, tp_varfile_copy)
+                tp_varfile = os.path.basename(tp_varfile_copy)
+                statistics_dir = os.path.basename(statistics_dir)
 
             # > Run statistical test for ttest/anova
             if model in ["ttest", "anova"]:
