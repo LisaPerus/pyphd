@@ -395,7 +395,7 @@ for scalar in inputs["scalars"]:
                 # scoreCDR1 : CDR0 CDR0.5 -> 2 elts
                 # gpeMapt4c : 1:omega3+IM 2:omega3 3:IM 4:ctrl -> 4 elts
                 # Like this contrast will be found more easily
-                if model == "two_way_anova":
+                if model == "two_way_anova" or model == "two_way_ancova":
                     merge_cols_non_ordered = [
                         gpe_col] + conn_file_additional_covariates
                     merge_cols = []
