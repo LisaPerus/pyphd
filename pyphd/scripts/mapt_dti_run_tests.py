@@ -309,8 +309,11 @@ for scalar in inputs["scalars"]:
                 # group_name should always be first column and
                 # additional_conn_file_covariates the last
                 extract_cols = [inputs["group_name"]] + [
-                    scalar + "_" + tp] + model_spe_data[
-                        "covariates_extract"]
+                    scalar + "_" + tp]
+
+                if model_spe_data["covariates_extract"] is not None:
+                    extract_cols += model_spe_data["covariates_extract"]
+
                 outfile = extract_dti_group_analysis_data(
                     dti_datafile=inputs["dti_input_data"],
                     cols_to_keep=extract_cols, outdir=model_spe_data["outdir"],
