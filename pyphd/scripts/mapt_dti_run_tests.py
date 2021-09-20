@@ -112,6 +112,9 @@ def get_cmd_line_args():
 
     # Optional argument
     parser.add_argument(
+        "-D", "--do-not-add-tp-covs", action="store_true",
+        help="Do not add timepoint covariates.")
+    parser.add_argument(
         "-G", "--extract-group", action="store_true",
         help="Option to extract subgroup.")
     parser.add_argument(
@@ -180,8 +183,12 @@ else:
     inputs["rename_file"] = {}
     inputs["erase_cols"] = []
 covariates_info = group_extraction_info[analysis_name]["covariates"]
-add_cov_spe_timepoints = group_extraction_info[
-    analysis_name]["add_cov_spe_timepoints"]
+
+if inputs["do_not_add_tp_covs"]:
+    add_cov_spe_timepoints = False
+else:
+    add_cov_spe_timepoints = group_extraction_info[
+        analysis_name]["add_cov_spe_timepoints"]
 
 conn_file_additional_covariates = None
 if "additional_conn_file_covariates" in group_extraction_info[
