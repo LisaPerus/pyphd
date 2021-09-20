@@ -162,9 +162,12 @@ SCRIPTS_STATS = {"ttest" : os.path.join(SCRIPT_DIR, "GIT_REPOS", "RPhd", "script
 }
 
 # Different model with different covariates can be used
+# NB : we note m4 the m1 model without the delay
 MODELS_COVARIATES = {
     "m1" : ["age", "sexe", "NIVSCOL_UNI"],
-    "m2" : ["age", "sexe", "NIVSCOL", "APOE4"]
+    "m2" : ["age", "sexe", "NIVSCOL", "APOE4"],
+    "m3" : ["age"],
+    "m5" : ["age", "sexe", "NIVSCOL", "Machine"]
 }
 
 # Covariates linked to data time acquisition can be added for resting state
@@ -397,10 +400,40 @@ R36_RESAMPLED_CONN_INPUTS_ZSCORES = {
     }
 }
 
+
+RHCP_CONN_ZSCORES = {
+
+    "M0" : {
+        "conn_file_pattern" : "resultsROI_Subject*_Condition001.mat",
+        "datafile" : os.path.join(os.getenv("HOME"), "PHD", "NOTES", "Conn_input_Montpellier_Bordeaux_Toulouse_MAPT.csv"),
+        "outdir" : None,
+        "conn_datapath" : os.path.join(MEDIA_SCRIPT, "MAPT_Conn_Montpellier_Bordeaux_Toulouse", "conn_analysis", "results", "firstlevel", "SBC_09_Conn_network_HCP_ICA"),
+        "timepoint_name" : "zscores_common_subjects_timesteps_PREPOST_at_PRE"
+    },
+    "M36" : {
+        "conn_file_pattern" : "resultsROI_Subject*_Condition002.mat",
+        "datafile" : os.path.join(os.getenv("HOME"), "PHD", "NOTES", "Conn_input_Montpellier_Bordeaux_Toulouse_MAPT.csv"),
+        "outdir" : None,
+        "conn_datapath" : os.path.join(MEDIA_SCRIPT, "MAPT_Conn_Montpellier_Bordeaux_Toulouse", "conn_analysis", "results", "firstlevel", "SBC_09_Conn_network_HCP_ICA"),
+        "timepoint_name" : "zscores_common_subjects_timesteps_PREPOST_at_POST"
+    },
+    "M36-M0" : {
+        "conn_file_pattern" : "diff_zscores_resultsROI_*_Condition001*_Condition002.mat",
+        "datafile" : os.path.join(os.getenv("HOME"), "PHD", "NOTES", "Conn_input_Montpellier_Bordeaux_Toulouse_MAPT.csv"),
+        "outdir" : None,
+        "conn_datapath" : os.path.join(MEDIA_SCRIPT, "MAPT_Conn_Montpellier_Bordeaux_Toulouse", "conn_analysis", "results", "firstlevel", "SBC_09_Conn_network_HCP_ICA", "diff_zscores_Condition002-Condition001"),
+        "timepoint_name" : "diff_zscores_POST-PRE"
+    }
+
+
+
+}
+
 # Conn network analyses list
 CONN_NETWORKS_ANALYSES = {
     "R7" : R7_CONN_INPUTS_ZSCORES,
     "R36" : R36_CONN_INPUTS_ZSCORES,
     "R7_resampled" : R7_RESAMPLED_CONN_INPUTS_ZSCORES,
-    "R36_resampled" : R36_RESAMPLED_CONN_INPUTS_ZSCORES
+    "R36_resampled" : R36_RESAMPLED_CONN_INPUTS_ZSCORES,
+    "RHCP_CONN" : RHCP_CONN_ZSCORES
 }
