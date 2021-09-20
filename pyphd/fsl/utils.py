@@ -428,7 +428,28 @@ def find_contrast(nb_gpe_cols, nb_covariates, model, one_sided=True,
                 "or less than 4 groups")
     elif model == "two_way_anova":
         if multiple_levels_nb[0] == 2 and multiple_levels_nb[1] == 4:
-            if nb_covariates == 4:
+            contrast_file = os.path.join(
+                os.path.dirname(os.path.dirname(
+                    os.path.realpath(__file__))),
+                "ressources", "contrasts", "two_way_anova_2x4.txt")
+            fts_file = os.path.join(
+                os.path.dirname(os.path.dirname(
+                    os.path.realpath(__file__))),
+                "ressources", "contrasts",
+                "two_way_anova_2x4_4covs_fcontrast.txt")
+    elif model == "two_way_ancova":
+        if multiple_levels_nb[0] == 2 and multiple_levels_nb[1] == 4:
+            if nb_covariates == 3:
+                contrast_file = os.path.join(
+                    os.path.dirname(os.path.dirname(
+                        os.path.realpath(__file__))),
+                    "ressources", "contrasts", "two_way_anova_2x4_3covs.txt")
+                fts_file = os.path.join(
+                    os.path.dirname(os.path.dirname(
+                        os.path.realpath(__file__))),
+                    "ressources", "contrasts",
+                    "two_way_anova_2x4_4covs_fcontrast.txt")
+            elif nb_covariates == 4:
                 contrast_file = os.path.join(
                     os.path.dirname(os.path.dirname(
                         os.path.realpath(__file__))),
