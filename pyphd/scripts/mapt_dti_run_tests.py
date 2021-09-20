@@ -124,6 +124,9 @@ def get_cmd_line_args():
         "-E", "--demean", action="store_true",
         help="Demean covariates in randomise.")
     parser.add_argument(
+        "-N", "--nb-perms", type=int,
+        help="Number of permutations.")
+    parser.add_argument(
         "-F", "--manually-demean", action="store_true",
         help="Manually demean covariates when creating design file.")
     parser.add_argument(
@@ -402,7 +405,6 @@ for scalar in inputs["scalars"]:
                     merge_cols = None
                     len_merge_cols = None
 
-
                 # Note 03/07/2020 : since we are looking at group difference
                 # and not at mean within a group itself there is no need to
                 # demean the covariates
@@ -475,6 +477,7 @@ for scalar in inputs["scalars"]:
                     fsl_sh=inputs["fsl_config"],
                     mask=inputs["mask"],
                     tfce_2d_opt=True,
+                    nb_perms=inputs["nb_perms"],
                     demean=inputs["demean"])
 
                 # Save outputs
