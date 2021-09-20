@@ -207,6 +207,7 @@ def fsleyes_render(
     hidey=False,
     hidez=False,
     hide_cursor=False,
+    hide_label=False,
         mm_pos=None):
     """
     Create png snap of image using fsleyes render.
@@ -240,6 +241,10 @@ def fsleyes_render(
     # Center on mni coords if needed
     if mm_pos is not None:
         cmd += ["-wl"] + [str(x) for x in mm_pos]
+
+    # Hide label if necessary
+    if hide_label:
+        cmd += ["--hideLabels"]
 
     # Hide view or cursor if necessary
     if hidex:
