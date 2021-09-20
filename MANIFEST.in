@@ -13,3 +13,5 @@ include pyphd/ressources/contrasts/ttest_one_sided.txt
 include pyphd/ressources/contrasts/ttest_two_sided.txt
 include pyphd/ressources/contrasts/two_way_anova_2x4_4covs.txt
 include pyphd/ressources/contrasts/two_way_anova_2x4_4covs_fcontrast.txt
+include pyphd/ressources/contrasts/two_way_anova_2x4.txt
+include pyphd/ressources/contrasts/two_way_anova_2x4_3covs.txt
