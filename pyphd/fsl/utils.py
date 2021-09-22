@@ -408,7 +408,12 @@ def find_contrast(nb_gpe_cols, nb_covariates, model, one_sided=True,
                 os.path.dirname(os.path.dirname(
                     os.path.realpath(__file__))),
                 "ressources", "contrasts", "anova_4gpes_fcontrast.txt")
-            if nb_covariates == 4:
+            if nb_covariates == 3:
+                contrast_file = os.path.join(
+                    os.path.dirname(os.path.dirname(
+                        os.path.realpath(__file__))),
+                    "ressources", "contrasts", "ancova_4gpes_3covs.txt")
+            elif nb_covariates == 4:
                 contrast_file = os.path.join(
                     os.path.dirname(os.path.dirname(
                         os.path.realpath(__file__))),
