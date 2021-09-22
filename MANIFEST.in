@@ -2,6 +2,7 @@ include pyphd/ressources/scimagojr_2018.csv
 include pyphd/ressources/mapt_analyses_details.json
 include pyphd/ressources/contrasts/ancova_4gpes_4covs_fcontrast.txt
 include pyphd/ressources/contrasts/ancova_4gpes_4covs.txt
+include pyphd/ressources/contrasts/ancova_4gpes_3covs.txt
 include pyphd/ressources/contrasts/ancova_4gpes_5covs.txt
 include pyphd/ressources/contrasts/anova_4gpes_fcontrast.txt
 include pyphd/ressources/contrasts/anova_4gpes.txt
