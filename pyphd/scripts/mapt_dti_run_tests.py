@@ -330,12 +330,13 @@ for scalar in inputs["scalars"]:
                 extract_cols = [inputs["group_name"]] + [
                     scalar + "_" + tp]
 
-                if model_spe_data["covariates_extract"] is not None:
-                    extract_cols += model_spe_data["covariates_extract"]
-
                 # If specified, add subjects id col to intermediate files
                 if inputs["add_sid_col"] is not None:
                     extract_cols += [inputs["add_sid_col"]]
+
+                # Add additional covariates
+                if model_spe_data["covariates_extract"] is not None:
+                    extract_cols += model_spe_data["covariates_extract"]
 
                 outfile = extract_dti_group_analysis_data(
                     dti_datafile=inputs["dti_input_data"],
