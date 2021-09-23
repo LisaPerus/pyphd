@@ -290,7 +290,7 @@ def create_group_design_matrix(
         for cov in categorical_covariates_to_levels:
             new_cov_data = transform_categorical_into_binary_levels(
                 cov, outdata[cov])
-            outdata.drop(cov)
+            outdata.pop(cov)
             for new_col_name, new_col_data in new_cov_data.items():
                 outdata[new_col_name] = new_col_data
 
@@ -301,7 +301,7 @@ def create_group_design_matrix(
 
     # Delete subject id col if needed before writting final output
     if delete_sid_col is not None:
-        outdata.drop(delete_sid_col)
+        outdata.pop(delete_sid_col)
 
     outdata.to_csv(design_file, index=False, header=False, sep=" ")
 
