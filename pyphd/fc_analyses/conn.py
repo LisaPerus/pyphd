@@ -458,6 +458,8 @@ def extract_group(conn_file, groups_info={}, rename_cols={}, erase_cols=[],
     -------
     outfile: str
         Path to file subjects with all their connection
+    deleted_subjects: pd.DataFrame
+        dataframe with lines of data deleted when extracting groups
     """
 
     # Read conn file
@@ -467,8 +469,18 @@ def extract_group(conn_file, groups_info={}, rename_cols={}, erase_cols=[],
     # Select subjects in subgroups
     # Note 30/09/2020 : if there are nan values in subgroups it may delete
     # some lines
+    copy_outdata_before_deletion = outdata.copy()
     for col, col_data in groups_info.items():
         outdata = outdata[outdata.iloc[:, col].isin(list(col_data.keys()))]
+
+    # > Get eventual deleted subjects
+    spe_index = list(set(list(copy_outdata_before_deletion.index)) - set(list(
+        outdata.index)))
+    if len(spe_index) == 0:
+        deleted_subjects = pd.DataFrame({})
+        deleted_subjects.columns = outdata.columns
+    else:
+        deleted_subjects = copy_outdata_before_deletion.iloc[spe_index, :]
 
     # Rename subgroup subjects with new values
     for col, col_data in groups_info.items():
@@ -514,7 +526,7 @@ def extract_group(conn_file, groups_info={}, rename_cols={}, erase_cols=[],
 
     # Save output file
     outdata.to_csv(outfile, index=False)
-    return outfile
+    return outfile, deleted_subjects
 
 
 def extract_clinical_data_for_mapt_metrics(
