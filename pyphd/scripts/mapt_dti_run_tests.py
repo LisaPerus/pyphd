@@ -464,12 +464,17 @@ for scalar in inputs["scalars"]:
                         categorical_covs.append(cov)
 
                 # Create design file
+                if inputs["add_sid_col"] is not None:
+                    design_covs = model_spe_data["covariates"] + [
+                        inputs["add_sid_col"]]
+                else:
+                    design_covs = model_spe_data["covariates"]
                 (design_file, _, nb_gpe_cols,
                  nb_subjects) = create_group_design_matrix(
                     datafile=outfile,
                     gpe_col=gpe_col,
                     outdir=model_spe_data["outdir"],
-                    covariates=model_spe_data["covariates"],
+                    covariates=design_covs,
                     categorical_covariates_to_levels=categorical_covs,
                     delete_sid_col=inputs["add_sid_col"],
                     merge_cols=merge_cols,
