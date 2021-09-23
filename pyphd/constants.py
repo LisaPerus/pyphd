@@ -167,7 +167,7 @@ MODELS_COVARIATES = {
     "m1" : ["age", "sexe", "NIVSCOL_UNI"],
     "m2" : ["age", "sexe", "NIVSCOL", "APOE4"],
     "m3" : ["age"],
-    "m5" : ["age", "sexe", "NIVSCOL", "Machine"]
+    "m5" : ["age", "sexe", "NIVSCOL_UNI", "Machine"]
 }
 
 # Covariates linked to data time acquisition can be added for resting state
@@ -185,7 +185,8 @@ MAPT_RSFMRI_COV_TYPES = {
     "NIVSCOL" : "Continuous",
     "APOE4" : "Categorical",
     "Delay_IntIRMM0_V1_days" : "Continuous",
-    "intIRM36-V1" : "Continuous"
+    "intIRM36-V1" : "Continuous",
+    "Machine" : "Categorical"
 }
 
 COVARIATES_RSFMRI_ANALYSES = ["age", "sexe", "NIVSCOL", "APOE4"]
