@@ -146,7 +146,7 @@ def transform_categorical_into_binary_levels(cov, cov_list_values):
             new_col = []
             for elt in cov_list_values:
                 new_col.append(str(int(elt)))
-            results[cov] = new_col
+            results[cov] = new_col
         else:
             level_1 = levels[1]
             level_0 = levels[0]
