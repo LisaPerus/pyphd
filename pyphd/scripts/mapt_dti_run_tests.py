@@ -196,7 +196,7 @@ else:
 if inputs["covariates_models"] is not None:
     covariates_info = {}
     for elt in inputs["covariates_models"]:
-        model_list, model_list_covs = = elt.split("/")
+        model_list, model_list_covs = elt.split("/")
         if model_list not in covariates_info.keys():
             covariates_info[model_list] = []
         covariates_info[model_list].append(model_list_covs)
