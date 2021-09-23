@@ -470,7 +470,7 @@ for scalar in inputs["scalars"]:
                     gpe_col=gpe_col,
                     outdir=model_spe_data["outdir"],
                     covariates=model_spe_data["covariates"],
-                    categorical_covariates=categorical_covs,
+                    categorical_covariates_to_levels=categorical_covs,
                     delete_sid_col=inputs["add_sid_col"],
                     merge_cols=merge_cols,
                     demean=inputs["manually_demean"])
