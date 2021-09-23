@@ -112,9 +112,61 @@ def text2vest(indata, outdata, fsl_sh):
     fslprocess()
 
 
+def transform_categorical_into_binary_levels(cov, cov_list_values):
+    """
+    Transform a list of values for a covariates into multiple list of binary
+    levels.
+
+    Parameters
+    ----------
+    cov: str
+        name of covariate
+    cov_list_values: list
+        list of values for this covariate and each subject
+
+    Returns
+    -------
+    results: dict
+        dict with covariate binarized into different columns (lists)
+    """
+
+    levels = list(set(cov_list_values))
+    results = {}
+    if len(levels) < 2:
+        msg = "Cannot create different levels for a covariate with"
+        msg += "less than 2 levels : {0}".format(cov)
+        raise ValueError(msg)
+    elif len(levels) > 2:
+        raise NotImplementedError(
+            "Code not implemented yet for categorical covariate > 2 levels")
+    else:
+        if (("0.0" in levels and "1.0" in levels) or
+                (0 in levels and 1 in levels) or
+                (0.0 in levels and 1.0 in levels)):
+            new_col = []
+            for elt in cov_list_values:
+                new_col.append(str(int(elt)))
+            results[cov] = new_col
+        else:
+            level_1 = levels[1]
+            level_0 = levels[0]
+            new_col = []
+            for elt in cov_list_values:
+                if elt == level_1:
+                    new_col.append("1")
+                elif elt == level_0:
+                    new_col.append("0")
+                else:
+                    raise ValueError(
+                        "Categorical variable does not have two levels")
+            results[cov + "_" + level_1 + "_1"] = new_col
+    return results
+
+
 def create_group_design_matrix(
-        datafile, gpe_col, outdir, covariates=None, merge_cols=None,
-        demean=True):
+        datafile, gpe_col, outdir, covariates=None,
+        categorical_covariates_to_levels=None, delete_sid_col=None,
+        merge_cols=None, demean=True):
     """
     Create a group design matrix file from a csv file containing a column with
     group of subjects and other information.
@@ -146,6 +198,13 @@ def create_group_design_matrix(
         path to output directory
     covariates: list of str
         list of columns with covariates
+    categorical_covariates_to_levels: list of str
+        list of categorical covariates. If set each covariate is considered as
+        a categorical covariate and each of its level is written in
+        the design file.
+    delete_sid_col: str
+        if there is a column with subject id, delete it before writting the
+        final design file (but keep in intermediate files).
     merge_cols: list of str
         contains names of columns that need to be merged. If set, all columns
         will be merged and the merged column will become the new gpe_col.
@@ -224,10 +283,26 @@ def create_group_design_matrix(
                 col_values = [float(x) - mean_val_col for x in col_values]
             outdata[cov] = col_values
 
+    # If there are categorical covariates, transform it into different levels
+    # If it is already binarized but is a float (e.g : 0.0 or 1.0) transform
+    # it into int
+    if categorical_covariates_to_levels is not None:
+        for cov in categorical_covariates_to_levels:
+            new_cov_data = transform_categorical_into_binary_levels(
+                cov, outdata[cov])
+            outdata.drop(cov)
+            for new_col_name, new_col_data in new_cov_data.items():
+                outdata[new_col_name] = new_col_data
+
     # Write output
     design_file_with_header = os.path.join(outdir, "design.csv")
     design_file = os.path.join(outdir, "design.txt")
     outdata.to_csv(design_file_with_header, index=False)
+
+    # Delete subject id col if needed before writting final output
+    if delete_sid_col is not None:
+        outdata.drop(delete_sid_col)
+
     outdata.to_csv(design_file, index=False, header=False, sep=" ")
 
     return design_file, design_file_with_header, nb_gpe_cols, nb_subjects
