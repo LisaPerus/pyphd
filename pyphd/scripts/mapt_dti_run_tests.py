@@ -458,10 +458,13 @@ for scalar in inputs["scalars"]:
                 # True.
 
                 # > Get categorical variables
-                categorical_covs = []
-                for cov in model_spe_data["covariates"]:
-                    if MAPT_RSFMRI_COV_TYPES[cov] == "Categorical":
-                        categorical_covs.append(cov)
+                if model_spe_data["covariates"] is not None:
+                    categorical_covs = []
+                    for cov in model_spe_data["covariates"]:
+                        if MAPT_RSFMRI_COV_TYPES[cov] == "Categorical":
+                            categorical_covs.append(cov)
+                else:
+                    categorical_covs = None
 
                 # Create design file
                 if inputs["add_sid_col"] is not None:
