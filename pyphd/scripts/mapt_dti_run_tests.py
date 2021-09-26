@@ -467,11 +467,14 @@ for scalar in inputs["scalars"]:
                     categorical_covs = None
 
                 # Create design file
-                if inputs["add_sid_col"] is not None:
-                    design_covs = model_spe_data["covariates"] + [
-                        inputs["add_sid_col"]]
+                if model_spe_data["covariates"] is not None:
+                    if inputs["add_sid_col"] is not None:
+                        design_covs = model_spe_data["covariates"] + [
+                            inputs["add_sid_col"]]
+                    else:
+                        design_covs = model_spe_data["covariates"]
                 else:
-                    design_covs = model_spe_data["covariates"]
+                    design_covs = None
                 (design_file, _, nb_gpe_cols,
                  nb_subjects) = create_group_design_matrix(
                     datafile=outfile,
