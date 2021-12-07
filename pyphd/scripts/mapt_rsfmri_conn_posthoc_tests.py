@@ -133,6 +133,11 @@ def get_cmd_line_args():
         "-K", "--tukeytest", type=str,
         default="two_way_anova", help="Type of posthoc test to apply.")
     parser.add_argument(
+        "-M", "--modify-group-factors", type=is_file,
+        help="File used to modify names of group_colname levels in R posthoc"
+             "script. Can be useful to orient direction of contrasts in "
+             "posthoc tests.")
+    parser.add_argument(
         "-C", "--covmodel", type=str,
         help="Specify model if covariate have to be added.")
     parser.add_argument(
@@ -337,6 +342,7 @@ statistic_dir = os.path.join(inputs["outdir"], "statistics")
 if not os.path.isdir(statistic_dir):
     os.mkdir(statistic_dir)
 if inputs["tukeytest"] == "two_way_anova":
+
     cmd = ["Rscript", "--vanilla", SCRIPTS_STATS["posthoc_two_way_anova"],
            "-d", conn_file_with_selected_conns,
            "-g", group_colname,
@@ -349,6 +355,9 @@ if inputs["tukeytest"] == "two_way_anova":
             covariates_type.append(MAPT_RSFMRI_COV_TYPES[cov])
         cmd += ["-c", " ".join([x.replace("-", "_") for x in list_covariates]),
                 "-t", " ".join(covariates_type)]
+
+    if inputs["modify_group_factors"] is not None:
+        cmd += ["-M", inputs["modify_group_factors"]]
     print(" ".join(cmd))
 else:
     raise ValueError("Post hoc tests implement only for two-way anova.")
