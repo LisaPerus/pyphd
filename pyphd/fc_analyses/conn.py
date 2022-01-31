@@ -477,8 +477,10 @@ def extract_group(conn_file, groups_info={}, rename_cols={}, erase_cols=[],
     spe_index = list(set(list(copy_outdata_before_deletion.index)) - set(list(
         outdata.index)))
     if len(spe_index) == 0:
-        deleted_subjects = pd.DataFrame({})
-        deleted_subjects.columns = outdata.columns
+        deleted_subjects = {}
+        for col in outdata.columns:
+            deleted_subjects[col] = []
+        deleted_subjects = pd.DataFrame(deleted_subjects)
     else:
         deleted_subjects = copy_outdata_before_deletion.iloc[spe_index, :]
 
