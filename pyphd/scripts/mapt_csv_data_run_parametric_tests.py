@@ -121,7 +121,7 @@ def get_cmd_line_args():
         "-J", "--group-json", type=is_file,
         help="Json with group extraction info", default=ANALYSES_DETAILS_JSON)
     parser.add_argument(
-        "-N", "--center", type=str, help="Center.", default="0399")
+        "-N", "--center", type=str, help="Center.")
     parser.add_argument(
         "-V", "--verbose",
         type=int, choices=[0, 1, 2], default=2,
