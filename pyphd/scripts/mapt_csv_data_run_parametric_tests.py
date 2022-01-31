@@ -322,7 +322,7 @@ for idx_tp, tp in enumerate(inputs["timepoints"]):
                 groups_info = {}
                 for elt, elt_data in inputs["groups_info"].items():
                     groups_info[int(elt)] = elt_data
-                tp_varfile = extract_group(
+                tp_varfile, _ = extract_group(
                     tp_varfile, groups_info=groups_info,
                     rename_cols=inputs["rename_cols"],
                     erase_cols=inputs["erase_cols"],
@@ -372,6 +372,8 @@ for idx_tp, tp in enumerate(inputs["timepoints"]):
                 covariates_model = []
                 for cov in model_spe_data["covariates"]:
                     covariates_model.append(cov.replace("-", "_"))
+            else:
+                covariates_model = None
 
             # > If filename is too long R cannot read it, move to directory
             # and reduce namefile
@@ -411,9 +413,10 @@ for idx_tp, tp in enumerate(inputs["timepoints"]):
                        "-d", tp_varfile,
                        "-o", statistics_dir,
                        "-g", group_colname,
-                       "-s", subgroup_colname,
-                       "-c", " ".join(covariates_model),
-                       "-t", " ".join(covariates_types)]
+                       "-s", subgroup_colname]
+                if covariates_model is not None:
+                    cmd += ["-c", " ".join(covariates_model)]
+                cmd += ["-t", " ".join(covariates_types)]
             else:
                 raise ValueError("Unknown model : {0}".format(model))
 
