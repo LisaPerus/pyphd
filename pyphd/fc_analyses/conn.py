@@ -528,7 +528,7 @@ def extract_group(conn_file, groups_info={}, rename_cols={}, erase_cols=[],
 
     # Save output file
     outdata.to_csv(outfile, index=False)
-    return outfile, deleted_subjects
+    return (outfile, deleted_subjects)
 
 
 def extract_clinical_data_for_mapt_metrics(
