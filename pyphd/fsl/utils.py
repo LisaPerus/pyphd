@@ -79,6 +79,7 @@ def palm(indata, design_file, contrast_file, f_contrast, output_basename,
         cmd.append("-twotail")
     if saveparametric:
         cmd.append("-saveparametric")
+    print(" ".join(cmd))
     proc = subprocess.Popen(cmd,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
@@ -87,10 +88,31 @@ def palm(indata, design_file, contrast_file, f_contrast, output_basename,
         raise ValueError(
                 "Command '{0}' failed : {1} + {2}".format(
                     " ".join(cmd), stderr, stdout))
-    stat_val = glob.glob(os.path.join(output_basename + "*dat_tstat_c*.csv"))
-    pval_unc = glob.glob(os.path.join(output_basename + "*uncp*.csv"))
-    p_fwe = glob.glob(os.path.join(output_basename + "*fwep*.csv"))
-    return stat_val, pval_unc, p_fwe
+    tstat_val_files = glob.glob(
+        os.path.join(output_basename + "*dat_tstat_c*"))
+    fstat_val_files = glob.glob(
+        os.path.join(output_basename + "*dat_fstat_c*"))
+    tstat_pval_unc_files = glob.glob(
+        os.path.join(output_basename + "*tstat_uncp_c*"))
+    fstat_pval_unc_files = glob.glob(
+        os.path.join(output_basename + "*fstat_uncp_c*"))
+    tstat_p_fwe_files = glob.glob(
+        os.path.join(output_basename + "*tstat_fwep*"))
+    fstat_p_fwe_files = glob.glob(
+        os.path.join(output_basename + "*fstat_fwep*"))
+    tstat_uncparap_files = glob.glob(
+        os.path.join(output_basename + "*tstat_uncparap*"))
+    fstat_uncparap_files = glob.glob(
+        os.path.join(output_basename + "*fstat_uncparap*"))
+    palm_elapsed_file = glob.glob(
+        os.path.join(output_basename + "*_elapsed.csv"))
+    palm_config_file = glob.glob(
+        os.path.join(output_basename + "*_palmconfig.txt"))
+
+    return (tstat_val_files, fstat_val_files, tstat_pval_unc_files,
+            fstat_pval_unc_files, tstat_p_fwe_files, fstat_p_fwe_files,
+            tstat_uncparap_files, fstat_uncparap_files, palm_elapsed_file,
+            palm_config_file)
 
 
 def text2vest(indata, outdata, fsl_sh):
