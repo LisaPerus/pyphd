@@ -457,7 +457,18 @@ def find_contrast(nb_gpe_cols, nb_covariates, model, one_sided=True,
                 os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
                 "ressources", "contrasts", "ttest_two_sided.txt")
     elif model == "glm":
-        if nb_covariates == 4:
+        if nb_covariates == 3:
+            if one_sided:
+                contrast_file = os.path.join(
+                    os.path.dirname(os.path.dirname(
+                        os.path.realpath(__file__))),
+                    "ressources", "contrasts", "glm_2gpes_3covs_one_sided.txt")
+            else:
+                contrast_file = os.path.join(
+                    os.path.dirname(os.path.dirname(
+                        os.path.realpath(__file__))),
+                    "ressources", "contrasts", "glm_2gpes_3covs_two_sided.txt")
+        elif nb_covariates == 4:
             if one_sided:
                 contrast_file = os.path.join(
                     os.path.dirname(os.path.dirname(
