@@ -854,11 +854,17 @@ for idx_tp, tp in enumerate(inputs["timepoints"]):
 """
 Update the outputs and save them and the inputs in a 'logs' directory.
 """
-outfile = os.path.join(inputs["outdir"], inputs["analysis_name"] + ".json")
-with open(outfile, "wt") as open_file:
-    outdata = {"output_files": outputs, "runtime": runtime, "inputs": inputs}
-    json.dump(outdata, open_file,
-              sort_keys=True, check_circular=True, indent=4)
+log_dir = os.path.join(inputs["outdir"], "logs")
+if not os.path.isdir(log_dir):
+    os.mkdir(log_dir)
+for name, name_data in {"inputs": inputs, "outputs": outputs,
+                        "runtime": runtime}:
+    outfile = os.path.join(
+        log_dir, inputs["analysis_name"] + "_" + name + ".json")
+    with open(outfile, "wt") as open_file:
+        outdata = {"info": name_data}
+        json.dump(outdata, open_file,
+                  sort_keys=True, check_circular=True, indent=4)
 if verbose > 0:
     print("[Outputs]:")
     print(outfile)
