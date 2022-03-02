@@ -269,7 +269,7 @@
     },
     "CDR_x_O3":{
 
-            "models" : ["two_way_anova"],
+            "models" : ["two_way_anova", "two_way_ancova"],
             "group_name" : "gpeMapt4c",
             "additional_conn_file_covariates" : ["scoreCDR1"],
             "extract_group" : true,
@@ -277,7 +277,7 @@
             "rename_cols" : {},
             "erase_cols" : [],
             "rename_file" : {"gpeMapt4c" : "CDR_x_O3", "scoreCDR1" : ""},
-            "covariates" : {"two_way_anova" :  ["m1"]},
+            "covariates" : {"two_way_ancova" :  ["m1"]},
             "subgroup_two_way_anova" : "scoreCDR1",
             "add_cov_spe_timepoints" : true
     },
