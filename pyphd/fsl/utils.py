@@ -79,7 +79,6 @@ def palm(indata, design_file, contrast_file, f_contrast, output_basename,
         cmd.append("-twotail")
     if saveparametric:
         cmd.append("-saveparametric")
-    print(" ".join(cmd))
     proc = subprocess.Popen(cmd,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
@@ -112,7 +111,7 @@ def palm(indata, design_file, contrast_file, f_contrast, output_basename,
     return (tstat_val_files, fstat_val_files, tstat_pval_unc_files,
             fstat_pval_unc_files, tstat_p_fwe_files, fstat_p_fwe_files,
             tstat_uncparap_files, fstat_uncparap_files, palm_elapsed_file,
-            palm_config_file)
+            palm_config_file, cmd)
 
 
 def text2vest(indata, outdata, fsl_sh):
@@ -539,6 +538,20 @@ def find_contrast(nb_gpe_cols, nb_covariates, model, one_sided=True,
                     os.path.realpath(__file__))),
                 "ressources", "contrasts",
                 "two_way_anova_2x4_4covs_fcontrast.txt")
+        elif multiple_levels_nb[0] == 2 and multiple_levels_nb[1] == 2:
+            contrast_file = os.path.join(
+                os.path.dirname(os.path.dirname(
+                    os.path.realpath(__file__))),
+                "ressources", "contrasts", "two_way_anova_2x2.txt")
+            fts_file = os.path.join(
+                os.path.dirname(os.path.dirname(
+                    os.path.realpath(__file__))),
+                "ressources", "contrasts",
+                "two_way_anova_2x2_fcontrast.txt")
+        else:
+            raise ValueError(
+                "Does not provide pre-made contrast file other than for 2x4 "
+                "or 2x2 anova")
     elif model == "two_way_ancova":
         if multiple_levels_nb[0] == 2 and multiple_levels_nb[1] == 4:
             if nb_covariates == 3:
@@ -565,6 +578,17 @@ def find_contrast(nb_gpe_cols, nb_covariates, model, one_sided=True,
                 raise ValueError(
                     "Does not provide pre-made contrast file for 2x4 anova "
                     "with more or less than 4 covariates")
+        elif multiple_levels_nb[0] == 2 and multiple_levels_nb[1] == 2:
+            if nb_covariates == 3:
+                contrast_file = os.path.join(
+                    os.path.dirname(os.path.dirname(
+                        os.path.realpath(__file__))),
+                    "ressources", "contrasts", "two_way_anova_2x2_3covs.txt")
+                fts_file = os.path.join(
+                    os.path.dirname(os.path.dirname(
+                        os.path.realpath(__file__))),
+                    "ressources", "contrasts",
+                    "two_way_anova_2x2_fcontrast.txt")
         else:
             raise ValueError(
                 "Does not provide pre-made contrast file for two_way anova "
