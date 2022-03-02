@@ -19,3 +19,5 @@ include pyphd/ressources/contrasts/two_way_anova_2x4_3covs.txt
 include pyphd/ressources/contrasts/two_way_anova_2x2.txt
 include pyphd/ressources/contrasts/two_way_anova_2x2_3covs.txt
 include pyphd/ressources/contrasts/two_way_anova_2x2_fcontrast.txt
+include pyphd/ressources/contrasts/glm_2gpes_3covs_one_sided.txt
+include pyphd/ressources/contrasts/glm_2gpes_3covs_two_sided.txt
