@@ -858,7 +858,7 @@ log_dir = os.path.join(inputs["outdir"], "logs")
 if not os.path.isdir(log_dir):
     os.mkdir(log_dir)
 for name, name_data in {"inputs": inputs, "outputs": outputs,
-                        "runtime": runtime}:
+                        "runtime": runtime}.items():
     outfile = os.path.join(
         log_dir, inputs["analysis_name"] + "_" + name + ".json")
     with open(outfile, "wt") as open_file:
