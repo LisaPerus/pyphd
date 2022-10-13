@@ -1,4 +1,4 @@
-# Script reproducing Clara Manesco matlab script for rsfMRI data preprocessing
+# Script reproducing Montpellier lab matlab script for rsfMRI data preprocessing
 # on the MAPT cohort.
 # Copyright (C) 2019  Lisa Perus
 #
@@ -43,7 +43,7 @@ from pypreprocess import __version__ as pypreprocess_version
 from pypreprocess.io_utils import niigz2nii
 
 # PyPHD imports
-from pyphd.constants import RSFMRI_PREPROC_CLARA_MANESCO
+from pyphd.constants import RSFMRI_PREPROC_MONTPELLIER
 from pyphd.spm.utils import (spm_standalone_reorient, get_slice_order,
                              st_get_ref_slice)
 from pyphd.transformations.space import delete_im_first_volumes
@@ -51,7 +51,7 @@ from pyphd.transformations.space import delete_im_first_volumes
 
 # Script documentation
 DOC = """
-Execute Clara Manesco fMRI preprocessing pipeline initially designed to be run
+Execute Montpellier fMRI preprocessing pipeline initially designed to be run
 on MAPT data.
 ------------------------------------------------------------------------------
 
