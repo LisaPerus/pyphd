@@ -46,7 +46,7 @@ else:
 
 # Constant for fmri data preprocessing script adapted from Clara Manesco
 # pipeline.
-RSFMRI_PREPROC_CLARA_MANESCO = {
+RSFMRI_PREPROC_MONTPELLIER = {
     "NewSegment":
         {
             "_comment": ["Save only native, not dartel map.",
